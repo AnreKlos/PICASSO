@@ -1,0 +1,1374 @@
+import { useState, useRef, useEffect, useCallback } from 'react'
+import { Shield, Clock, Coffee, ChevronDown, MessageCircle, X, Send, ArrowRight, Sparkles, Diamond, Scissors, HandMetal, Eye, Flower2, FlaskConical, Star, MapPin, Phone, Clock3, Menu } from 'lucide-react'
+import { motion, useScroll, useTransform, useInView, AnimatePresence, useMotionValue, animate } from 'framer-motion'
+import Lenis from 'lenis'
+import useEmblaCarousel from 'embla-carousel-react'
+
+const EASE = [0.16, 1, 0.3, 1]
+const GOLD = '#C9A87A'
+const GOLD_DIM = '#A68B5A'
+const GOLD_BRIGHT = '#D4B88A'
+const TEXT = '#F0EBE3'
+const TEXT_SOFT = '#B5AFA7'
+const MUTED = '#9A938B'
+const BG = '#0E0C0B'
+const CHOCOLATE = '#151210'
+const SURFACE = '#1A1714'
+const SURFACE_L = '#262220'
+const BORDER = 'rgba(255,255,255,0.06)'
+const BORDER_H = 'rgba(255,255,255,0.14)'
+
+function TiltHeading({ children, className = '', as: Tag = 'h2', style = {} }) {
+  const ref = useRef(null)
+  const targetRef = useRef({ x: 0, y: 0 })
+  const currentRef = useRef({ x: 0, y: 0 })
+  const [render, setRender] = useState({ x: 0, y: 0 })
+  const [hovering, setHovering] = useState(false)
+  const swayAngleRef = useRef(0)
+  const frameRef = useRef(null)
+
+  useEffect(() => {
+    let lastX = 0, lastY = 0
+    function animate() {
+      swayAngleRef.current += hovering ? 0.02 : 0
+      const swayX = hovering ? Math.sin(swayAngleRef.current) * 1.5 : 0
+      const swayY = hovering ? Math.cos(swayAngleRef.current * 0.7) * 1.0 : 0
+      currentRef.current.x += (targetRef.current.x + swayX - currentRef.current.x) * 0.08
+      currentRef.current.y += (targetRef.current.y + swayY - currentRef.current.y) * 0.08
+      const nx = Math.round(currentRef.current.x * 100) / 100
+      const ny = Math.round(currentRef.current.y * 100) / 100
+      if (nx !== lastX || ny !== lastY) {
+        lastX = nx; lastY = ny
+        setRender({ x: nx, y: ny })
+      }
+      frameRef.current = requestAnimationFrame(animate)
+    }
+    frameRef.current = requestAnimationFrame(animate)
+    return () => { if (frameRef.current) cancelAnimationFrame(frameRef.current) }
+  }, [hovering])
+
+  const handleMouseMove = useCallback((e) => {
+    if (!ref.current) return
+    const rect = ref.current.getBoundingClientRect()
+    const x = (e.clientX - rect.left) / rect.width - 0.5
+    const y = (e.clientY - rect.top) / rect.height - 0.5
+    targetRef.current = { x: y * -5, y: x * 5 }
+  }, [])
+
+  return (
+    <Tag
+      ref={ref}
+      onMouseMove={handleMouseMove}
+      onMouseEnter={() => setHovering(true)}
+      onMouseLeave={() => { targetRef.current = { x: 0, y: 0 }; setHovering(false) }}
+      className={`${className} cursor-default select-none will-change-transform`}
+      style={{
+        ...style,
+        transform: `perspective(800px) rotateX(${render.x}deg) rotateY(${render.y}deg) translateZ(0)`,
+        textShadow: hovering
+          ? `0 0 40px rgba(201,168,122,0.12), 0 4px 20px rgba(0,0,0,0.3)`
+          : `0 4px 20px rgba(0,0,0,0.2)`,
+      }}
+    >
+      {children}
+    </Tag>
+  )
+}
+
+function GoldSpan({ children }) {
+  const [glow, setGlow] = useState(false)
+  return (
+    <span
+      className="italic inline-block transition-all duration-300 select-none"
+      style={{
+        color: GOLD,
+        textShadow: glow
+          ? `0 0 18px rgba(201,168,122,0.3), 0 0 40px rgba(201,168,122,0.1)`
+          : 'none',
+      }}
+      onMouseEnter={() => setGlow(true)}
+      onMouseLeave={() => setGlow(false)}
+    >
+      {children}
+    </span>
+  )
+}
+
+function FadeIn({ children, className = '', delay = 0, direction = 'up', distance = 50 }) {
+  const ref = useRef(null)
+  const inView = useInView(ref, { once: true, margin: '-50px' })
+  const d = { up: { y: distance }, down: { y: -distance }, left: { x: distance }, right: { x: -distance } }[direction] || { y: distance }
+  return (
+    <motion.div ref={ref} initial={{ opacity: 0, ...d }} animate={inView ? { opacity: 1, y: 0, x: 0 } : {}} transition={{ duration: 1, ease: EASE, delay }} className={className}>
+      {children}
+    </motion.div>
+  )
+}
+
+function MagneticButton({ children, className = '', style = {}, ...rest }) {
+  const ref = useRef(null)
+  const mx = useMotionValue(0)
+  const my = useMotionValue(0)
+  const isDesktop = useRef(false)
+
+  useEffect(() => {
+    const mql = window.matchMedia('(hover: hover) and (pointer: fine)')
+    isDesktop.current = mql.matches
+    const handler = (e) => { isDesktop.current = e.matches }
+    mql.addEventListener('change', handler)
+    return () => mql.removeEventListener('change', handler)
+  }, [])
+
+  const handleMouseMove = useCallback((e) => {
+    if (!isDesktop.current || !ref.current) return
+    const rect = ref.current.getBoundingClientRect()
+    const nx = (e.clientX - rect.left - rect.width / 2) / (rect.width / 2)
+    const ny = (e.clientY - rect.top - rect.height / 2) / (rect.height / 2)
+    mx.set(Math.round(Math.max(-5, Math.min(5, nx * 5)) * 100) / 100)
+    my.set(Math.round(Math.max(-3, Math.min(3, ny * 3)) * 100) / 100)
+  }, [mx, my])
+
+  const handleMouseLeave = useCallback(() => {
+    animate(mx, 0, { duration: 0.18, ease: [0.16, 1, 0.3, 1] })
+    animate(my, 0, { duration: 0.18, ease: [0.16, 1, 0.3, 1] })
+  }, [mx, my])
+
+  return (
+    <motion.a ref={ref} onMouseMove={handleMouseMove} onMouseLeave={handleMouseLeave}
+      style={{ x: mx, y: my, ...style }} className={className} {...rest}>
+      {children}
+    </motion.a>
+  )
+}
+
+function DustParticles() {
+  const canvasRef = useRef(null)
+  const particlesRef = useRef([])
+  const frameRef = useRef(null)
+
+  useEffect(() => {
+    const FALL = 22
+    const DRIFT = 10
+    const LARGE = 4
+    const particles = []
+
+    for (let i = 0; i < FALL; i++) {
+      particles.push({
+        x: Math.random() * window.innerWidth,
+        y: Math.random() * window.innerHeight,
+        size: Math.random() * 1.6 + 0.5,
+        speedX: (Math.random() - 0.5) * 0.08,
+        speedY: Math.random() * 0.18 + 0.03,
+        opacity: Math.random() * 0.2 + 0.04,
+        type: 'fall',
+      })
+    }
+
+    for (let i = 0; i < DRIFT; i++) {
+      const dir = i < DRIFT / 2 ? 1 : -1
+      particles.push({
+        x: dir === 1 ? -10 : window.innerWidth + 10,
+        y: Math.random() * window.innerHeight,
+        size: Math.random() * 1.8 + 0.8,
+        speedX: dir * (Math.random() * 0.35 + 0.15),
+        speedY: Math.random() * 0.08 + 0.02,
+        opacity: Math.random() * 0.28 + 0.1,
+        type: 'drift',
+      })
+    }
+
+    for (let i = 0; i < LARGE; i++) {
+      particles.push({
+        x: Math.random() * window.innerWidth,
+        y: Math.random() * window.innerHeight,
+        size: Math.random() * 2.5 + 2.5,
+        speedX: (Math.random() - 0.5) * 0.03,
+        speedY: Math.random() * 0.06 + 0.01,
+        opacity: Math.random() * 0.08 + 0.03,
+        type: 'fall',
+      })
+    }
+
+    particlesRef.current = particles
+
+    function animate() {
+      const canvas = canvasRef.current
+      if (!canvas) return
+      const ctx = canvas.getContext('2d')
+      ctx.clearRect(0, 0, canvas.width, canvas.height)
+      for (const p of particlesRef.current) {
+        p.x += p.speedX
+        p.y += p.speedY
+        if (p.type === 'fall') {
+          if (p.y > canvas.height + 10) { p.y = -10; p.x = Math.random() * canvas.width }
+          if (p.x > canvas.width + 10) p.x = -10
+          if (p.x < -10) p.x = canvas.width + 10
+        } else {
+          if (p.y > canvas.height + 10) p.y = -10
+          if (p.speedX > 0 && p.x > canvas.width + 10) { p.x = -10; p.y = Math.random() * canvas.height }
+          if (p.speedX < 0 && p.x < -10) { p.x = canvas.width + 10; p.y = Math.random() * canvas.height }
+        }
+        ctx.beginPath()
+        ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2)
+        ctx.fillStyle = `rgba(201,168,122,${p.opacity})`
+        ctx.fill()
+      }
+      frameRef.current = requestAnimationFrame(animate)
+    }
+
+    function onResize() {
+      const canvas = canvasRef.current
+      if (canvas) { canvas.width = window.innerWidth; canvas.height = window.innerHeight }
+    }
+    onResize()
+    window.addEventListener('resize', onResize, { passive: true })
+    frameRef.current = requestAnimationFrame(animate)
+    return () => { cancelAnimationFrame(frameRef.current); window.removeEventListener('resize', onResize) }
+  }, [])
+
+  return <canvas ref={canvasRef} className="absolute inset-0 pointer-events-none z-10 will-change-transform" style={{ filter: 'blur(0.8px)' }} aria-hidden="true" />
+}
+
+function FAQItem({ q, a, isOpen, onToggle }) {
+  return (
+    <div style={{ borderBottom: `1px solid ${BORDER}` }}>
+      <button onClick={onToggle} className="w-full flex items-center justify-between py-6 text-left group cursor-pointer">
+        <span className="font-picasso-display text-lg sm:text-xl font-medium pr-6" style={{ color: TEXT }}>{q}</span>
+        <motion.span animate={{ rotate: isOpen ? 180 : 0 }} transition={{ duration: 0.3, ease: EASE }} className="shrink-0" style={{ color: MUTED }}>
+          <ChevronDown size={22} />
+        </motion.span>
+      </button>
+      <AnimatePresence initial={false}>
+        {isOpen && (
+          <motion.div initial={{ height: 0, opacity: 0 }} animate={{ height: 'auto', opacity: 1 }} exit={{ height: 0, opacity: 0 }} transition={{ duration: 0.4, ease: EASE }} style={{ overflow: 'hidden' }}>
+            <p className="pb-6 leading-relaxed pr-8 text-[15px] font-light" style={{ color: TEXT_SOFT }}>{a}</p>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </div>
+  )
+}
+
+function ConciergeWidget() {
+  const [open, setOpen] = useState(false)
+  const [messages, setMessages] = useState([{ from: 'bot', text: 'Здравствуйте! Я цифровой консьерж PICASSO. Чем могу помочь?' }])
+  const [input, setInput] = useState('')
+  const [loading, setLoading] = useState(false)
+  const [showTooltip, setShowTooltip] = useState(false)
+  const scrollRef = useRef(null)
+
+  useEffect(() => {
+    if (scrollRef.current) scrollRef.current.scrollTop = scrollRef.current.scrollHeight
+  }, [messages])
+
+  useEffect(() => {
+    const timer = setTimeout(() => setShowTooltip(true), 3000)
+    return () => clearTimeout(timer)
+  }, [])
+
+  async function handleSend() {
+    const text = input.trim()
+    if (!text || loading) return
+    const updated = [...messages, { from: 'user', text }]
+    setMessages(updated)
+    setInput('')
+    setLoading(true)
+    try {
+      const res = await fetch('/api/chat', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          model: 'accounts/fireworks/models/glm-5p1',
+          messages: [
+            { role: 'system', content: `Ты — цифровой консьерж премиум салона красоты «PICASSO». Салон полного цикла: парикмахерские услуги, ногтевой сервис, брови, шугаринг, уход за лицом. Отвечай сдержанно, элегантно, как luxury-консультант. Кратко (2-4 предложения), без эмодзи, на «вы». Цены: стрижка от 2000₽, окрашивание от 4500₽, маникюр от 1800₽, архитектура бровей от 1200₽, шугаринг от 800₽, УЗ-чистка от 1500₽, пилинг от 1800₽. СТРОГОЕ ПРАВИЛО: Отвечай только финальным текстом ответа. Никогда не показывай шаги своих рассуждений, анализ, планирование или рассуждения (Analyze, Identify, Consider, Plan и т.д.). Сразу давай готовый ответ.` },
+            ...updated.map(m => ({ role: m.from === 'bot' ? 'assistant' : 'user', content: m.text })),
+          ],
+          max_tokens: 300,
+          temperature: 0.7,
+        }),
+      })
+      if (!res.ok) throw new Error()
+      const data = await res.json()
+      setMessages([...updated, { from: 'bot', text: data.choices?.[0]?.message?.content || 'Попробуйте ещё раз.' }])
+    } catch {
+      setMessages([...updated, { from: 'bot', text: 'Связь прервалась. Попробуйте снова.' }])
+    } finally { setLoading(false) }
+  }
+
+  return (
+    <div className="fixed bottom-6 right-6 z-50">
+      <AnimatePresence>
+        {open && (
+          <motion.div initial={{ opacity: 0, y: 20, scale: 0.92 }} animate={{ opacity: 1, y: 0, scale: 1 }} exit={{ opacity: 0, y: 20, scale: 0.92 }} transition={{ duration: 0.35, ease: EASE }}
+            data-lenis-prevent
+            className="absolute bottom-[72px] right-0 w-[340px] sm:w-[400px] overflow-hidden" style={{ background: SURFACE, border: `1px solid ${BORDER}`, borderRadius: 16, boxShadow: '0 12px 60px rgba(0,0,0,0.5)' }}>
+            <div className="flex items-center justify-between px-6 py-5" style={{ borderBottom: `1px solid ${BORDER}` }}>
+              <div>
+                <p className="font-picasso-display text-sm font-semibold" style={{ color: TEXT }}>PICASSO Concierge</p>
+                <p className="text-[12px] font-picasso-body" style={{ color: MUTED }}>Онлайн 24/7</p>
+              </div>
+              <button onClick={() => setOpen(false)} className="cursor-pointer" style={{ color: MUTED }}><X size={18} /></button>
+            </div>
+            <div ref={scrollRef} className="h-72 overflow-y-auto px-6 py-5 flex flex-col gap-3">
+              {messages.map((m, i) => (
+                <div key={i} className={`max-w-[85%] px-4 py-3 text-sm font-picasso-body leading-relaxed ${m.from === 'bot' ? 'self-start' : 'self-end'}`}
+                  style={{ background: m.from === 'bot' ? SURFACE_L : GOLD, color: m.from === 'bot' ? TEXT : BG, borderRadius: 12 }}>
+                  {m.text}
+                </div>
+              ))}
+              {loading && <div className="self-start max-w-[85%] px-4 py-3 text-sm font-picasso-body italic" style={{ background: SURFACE_L, color: MUTED, borderRadius: 12 }}>Консьерж подбирает ответ...</div>}
+            </div>
+            <div className="px-5 py-4 flex items-center gap-3" style={{ borderTop: `1px solid ${BORDER}` }}>
+              <input value={input} onChange={(e) => setInput(e.target.value)} onKeyDown={(e) => e.key === 'Enter' && handleSend()} placeholder="Ваш вопрос..."
+                className="flex-1 bg-transparent text-sm font-picasso-body outline-none" style={{ color: TEXT }} disabled={loading} />
+              <button onClick={handleSend} disabled={loading || !input.trim()} className="shrink-0 cursor-pointer transition-colors disabled:opacity-40" style={{ color: MUTED }}><Send size={16} /></button>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+      <motion.button whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }} onClick={() => { setOpen(!open); setShowTooltip(false) }}
+        className="w-14 h-14 flex items-center justify-center cursor-pointer" style={{ background: `linear-gradient(to bottom, ${GOLD_BRIGHT} 0%, ${GOLD} 50%, ${GOLD_DIM} 100%)`, color: BG, borderRadius: 9999, boxShadow: '0 4px 30px rgba(201,168,122,0.2), inset 0 1px 0 rgba(255,255,255,0.25), inset 0 -1px 0 rgba(0,0,0,0.15)' }}>
+        {open ? <X size={20} /> : <MessageCircle size={20} />}
+      </motion.button>
+      <AnimatePresence>
+        {showTooltip && !open && (
+          <motion.div
+            initial={{ opacity: 0, x: 10, scale: 0.9 }}
+            animate={{ opacity: 1, x: 0, scale: 1 }}
+            exit={{ opacity: 0, x: 10, scale: 0.9 }}
+            transition={{ duration: 0.35, ease: EASE }}
+            onClick={() => { setOpen(true); setShowTooltip(false) }}
+            className="absolute bottom-4 right-[68px] whitespace-nowrap px-4 py-2.5 font-picasso-body text-[13px] cursor-pointer"
+            style={{ background: SURFACE, color: TEXT, border: `1px solid ${BORDER_H}`, borderRadius: 9999, boxShadow: '0 4px 20px rgba(0,0,0,0.3)' }}
+          >
+            Я ИИ-консьерж. Помочь подобрать время?
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </div>
+  )
+}
+
+function Nav() {
+  const [scrolled, setScrolled] = useState(false)
+  const [mobileOpen, setMobileOpen] = useState(false)
+  useEffect(() => {
+    const fn = () => setScrolled(window.scrollY > 40)
+    window.addEventListener('scroll', fn, { passive: true })
+    return () => window.removeEventListener('scroll', fn)
+  }, [])
+
+  const scrollTo = useCallback((href) => {
+    const el = document.querySelector(href)
+    if (!el) return
+    const rect = el.getBoundingClientRect()
+    const scrollMargin = parseInt(getComputedStyle(el).scrollMarginTop) || 0
+    const top = rect.top + window.scrollY - scrollMargin
+    if (window.__lenis) {
+      window.__lenis.scrollTo(top, { duration: 1.2 })
+    } else {
+      window.scrollTo({ top, behavior: 'smooth' })
+    }
+  }, [])
+
+  const links = [
+    { href: '#about', label: 'О салоне' },
+    { href: '#services', label: 'Услуги' },
+    { href: '#gallery', label: 'Галерея' },
+    { href: '#team', label: 'Мастера' },
+    { href: '#reviews', label: 'Отзывы' },
+    { href: '#faq', label: 'FAQ' },
+    { href: '#contacts', label: 'Контакты' },
+  ]
+
+  return (
+    <motion.nav initial={{ y: -40, opacity: 0 }} animate={{ y: 0, opacity: 1 }} transition={{ duration: 0.6, ease: EASE }}
+      className={`fixed top-0 left-0 right-0 z-40 transition-all duration-500 ${scrolled ? 'backdrop-blur-lg' : ''}`}
+      style={{ background: scrolled ? 'rgba(14,12,11,0.92)' : 'transparent', borderBottom: `1px solid ${scrolled ? BORDER : 'transparent'}` }}>
+      <div className="mx-auto max-w-6xl px-5 sm:px-8 flex items-center justify-between h-16">
+        <a href="#" className="font-picasso-display text-xl font-semibold tracking-[0.08em] select-none" style={{ color: GOLD, textShadow: '0 0 20px rgba(201,168,122,0.15)' }}>PICASSO</a>
+        <div className="hidden lg:flex items-center gap-7 font-picasso-body text-[13px] font-medium uppercase tracking-[0.12em]" style={{ color: MUTED }}>
+          {links.map(l => <a key={l.href} href={l.href} onClick={(e) => { e.preventDefault(); scrollTo(l.href) }} className="hover:text-[var(--color-picasso-text)] transition-colors duration-200" style={{ color: MUTED }}>{l.label}</a>)}
+          <MagneticButton href="#booking"
+            className="inline-flex items-center gap-2 px-5 py-2 transition-all duration-300 font-picasso-body text-[13px] font-medium uppercase tracking-[0.12em]"
+            style={{ background: `linear-gradient(to bottom, ${GOLD_BRIGHT} 0%, ${GOLD} 50%, ${GOLD_DIM} 100%)`, color: BG, borderRadius: 9999, boxShadow: '0 2px 12px rgba(201,168,122,0.15), inset 0 1px 0 rgba(255,255,255,0.2), inset 0 -1px 0 rgba(0,0,0,0.12)' }}>
+            Записаться
+          </MagneticButton>
+        </div>
+        <button className="lg:hidden cursor-pointer" style={{ color: TEXT }} onClick={() => setMobileOpen(!mobileOpen)}>
+          {mobileOpen ? <X size={24} /> : <Menu size={24} />}
+        </button>
+      </div>
+      <AnimatePresence>
+        {mobileOpen && (
+          <motion.div initial={{ height: 0, opacity: 0 }} animate={{ height: 'auto', opacity: 1 }} exit={{ height: 0, opacity: 0 }} transition={{ duration: 0.3 }}
+            className="lg:hidden overflow-hidden" style={{ background: 'rgba(14,12,11,0.97)', borderTop: `1px solid ${BORDER}` }}>
+            <div className="flex flex-col gap-4 px-6 py-6 font-picasso-body text-[14px] uppercase tracking-[0.1em]" style={{ color: MUTED }}>
+              {links.map(l => <a key={l.href} href={l.href} onClick={(e) => { e.preventDefault(); setMobileOpen(false); scrollTo(l.href) }} className="py-1" style={{ color: MUTED }}>{l.label}</a>)}
+              <a href="#booking" onClick={(e) => { e.preventDefault(); setMobileOpen(false); scrollTo('#booking') }} className="mt-2 inline-flex items-center justify-center gap-2 px-5 py-3" style={{ background: GOLD, color: BG, borderRadius: 9999 }}>Записаться</a>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </motion.nav>
+  )
+}
+
+function TiltGlare({ children, className = '', style = {} }) {
+  const ref = useRef(null)
+  const tiltRef = useRef({ x: 0, y: 0, glareX: 50, glareY: 50, glareO: 0 })
+
+  useEffect(() => {
+    const el = ref.current
+    if (!el) return
+    const target = { x: 0, y: 0, glareX: 50, glareY: 50, glareO: 0 }
+    const current = { x: 0, y: 0, glareX: 50, glareY: 50, glareO: 0 }
+
+    function onMove(e) {
+      const rect = el.getBoundingClientRect()
+      const px = (e.clientX - rect.left) / rect.width
+      const py = (e.clientY - rect.top) / rect.height
+      target.x = (py - 0.5) * -8
+      target.y = (px - 0.5) * 8
+      target.glareX = px * 100
+      target.glareY = py * 100
+      target.glareO = 0.15
+    }
+
+    function onLeave() {
+      target.x = 0; target.y = 0; target.glareO = 0
+    }
+
+    let frame
+    function animate() {
+      current.x += (target.x - current.x) * 0.04
+      current.y += (target.y - current.y) * 0.04
+      current.glareX += (target.glareX - current.glareX) * 0.06
+      current.glareY += (target.glareY - current.glareY) * 0.06
+      current.glareO += (target.glareO - current.glareO) * 0.03
+      el.style.transform = `perspective(800px) rotateX(${current.x}deg) rotateY(${current.y}deg)`
+      const glare = el.querySelector('.tilt-glare')
+      if (glare) {
+        glare.style.background = `radial-gradient(circle at ${current.glareX}% ${current.glareY}%, rgba(255,255,255,${current.glareO}), transparent 60%)`
+      }
+      frame = requestAnimationFrame(animate)
+    }
+    frame = requestAnimationFrame(animate)
+
+    el.addEventListener('mousemove', onMove)
+    el.addEventListener('mouseleave', onLeave)
+    return () => {
+      cancelAnimationFrame(frame)
+      el.removeEventListener('mousemove', onMove)
+      el.removeEventListener('mouseleave', onLeave)
+    }
+  }, [])
+
+  return (
+    <div ref={ref} className={className} style={{ ...style, transformStyle: 'preserve-3d' }}>
+      {children}
+      <div className="tilt-glare absolute inset-0 pointer-events-none rounded-3xl" style={{ mixBlendMode: 'overlay' }} />
+    </div>
+  )
+}
+
+function Hero() {
+  const ref = useRef(null)
+  const { scrollYProgress } = useScroll({ target: ref, offset: ['start start', 'end start'] })
+  const heroY = useTransform(scrollYProgress, [0, 1], [0, -120])
+  const heroOpacity = useTransform(scrollYProgress, [0, 0.6], [1, 0])
+  const bgY = useTransform(scrollYProgress, [0, 1], [0, 500])
+  const midY = useTransform(scrollYProgress, [0, 1], [0, 250])
+  const imgY = useTransform(scrollYProgress, [0, 1], [0, 150])
+
+  return (
+    <section ref={ref} className="relative min-h-screen flex items-center overflow-hidden" style={{ background: BG }}>
+
+      <motion.div style={{ y: bgY, willChange: 'transform' }} className="absolute -top-[400px] -bottom-[400px] left-0 right-0 pointer-events-none">
+        <div className="absolute top-[15%] left-[10%] w-[900px] h-[900px] rounded-full blur-[200px]" style={{ background: 'rgba(201,168,122,0.035)' }} />
+        <div className="absolute bottom-[10%] right-[5%] w-[700px] h-[700px] rounded-full blur-[160px]" style={{ background: 'rgba(184,146,138,0.025)' }} />
+      </motion.div>
+      <motion.div style={{ y: midY, willChange: 'transform' }} className="absolute -top-[200px] -bottom-[200px] left-0 right-0 pointer-events-none">
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[1100px] h-[1100px] rounded-full blur-[240px]" style={{ background: 'rgba(201,168,122,0.018)' }} />
+      </motion.div>
+
+      <div className="absolute inset-0 pointer-events-none" style={{ background: 'radial-gradient(ellipse 70% 55% at 50% 42%, rgba(201,168,122,0.05) 0%, transparent 65%)' }} />
+      <div className="absolute inset-0 pointer-events-none" style={{ background: 'radial-gradient(ellipse 100% 100% at 50% 50%, transparent 40%, rgba(14,12,11,0.7) 75%, rgba(14,12,11,0.95) 100%)' }} />
+
+      <DustParticles />
+
+      <div className="relative z-[5] w-full pointer-events-auto">
+        <div className="mx-auto max-w-6xl px-5 sm:px-8 flex flex-col lg:flex-row items-center gap-12 lg:gap-16 pt-28 pb-16">
+          <div className="flex-1 text-center lg:text-left">
+            <motion.div style={{ y: heroY, opacity: heroOpacity, willChange: 'transform' }}>
+              <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.6, ease: EASE }}>
+                <p className="font-picasso-body text-[12px] uppercase tracking-[0.4em] mb-8 select-none" style={{ color: GOLD }}>Premium Beauty Studio</p>
+              </motion.div>
+
+              <div className="smoke-reveal">
+                <div className="smoke-layer smoke-layer-1" />
+                <div className="smoke-layer smoke-layer-2" />
+                <div className="smoke-layer smoke-layer-3" />
+                <motion.div
+                  initial={{ opacity: 0, filter: 'blur(20px) brightness(2.5)' }}
+                  animate={{ opacity: 1, filter: 'blur(0px) brightness(1)' }}
+                  transition={{ duration: 2, ease: EASE, delay: 0.2 }}
+                >
+                  <TiltHeading as="h1" className="font-picasso-display font-medium tracking-[-0.01em] leading-[1.1]" style={{ color: TEXT }}>
+                <span className="text-4xl sm:text-5xl lg:text-[3.8rem] xl:text-[4.5rem]" style={{ color: TEXT }}>Салон<br />эстетики</span> <span className="italic text-5xl sm:text-6xl lg:text-[5.5rem] xl:text-[6.5rem]" style={{
+                  color: GOLD,
+                  textShadow: `
+                    0 1px 0 #A68B5A,
+                    0 2px 0 #8A742B,
+                    0 3px 0 #6E5D22,
+                    0 4px 0 #53491A,
+                    0 5px 0 #3D3614,
+                    0 6px 14px rgba(0,0,0,0.35),
+                    0 12px 40px rgba(201,168,122,0.18),
+                    0 0 80px rgba(201,168,122,0.08),
+                    0 0 160px rgba(201,168,122,0.03),
+                    0 0 260px rgba(201,168,122,0.01)
+                  `,
+                }}>PICASSO</span>
+                  </TiltHeading>
+                </motion.div>
+              </div>
+
+              <motion.p initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.9, ease: EASE, delay: 0.8 }}
+                className="mt-7 font-picasso-body text-lg sm:text-xl font-light leading-relaxed" style={{ color: TEXT_SOFT }}>
+                Стрижка, цвет, ногти, брови — полный цикл красоты в одном пространстве
+              </motion.p>
+
+              <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.7, ease: EASE, delay: 0.8 }}
+                className="flex flex-col sm:flex-row items-center justify-center lg:justify-start gap-4 mt-12">
+          <MagneticButton href="#booking" onClick={(e) => { e.preventDefault(); scrollTo('#booking') }}
+                  whileHover={{ boxShadow: '0 6px 40px rgba(201,168,122,0.25), inset 0 1px 0 rgba(255,255,255,0.15)' }}
+                  whileTap={{ boxShadow: '0 2px 12px rgba(201,168,122,0.15)' }}
+                  className="btn-shine group inline-flex items-center justify-center gap-2 px-9 py-4 font-picasso-body text-[13px] font-medium uppercase tracking-[0.14em] transition-all duration-300"
+                  style={{ background: `linear-gradient(to bottom, ${GOLD_BRIGHT} 0%, ${GOLD} 40%, ${GOLD_DIM} 100%)`, color: BG, borderRadius: 9999, boxShadow: '0 1px 0 rgba(255,255,255,0.25) inset, 0 -2px 0 rgba(0,0,0,0.2) inset, 0 4px 8px rgba(0,0,0,0.3), 0 8px 30px rgba(201,168,122,0.18)', textShadow: '0 1px 2px rgba(0,0,0,0.25)' }}>
+                  Онлайн запись <ArrowRight size={15} className="transition-transform group-hover:translate-x-1" />
+                </MagneticButton>
+                <MagneticButton href="#gallery"
+                  whileHover={{ boxShadow: '0 6px 30px rgba(0,0,0,0.4), inset 0 1px 0 rgba(255,255,255,0.06)' }}
+                  whileTap={{ boxShadow: '0 2px 10px rgba(0,0,0,0.3)' }}
+                  className="inline-flex items-center justify-center font-picasso-body text-[13px] font-medium uppercase tracking-[0.14em] px-9 py-4 transition-all duration-300"
+                  style={{ border: `1px solid ${BORDER_H}`, color: TEXT, borderRadius: 9999, boxShadow: '0 4px 20px rgba(0,0,0,0.25), inset 0 1px 0 rgba(255,255,255,0.04), inset 0 -1px 0 rgba(0,0,0,0.2)' }}>
+                  Наши работы
+                </MagneticButton>
+              </motion.div>
+            </motion.div>
+          </div>
+
+          <div className="flex-1 relative max-w-md lg:max-w-none">
+            <motion.div style={{ y: imgY, willChange: 'transform' }} className="relative">
+              <TiltGlare className="relative overflow-hidden rounded-3xl" style={{ boxShadow: '0 20px 60px rgba(0,0,0,0.5), 0 0 80px rgba(201,168,122,0.04)' }}>
+                <motion.div
+                  initial={{ opacity: 0, scale: 1.08, filter: 'blur(20px) brightness(2) saturate(0)' }}
+                  animate={{ opacity: 1, scale: 1, filter: 'blur(0px) brightness(1) saturate(1)' }}
+                  transition={{ duration: 2.2, ease: EASE, delay: 0.6 }}
+                  className="w-full"
+                >
+                  <img src="/images/hair/hair_1.webp" alt="PICASSO hair styling" className="w-full aspect-[3/4] object-cover" />
+                </motion.div>
+                <div className="absolute inset-0" style={{ background: 'linear-gradient(to top, rgba(14,12,11,0.7) 0%, transparent 40%), linear-gradient(to right, rgba(14,12,11,0.4) 0%, transparent 30%)' }} />
+              </TiltGlare>
+              <div className="absolute -bottom-6 -left-6 w-32 h-32 rounded-full blur-[60px]" style={{ background: 'rgba(201,168,122,0.06)' }} />
+              <div className="absolute -top-4 -right-4 w-24 h-24 rounded-full blur-[40px]" style={{ background: 'rgba(184,146,138,0.04)' }} />
+            </motion.div>
+         </div>
+       </div>
+      </div>
+     </section>
+  )
+}
+
+function About() {
+  const [lightbox, setLightbox] = useState(null)
+
+  return (
+    <section id="about" className="scroll-mt-20 py-28 sm:py-36 relative" style={{ background: CHOCOLATE }}>
+      <div className="absolute inset-0 pointer-events-none">
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[700px] h-[700px] rounded-full blur-[200px]" style={{ background: 'rgba(201,168,122,0.02)' }} />
+      </div>
+      <div className="mx-auto max-w-6xl px-5 sm:px-8 relative z-10">
+        <div className="flex flex-col lg:flex-row items-center gap-16">
+          <div className="flex-1">
+            <FadeIn>
+              <p className="font-picasso-body text-[12px] uppercase tracking-[0.4em] mb-5 select-none" style={{ color: GOLD }}>О салоне</p>
+            </FadeIn>
+            <FadeIn delay={0.1}>
+              <TiltHeading className="font-picasso-display text-3xl sm:text-4xl lg:text-5xl font-medium leading-[1.15]" style={{ color: TEXT }}>
+                Пространство,<br />где хочется <GoldSpan>оставаться</GoldSpan>
+              </TiltHeading>
+            </FadeIn>
+            <FadeIn delay={0.2}>
+              <p className="mt-7 text-[16px] font-light leading-relaxed max-w-lg" style={{ color: TEXT_SOFT }}>
+                PICASSO — это не просто салон. Это место, где стиль встречается с заботой, а каждая деталь продумана ради вашего комфорта. Свежесваренный кофе, шелковые халаты, тишина и мастера, которым доверяют.
+              </p>
+            </FadeIn>
+            <FadeIn delay={0.3}>
+              <div className="mt-10 grid grid-cols-2 gap-6">
+                {[
+                  { Icon: Shield, label: 'Абсолютная стерильность' },
+                  { Icon: Clock, label: 'Гарантия качества' },
+                  { Icon: Coffee, label: 'Премиум сервис' },
+                  { Icon: Diamond, label: 'Профессиональные материалы' },
+                ].map((item) => (
+                  <div key={item.label} className="flex items-start gap-3 p-4" style={{ border: '1px solid rgba(255,255,255,0.1)', borderRadius: 12, background: 'rgba(255,255,255,0.03)' }}>
+                    <div className="w-10 h-10 shrink-0 flex items-center justify-center" style={{ border: `1px solid ${BORDER_H}`, borderRadius: 9999, background: 'rgba(201,168,122,0.06)' }}>
+                      <item.Icon size={16} style={{ color: GOLD }} strokeWidth={1.5} />
+                    </div>
+                    <p className="text-[14px] font-light leading-snug pt-2" style={{ color: TEXT_SOFT }}>{item.label}</p>
+                  </div>
+                ))}
+              </div>
+            </FadeIn>
+          </div>
+          <div className="flex-1 flex flex-col gap-4">
+            <FadeIn>
+              <div className="group relative overflow-hidden bg-[#050505] cursor-pointer" style={{ borderRadius: 12, filter: 'brightness(0.94) contrast(1.15) saturate(0.87) sepia(0.10) hue-rotate(-8deg)', WebkitMaskImage: 'linear-gradient(to bottom, black 70%, transparent 100%)', maskImage: 'linear-gradient(to bottom, black 70%, transparent 100%)' }}
+                onClick={() => setLightbox({ src: '/images/interior/whod_s_ulitci.webp', alt: 'Вход в салон PICASSO' })}>
+                <img src="/images/interior/whod_s_ulitci.webp" alt="Вход в салон PICASSO" className="w-full h-full object-cover transform-gpu scale-[1.01] group-hover:scale-[1.03] transition-transform duration-500 ease-out aspect-[4/3] pointer-events-none" style={{ backfaceVisibility: 'hidden', willChange: 'transform' }} loading="lazy" />
+                <div className="absolute inset-0 pointer-events-none" style={{ background: 'radial-gradient(ellipse at 50% 40%, rgba(201,168,122,0.11) 0%, rgba(138,106,74,0.08) 50%, transparent 80%)' }} />
+                <div className="absolute inset-0 pointer-events-none" style={{ boxShadow: 'inset 0 0 100px 40px rgba(14,12,11,0.35)' }} />
+                <div className="absolute inset-0 pointer-events-none transition-opacity duration-500 opacity-40 group-hover:opacity-20" style={{ background: 'rgba(14,12,11,0.4)' }} />
+              </div>
+            </FadeIn>
+            <div className="grid grid-cols-2 gap-4">
+              <FadeIn delay={0.1}>
+                <div className="group relative overflow-hidden bg-[#050505] cursor-pointer" style={{ borderRadius: 12, filter: 'brightness(0.75) contrast(1.15) saturate(0.85)', WebkitMaskImage: 'linear-gradient(to bottom, black 60%, transparent 100%)', maskImage: 'linear-gradient(to bottom, black 60%, transparent 100%)' }}
+                  onClick={() => setLightbox({ src: '/images/interior/kabinet_1.webp', alt: 'Кабинет салона' })}>
+                  <img src="/images/interior/kabinet_1.webp" alt="Кабинет салона" className="w-full h-full object-cover transform-gpu scale-[1.01] group-hover:scale-[1.03] transition-transform duration-500 ease-out aspect-square pointer-events-none" style={{ backfaceVisibility: 'hidden', willChange: 'transform' }} loading="lazy" />
+                  <div className="absolute inset-0 pointer-events-none transition-opacity duration-500 opacity-40 group-hover:opacity-20" style={{ background: 'rgba(14,12,11,0.4)' }} />
+                </div>
+              </FadeIn>
+              <FadeIn delay={0.15}>
+                <div className="group relative overflow-hidden bg-[#050505] cursor-pointer" style={{ borderRadius: 12, filter: 'brightness(0.75) contrast(1.15) saturate(0.85)', WebkitMaskImage: 'linear-gradient(to bottom, black 60%, transparent 100%)', maskImage: 'linear-gradient(to bottom, black 60%, transparent 100%)' }}
+                  onClick={() => setLightbox({ src: '/images/interior/pritmnaya.webp', alt: 'Интерьер салона' })}>
+                  <img src="/images/interior/pritmnaya.webp" alt="Интерьер салона" className="w-full h-full object-cover transform-gpu scale-[1.01] group-hover:scale-[1.03] transition-transform duration-500 ease-out aspect-square pointer-events-none" style={{ backfaceVisibility: 'hidden', willChange: 'transform' }} loading="lazy" />
+                  <div className="absolute inset-0 pointer-events-none transition-opacity duration-500 opacity-40 group-hover:opacity-20" style={{ background: 'rgba(14,12,11,0.4)' }} />
+                </div>
+              </FadeIn>
+            </div>
+          </div>
+        </div>
+      </div>
+      <AnimatePresence>
+        {lightbox && <Lightbox src={lightbox.src} alt={lightbox.alt} onClose={() => setLightbox(null)} />}
+      </AnimatePresence>
+    </section>
+  )
+}
+
+function ServiceCard({ Icon, title, desc, image, featured }) {
+  const [showLightbox, setShowLightbox] = useState(false)
+  const cardRef = useRef(null)
+
+  const { scrollYProgress } = useScroll({ target: cardRef, offset: ['start end', 'end start'] })
+  const imgY = useTransform(scrollYProgress, [0, 1], [60, -60])
+
+  if (featured) {
+    return (
+      <FadeIn>
+        <div ref={cardRef} className="group bg-[#050505] cursor-pointer" style={{ borderRadius: 16 }}
+          onClick={() => setShowLightbox(true)}>
+          <div className="relative overflow-hidden bg-[#050505] aspect-[16/9]" style={{ borderRadius: 16 }}>
+            <motion.div style={{ y: imgY, willChange: 'transform' }} className="absolute inset-0">
+              <img
+                src={image} alt={title}
+                className="w-full h-full object-cover transform-gpu scale-[1.19] group-hover:scale-[1.21] transition-transform duration-500 ease-out pointer-events-none"
+                style={{ backfaceVisibility: 'hidden', willChange: 'transform' }}
+                loading="lazy" />
+            </motion.div>
+            <div className="absolute inset-0 pointer-events-none transition-opacity duration-500 opacity-30 group-hover:opacity-10" style={{ background: 'rgba(14,12,11,0.35)' }} />
+            <div className="absolute inset-0" style={{ background: 'linear-gradient(to top, rgba(14,12,11,0.95) 0%, rgba(14,12,11,0.6) 40%, transparent 65%)' }} />
+            <div className="absolute bottom-0 left-0 right-0 p-6 sm:p-8">
+              <div className="flex items-center gap-3 mb-3">
+                <div className="w-10 h-10 flex items-center justify-center" style={{ border: `1px solid ${BORDER_H}`, borderRadius: 9999, background: 'rgba(201,168,122,0.06)' }}>
+                  <Icon size={18} style={{ color: GOLD }} strokeWidth={1.5} />
+                </div>
+                <p className="font-picasso-body text-[11px] uppercase tracking-[0.2em]" style={{ color: GOLD }}>Главное направление</p>
+              </div>
+              <h3 className="font-picasso-display text-2xl sm:text-3xl font-medium" style={{ color: TEXT }}>{title}</h3>
+              <p className="mt-3 text-[15px] font-light leading-relaxed max-w-md" style={{ color: TEXT_SOFT }}>{desc}</p>
+            </div>
+          </div>
+        </div>
+        <AnimatePresence>
+          {showLightbox && <Lightbox src={image} alt={title} onClose={() => setShowLightbox(false)} />}
+        </AnimatePresence>
+      </FadeIn>
+    )
+  }
+
+  return (
+    <FadeIn>
+      <div className="group h-full bg-[#050505] transition-[box-shadow] duration-300 group-hover:shadow-[0_4px_24px_rgba(201,168,122,0.06)]" style={{ borderRadius: 16 }}>
+        <div className="p-6">
+          <div className="flex items-center gap-3 mb-3">
+            <div className="w-10 h-10 flex items-center justify-center" style={{ border: `1px solid ${BORDER_H}`, borderRadius: 9999, background: 'rgba(201,168,122,0.06)' }}>
+              <Icon size={18} style={{ color: GOLD }} strokeWidth={1.5} />
+            </div>
+            <h3 className="font-picasso-display text-lg font-medium" style={{ color: TEXT }}>{title}</h3>
+          </div>
+          <p className="text-[14px] font-light leading-relaxed" style={{ color: TEXT_SOFT }}>{desc}</p>
+        </div>
+      </div>
+    </FadeIn>
+  )
+}
+
+function Services() {
+  return (
+    <section id="services" className="scroll-mt-0 py-28 sm:py-36" style={{ background: BG, scrollMarginTop: '-260px' }}>
+        <div className="mx-auto max-w-6xl px-5 sm:px-8">
+          <FadeIn>
+            <p className="font-picasso-body text-[12px] uppercase tracking-[0.4em] mb-5 select-none text-center" style={{ color: GOLD }}>Направления</p>
+          </FadeIn>
+          <FadeIn delay={0.1}>
+            <TiltHeading className="font-picasso-display text-3xl sm:text-4xl lg:text-5xl font-medium text-center leading-[1.15]" style={{ color: TEXT }}>
+              Полный цикл <GoldSpan>красоты</GoldSpan>
+            </TiltHeading>
+          </FadeIn>
+          <FadeIn delay={0.2}>
+            <p className="mt-6 text-center text-base font-light leading-relaxed max-w-md mx-auto" style={{ color: TEXT_SOFT }}>
+              Пять миров эстетики под одной крышей
+            </p>
+          </FadeIn>
+
+          <div className="mt-16 flex flex-col gap-5">
+            <ServiceCard Icon={Scissors} title="Hair — Парикмахерские услуги"
+              desc="Стрижки, окрашивание, кератин, укладки — главное направление PICASSO. Мастера-стилисты создают образ, который подчёркивает вашу индивидуальность."
+              image="/images/services/kabinet_parikmaherskaya.webp" featured />
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
+              <ServiceCard Icon={HandMetal} title="Nail сервис"
+                desc="Маникюр, педикюр, наращивание, дизайн. Премиальные материалы и техника выравнивания." />
+              <ServiceCard Icon={Eye} title="Брови"
+                desc="Архитектура, ламинирование, окрашивание. Форма, которая работает на ваш образ." />
+              <ServiceCard Icon={Flower2} title="Шугаринг"
+                desc="Депиляция сахарной пастой. Мягко, бережно, для всех зон." />
+              <ServiceCard Icon={FlaskConical} title="Уход за лицом"
+                desc="УЗ-чистка, кислотные пилинги, маски. Здоровая кожа — основа красоты." />
+            </div>
+          </div>
+        </div>
+    </section>
+  )
+}
+
+function DirectionCard({ Icon, title, tagline, items, isOpen, onToggle, delay = 0 }) {
+  return (
+    <FadeIn delay={delay}>
+      <div className="group cursor-pointer transition-[box-shadow,border-color] duration-300"
+        style={{ background: SURFACE, border: `1px solid ${isOpen ? BORDER_H : BORDER}`, borderRadius: 16, overflow: 'hidden' }}
+        onClick={onToggle}>
+        <div className="px-6 sm:px-7 py-6 flex items-center gap-5">
+          <div className="w-12 h-12 shrink-0 flex items-center justify-center" style={{ border: `1px solid ${BORDER_H}`, borderRadius: 9999, background: 'rgba(201,168,122,0.04)' }}>
+            <Icon size={20} style={{ color: GOLD }} strokeWidth={1.5} />
+          </div>
+          <div className="flex-1 min-w-0">
+            <h3 className="font-picasso-display text-lg sm:text-xl font-medium" style={{ color: TEXT }}>{title}</h3>
+            <p className="mt-0.5 text-[13px] font-light truncate" style={{ color: MUTED }}>{tagline}</p>
+          </div>
+          <motion.span animate={{ rotate: isOpen ? 180 : 0 }} transition={{ duration: 0.3, ease: EASE }} className="shrink-0" style={{ color: MUTED }}>
+            <ChevronDown size={20} />
+          </motion.span>
+        </div>
+        <AnimatePresence initial={false}>
+          {isOpen && (
+            <motion.div key="content" initial={{ height: 0, opacity: 0 }} animate={{ height: 'auto', opacity: 1 }} exit={{ height: 0, opacity: 0 }} transition={{ duration: 0.4, ease: EASE }} style={{ overflow: 'hidden' }}>
+              <div className="px-6 sm:px-7 pb-6">
+                <div style={{ borderTop: `1px solid ${BORDER}`, paddingTop: 20 }} className="flex flex-col gap-4">
+                  {items.map((item) => (
+                    <div key={item.name} className="flex items-baseline gap-3 flex-wrap">
+                      <span className="font-picasso-body text-[14px] sm:text-[15px] font-light" style={{ color: TEXT_SOFT }}>{item.name}</span>
+                      <span className="hidden sm:inline flex-1 border-b min-w-[30px] mb-1" style={{ borderColor: 'rgba(255,255,255,0.04)', borderStyle: 'dotted' }} />
+                      <span className="font-picasso-body text-[14px] sm:text-[15px] font-light shrink-0" style={{ color: GOLD }}>{item.price}</span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
+      </div>
+    </FadeIn>
+  )
+}
+
+function Prices() {
+  const [openIdx, setOpenIdx] = useState(0)
+  const directions = [
+    { Icon: Scissors, title: 'Hair — Парикмахерские услуги', tagline: 'Стрижки, окрашивание, кератин, укладки', items: [
+      { name: 'Женская стрижка', price: 'от 2 000 ₽' },
+      { name: 'Окрашивание (однотонное)', price: 'от 4 500 ₽' },
+      { name: 'Кератиновое выпрямление', price: 'от 5 000 ₽' },
+      { name: 'Укладка / вечерняя', price: 'от 1 500 ₽' },
+    ]},
+    { Icon: HandMetal, title: 'Nail сервис', tagline: 'Маникюр, педикюр, наращивание, дизайн', items: [
+      { name: 'Маникюр «Всё включено»', price: 'от 1 800 ₽' },
+      { name: 'Smart-педикюр', price: 'от 2 200 ₽' },
+      { name: 'Наращивание ногтей', price: 'от 3 000 ₽' },
+      { name: 'Дизайн (Nail Art)', price: 'от 500 ₽' },
+    ]},
+    { Icon: Eye, title: 'Брови', tagline: 'Архитектура, ламинирование, окрашивание', items: [
+      { name: 'Архитектура бровей', price: 'от 1 200 ₽' },
+      { name: 'Ламинирование + ботокс', price: 'от 1 500 ₽' },
+      { name: 'Окрашивание (хна/краска)', price: 'от 600 ₽' },
+    ]},
+    { Icon: Flower2, title: 'Шугаринг', tagline: 'Депиляция сахарной пастой', items: [
+      { name: 'Ноги полностью', price: 'от 1 800 ₽' },
+      { name: 'Руки до локтя', price: 'от 700 ₽' },
+      { name: 'Бикини (классика)', price: 'от 1 200 ₽' },
+    ]},
+    { Icon: FlaskConical, title: 'Уход за лицом', tagline: 'УЗ-чистка, пилинги, маски', items: [
+      { name: 'УЗ-чистка лица', price: 'от 1 500 ₽' },
+      { name: 'Молочный пилинг', price: 'от 1 800 ₽' },
+      { name: 'Ретиноевый пилинг', price: 'от 3 000 ₽' },
+    ]},
+  ]
+
+  return (
+    <section id="prices" className="scroll-mt-20 py-28 sm:py-36" style={{ background: CHOCOLATE }}>
+      <div className="mx-auto max-w-2xl px-5 sm:px-8">
+        <FadeIn>
+          <p className="font-picasso-body text-[12px] uppercase tracking-[0.4em] mb-5 select-none text-center" style={{ color: GOLD }}>Прайс</p>
+        </FadeIn>
+        <FadeIn delay={0.1}>
+          <TiltHeading className="font-picasso-display text-3xl sm:text-4xl lg:text-5xl font-medium text-center leading-[1.15]" style={{ color: TEXT }}>
+            Направления <GoldSpan>эстетики</GoldSpan>
+          </TiltHeading>
+        </FadeIn>
+        <div className="mt-16 flex flex-col gap-4">
+          {directions.map((d, i) => (
+            <DirectionCard key={d.title} {...d} isOpen={openIdx === i} onToggle={() => setOpenIdx(openIdx === i ? -1 : i)} delay={i * 0.07} />
+          ))}
+        </div>
+      </div>
+    </section>
+  )
+}
+
+function Lightbox({ src, alt, onClose }) {
+  useEffect(() => {
+    const handleKey = (e) => { if (e.key === 'Escape') onClose() }
+    window.addEventListener('keydown', handleKey)
+    return () => window.removeEventListener('keydown', handleKey)
+  }, [onClose])
+
+  return (
+    <motion.div
+      initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: 0.3 }}
+      className="fixed inset-0 z-[60] w-full h-full flex items-center justify-center p-4 cursor-pointer"
+      style={{ background: 'rgba(0,0,0,0.92)', backdropFilter: 'blur(20px)' }}
+      onClick={onClose}>
+      <motion.img
+        initial={{ scale: 0.85, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} exit={{ scale: 0.85, opacity: 0 }}
+        transition={{ duration: 0.35, ease: EASE }}
+        src={src} alt={alt} className="block max-w-full max-h-full object-contain pointer-events-none" style={{ borderRadius: 8 }} />
+      <button onClick={onClose} className="absolute top-6 right-6 w-10 h-10 flex items-center justify-center cursor-pointer"
+        style={{ background: SURFACE, border: `1px solid ${BORDER}`, borderRadius: 9999, color: TEXT }}>
+        <X size={18} />
+      </button>
+    </motion.div>
+  )
+}
+
+function Gallery() {
+  const [lightbox, setLightbox] = useState(null)
+  const [selectedIndex, setSelectedIndex] = useState(0)
+
+  const works = [
+    { src: '/images/hair/hair_1.webp', alt: 'Hair styling 1' },
+    { src: '/images/hair/hair_2.webp', alt: 'Hair styling 2' },
+    { src: '/images/hair/hair_3.webp', alt: 'Hair transformation' },
+    { src: '/images/hair/hair_4.webp', alt: 'Hair colouring' },
+    { src: '/images/hair/hair_5.webp', alt: 'Hair styling 3' },
+    { src: '/images/hair/hair_6.webp', alt: 'Hair styling 4' },
+  ]
+
+  const [emblaRef, emblaApi] = useEmblaCarousel({
+    loop: true,
+    align: 'center',
+    skipSnaps: false,
+    dragFree: false,
+  })
+
+  const onSelect = useCallback(() => {
+    if (!emblaApi) return
+    setSelectedIndex(emblaApi.selectedScrollSnap())
+  }, [emblaApi])
+
+  useEffect(() => {
+    if (!emblaApi) return
+    onSelect()
+    emblaApi.on('select', onSelect)
+    emblaApi.on('reInit', onSelect)
+    return () => {
+      emblaApi.off('select', onSelect)
+      emblaApi.off('reInit', onSelect)
+    }
+  }, [emblaApi, onSelect])
+
+  useEffect(() => {
+    if (!emblaApi) return
+    const id = setInterval(() => emblaApi.scrollNext(), 4000)
+    return () => clearInterval(id)
+  }, [emblaApi])
+
+  function scrollPrev() { emblaApi?.scrollPrev() }
+  function scrollNext() { emblaApi?.scrollNext() }
+
+  return (
+    <section id="gallery" className="scroll-mt-20 py-28 sm:py-36" style={{ background: BG, scrollMarginTop: '-50px' }}>
+      <div className="mx-auto max-w-6xl px-5 sm:px-8">
+        <FadeIn>
+          <p className="font-picasso-body text-[12px] uppercase tracking-[0.4em] mb-5 select-none text-center" style={{ color: GOLD }}>Портфолио</p>
+        </FadeIn>
+        <FadeIn delay={0.1}>
+          <TiltHeading className="font-picasso-display text-3xl sm:text-4xl lg:text-5xl font-medium text-center leading-[1.15]" style={{ color: TEXT }}>
+            Наши <GoldSpan>работы</GoldSpan>
+          </TiltHeading>
+        </FadeIn>
+        <FadeIn delay={0.2}>
+          <p className="mt-6 text-center text-base font-light leading-relaxed max-w-lg mx-auto" style={{ color: TEXT_SOFT }}>
+            Каждая работа — отражение мастерства и вашего стиля
+          </p>
+        </FadeIn>
+
+        <div className="mt-20 relative">
+          <div className="overflow-hidden" ref={emblaRef}>
+            <div className="flex items-center" style={{ gap: '1.5rem' }}>
+              {works.map((w, i) => (
+                <div key={i} className="embla-slide shrink-0 flex items-center justify-center"
+                  style={{ flex: '0 0 70%', maxWidth: 420 }}>
+                  <div
+                    className="w-full overflow-hidden cursor-pointer relative transition-[transform,opacity,filter] duration-500"
+                    style={{
+                      aspectRatio: '3/4',
+                      borderRadius: i === selectedIndex ? 20 : 16,
+                      border: `1px solid ${i === selectedIndex ? BORDER_H : BORDER}`,
+                      transform: `scale(${i === selectedIndex ? 1 : 0.88})`,
+                      opacity: i === selectedIndex ? 1 : 0.5,
+                      filter: i === selectedIndex ? 'brightness(1)' : 'brightness(0.55)',
+                    }}
+                    onClick={() => {
+                      if (i === selectedIndex) setLightbox({ src: w.src, alt: w.alt })
+                      else emblaApi?.scrollTo(i)
+                    }}>
+                    <img src={w.src} alt={w.alt} className="w-full h-full object-cover" loading="lazy" draggable={false} />
+                    <div className="absolute inset-0" style={{
+                      background: i === selectedIndex
+                        ? 'linear-gradient(to top, rgba(14,12,11,0.5) 0%, transparent 35%)'
+                        : 'linear-gradient(to top, rgba(14,12,11,0.7) 0%, transparent 30%)',
+                    }} />
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          <button onClick={scrollPrev}
+            className="absolute left-0 sm:left-2 top-1/2 -translate-y-1/2 z-20 w-10 h-10 flex items-center justify-center cursor-pointer transition-opacity opacity-40 hover:opacity-80"
+            style={{ background: SURFACE, border: `1px solid ${BORDER}`, borderRadius: 9999, color: TEXT }}>
+            <ChevronDown size={18} style={{ transform: 'rotate(90deg)' }} />
+          </button>
+          <button onClick={scrollNext}
+            className="absolute right-0 sm:right-2 top-1/2 -translate-y-1/2 z-20 w-10 h-10 flex items-center justify-center cursor-pointer transition-opacity opacity-40 hover:opacity-80"
+            style={{ background: SURFACE, border: `1px solid ${BORDER}`, borderRadius: 9999, color: TEXT }}>
+            <ChevronDown size={18} style={{ transform: 'rotate(-90deg)' }} />
+          </button>
+        </div>
+
+        <div className="flex justify-center gap-2 mt-8">
+          {works.map((_, i) => (
+            <button key={i} onClick={() => emblaApi?.scrollTo(i)}
+              className="w-2 h-2 rounded-full transition-all duration-300 cursor-pointer"
+              style={{ background: i === selectedIndex ? GOLD : `${MUTED}40`, transform: i === selectedIndex ? 'scale(1.4)' : 'scale(1)' }} />
+          ))}
+        </div>
+      </div>
+
+      <AnimatePresence>
+        {lightbox && <Lightbox src={lightbox.src} alt={lightbox.alt} onClose={() => setLightbox(null)} />}
+      </AnimatePresence>
+    </section>
+  )
+}
+
+function MasterModal({ master, onClose }) {
+  useEffect(() => {
+    const handleKey = (e) => { if (e.key === 'Escape') onClose() }
+    document.body.style.overflow = 'hidden'
+    window.addEventListener('keydown', handleKey)
+    return () => { document.body.style.overflow = ''; window.removeEventListener('keydown', handleKey) }
+  }, [onClose])
+
+  return (
+    <motion.div
+      initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: 0.3 }}
+      className="fixed inset-0 z-[60] flex items-center justify-center p-4 cursor-pointer"
+      style={{ background: 'rgba(0,0,0,0.88)', backdropFilter: 'blur(20px)' }}
+      onClick={onClose}>
+      <motion.div
+        initial={{ opacity: 0, y: 30, scale: 0.95 }} animate={{ opacity: 1, y: 0, scale: 1 }} exit={{ opacity: 0, y: 30, scale: 0.95 }}
+        transition={{ duration: 0.4, ease: EASE }}
+        className="w-full max-w-3xl max-h-[90vh] overflow-y-auto cursor-default"
+        style={{ background: SURFACE, border: `1px solid ${BORDER_H}`, borderRadius: 20 }}
+        onClick={(e) => e.stopPropagation()}
+        data-lenis-prevent>
+        <div className="flex flex-col sm:flex-row gap-8 p-6 sm:p-8">
+          <div className="shrink-0 sm:w-[220px]">
+            <img src={master.image} alt={master.name} className="w-full aspect-[3/4] object-cover pointer-events-none" style={{ borderRadius: 12 }} />
+          </div>
+          <div className="flex-1 min-w-0">
+            <p className="font-picasso-body text-[11px] uppercase tracking-[0.2em] mb-2" style={{ color: GOLD }}>{master.role}</p>
+            <h3 className="font-picasso-display text-2xl sm:text-3xl font-medium mb-1" style={{ color: TEXT }}>{master.name}</h3>
+            <p className="text-[14px] font-light mb-6" style={{ color: MUTED }}>{master.exp}</p>
+            <div className="flex flex-col gap-y-2">
+              {master.details.map((d, i) => (
+                <div key={i} className="flex items-start gap-3">
+                  <span className="mt-[7px] shrink-0 w-1.5 h-1.5 rounded-full" style={{ background: GOLD }} />
+                  <p className="text-[14px] font-light leading-relaxed" style={{ color: TEXT_SOFT }}>{d}</p>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+        <button onClick={onClose} className="absolute top-4 right-4 w-10 h-10 flex items-center justify-center cursor-pointer"
+          style={{ background: SURFACE, border: `1px solid ${BORDER}`, borderRadius: 9999, color: TEXT }}>
+          <X size={18} />
+        </button>
+      </motion.div>
+    </motion.div>
+  )
+}
+
+function Team() {
+  const [selectedMaster, setSelectedMaster] = useState(null)
+  const masters = [
+    {
+      name: 'Юлия Котомина', role: 'Мастер-универсал', exp: 'Опыт 15+ лет', specialty: 'Стрижки, окрашивания, свадебный стилист',
+      image: '/images/team/yulia_kotomina.webp',
+      details: [
+        'Опыт работы 15 лет',
+        'Стрижки женские и мужские любой сложности, сложные окрашивания',
+        'Свадебный стилист — причёски, макияж',
+        '09.10.2015 — программа «Базовый визаж», квалификация визажист',
+        '05.12.2018 — «Окрашивание в технике Airtouch» — Светлова Оксана',
+        '18.04.2019 — семинар «Роскошь блонда» — Ольшанская Лола',
+        '02.03.2020 — «Свадебный стилист. Текстура и форма» — А. М. Саядян',
+        '05.07.2021 — международный Академический Базовый Онлайн-курс по причёскам G. Кот',
+      ],
+    },
+    {
+      name: 'Виктория Бобкова', role: 'Топ-стилист', exp: 'Опыт 8+ лет', specialty: 'Окрашивание, сложные стрижки, кератин',
+      image: '/images/team/viktoria_bobkova.webp',
+      details: [
+        '2017–2020 ГБПОУ Брянский Техникум Профессиональных технологий и Сферы услуг — парикмахер-модельер 4 разряда',
+        'С 2019 — работает в студии PICASSO',
+        '2018 — 1 место, 4-й открытый чемпионат Брянской области «Хрустальные ножницы» (Юниоры)',
+        '2019 — 1 место, 5-й открытый чемпионат Брянской области «Хрустальные ножницы» (Юниоры)',
+        '2020 — 2 место, 4-й открытый региональный чемпионат «Молодые профессионалы» WorldSkills Russia',
+        'Мастер-класс «Роскошь блонда» — Лола Ольшанская, Москва',
+        'Обучение «Наращивание волос» — Мария Зотова',
+        'Обучение «Колористика» — Мария Зотова',
+        'Сложные окрашивания: Airtouch, шатуш, мелирование',
+        'Окрашивание в тон, наращивание волос, все виды стрижек, современные мужские стрижки',
+        'Процедуры для волос: ботокс, протеин, восстановление',
+        'Подбор домашнего ухода, коррекция и окрашивание бровей',
+      ],
+    },
+    { name: 'Место в команде', role: 'Мы ищем мастеров', exp: 'PICASSO растёт', specialty: 'Присоединяйтесь к нашей команде', image: null, details: [] },
+  ]
+
+  return (
+    <section id="team" className="scroll-mt-20 py-28 sm:py-36" style={{ background: CHOCOLATE, scrollMarginTop: '-20px' }}>
+      <div className="mx-auto max-w-6xl px-5 sm:px-8">
+        <FadeIn>
+          <p className="font-picasso-body text-[12px] uppercase tracking-[0.4em] mb-5 select-none text-center" style={{ color: GOLD }}>Команда</p>
+        </FadeIn>
+        <FadeIn delay={0.1}>
+          <TiltHeading className="font-picasso-display text-3xl sm:text-4xl lg:text-5xl font-medium text-center leading-[1.15]" style={{ color: TEXT }}>
+            Наши <GoldSpan>мастера</GoldSpan>
+          </TiltHeading>
+        </FadeIn>
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 mt-20">
+          {masters.map((m, i) => (
+            <FadeIn key={m.name} delay={i * 0.1}>
+              <div className="group overflow-hidden h-full relative bg-[#050505]" style={{ borderRadius: 16 }}>
+                <div className="relative aspect-[3/4] overflow-hidden">
+                  {m.image ? (
+                    <img src={m.image} alt={m.name} className="w-full h-full object-cover transform-gpu scale-[1.01] group-hover:scale-[1.03] transition-transform duration-500 ease-out pointer-events-none" style={{ backfaceVisibility: 'hidden', willChange: 'transform' }} loading="lazy" />
+                  ) : (
+                    <div className="w-full h-full flex items-center justify-center" style={{ background: `linear-gradient(145deg, ${SURFACE_L} 0%, ${SURFACE} 100%)` }}>
+                      <Sparkles size={36} style={{ color: `${GOLD}15` }} strokeWidth={1} />
+                    </div>
+                  )}
+                  <div className="absolute inset-0 pointer-events-none transition-opacity duration-500 opacity-25 group-hover:opacity-5" style={{ background: 'rgba(14,12,11,0.35)' }} />
+                  <div className="absolute inset-0" style={{ background: 'linear-gradient(to top, rgba(14,12,11,0.95) 0%, rgba(14,12,11,0.5) 35%, transparent 55%)' }} />
+                  <div className="absolute bottom-0 left-0 right-0 p-6">
+                    <p className="font-picasso-body text-[11px] uppercase tracking-[0.2em] mb-2" style={{ color: GOLD }}>{m.role}</p>
+                    <h3 className="font-picasso-display text-xl font-medium" style={{ color: TEXT }}>{m.name}</h3>
+                    <p className="mt-1 text-[13px] font-light" style={{ color: TEXT_SOFT }}>{m.exp}</p>
+                    <p className="mt-2 text-[13px] font-light" style={{ color: MUTED }}>{m.specialty}</p>
+                    {m.details.length > 0 && (
+                      <button onClick={() => setSelectedMaster(m)} className="mt-4 font-picasso-body text-[12px] uppercase tracking-[0.14em] cursor-pointer transition-opacity hover:opacity-70"
+                        style={{ color: GOLD }}>Подробнее →</button>
+                    )}
+                  </div>
+                </div>
+              </div>
+            </FadeIn>
+          ))}
+        </div>
+      </div>
+      <AnimatePresence>
+        {selectedMaster && <MasterModal master={selectedMaster} onClose={() => setSelectedMaster(null)} />}
+      </AnimatePresence>
+    </section>
+  )
+}
+
+function Reviews() {
+  const reviews = [
+    { text: 'Удобное расположение. Приятный персонал. Была на стрижке – всё быстро и качественно. Приятная музыка и интересные разговоры. Если нужно, всегда помогут с Wi‑Fi.', author: 'Евгения К.' },
+    { text: 'Лучшие салоны Фокинского района, очень порядочные мастера, как профессионалы и как люди.', author: 'Михаил С.' },
+    { text: 'Уютная студия. Девочки всегда проконсультируют перед записью на процедуру. Хожу уже 5 лет, и детей на стрижку – только сюда.', author: 'Анна' },
+    { text: 'Уже лет 5 хожу только к Виктории – лучший мастер. У неё много наград, и она заняла 1 место по причёскам. От окрашивания бровей до наращивания волос на каре – всё нравится.', author: 'Ольга' },
+  ]
+
+  return (
+    <section id="reviews" className="scroll-mt-20 py-28 sm:py-36" style={{ background: BG, scrollMarginTop: '-10px' }}>
+      <div className="mx-auto max-w-5xl px-5 sm:px-8">
+        <FadeIn>
+          <p className="font-picasso-body text-[12px] uppercase tracking-[0.4em] mb-5 select-none text-center" style={{ color: GOLD }}>Отзывы</p>
+        </FadeIn>
+        <FadeIn delay={0.1}>
+          <TiltHeading className="font-picasso-display text-3xl sm:text-4xl lg:text-5xl font-medium text-center leading-[1.15]" style={{ color: TEXT }}>
+            Нам <GoldSpan>доверяют</GoldSpan>
+          </TiltHeading>
+        </FadeIn>
+        <div className="mt-16 grid grid-cols-1 sm:grid-cols-2 gap-6">
+          {reviews.map((r, i) => (
+            <FadeIn key={i} delay={i * 0.08} className="flex">
+              <div
+                className="group p-7 flex flex-col flex-1 bg-[#050505] transition-[box-shadow] duration-300 group-hover:shadow-[0_4px_20px_rgba(201,168,122,0.05)]" style={{ borderRadius: 16 }}>
+                <div className="flex gap-1 mb-5">
+                  {[...Array(5)].map((_, j) => <Star key={j} size={14} fill={GOLD} style={{ color: GOLD }} />)}
+                </div>
+                <p className="text-[15px] font-light leading-relaxed flex-1" style={{ color: TEXT_SOFT }}>{r.text}</p>
+                <div className="mt-6">
+                  <p className="font-picasso-display text-sm font-medium" style={{ color: TEXT }}>{r.author}</p>
+                </div>
+              </div>
+            </FadeIn>
+          ))}
+        </div>
+      </div>
+    </section>
+  )
+}
+
+function FAQ() {
+  const [openIdx, setOpenIdx] = useState(null)
+  const faqs = [
+    { q: 'Работаете ли вы со сложными окрашиваниями — выход из чёрного, тотал блонд?', a: 'Да, это наша специализация. Мы используем плекс-системы и защитные добавки на каждом этапе осветления, чтобы сохранить качество волос. Мастер предварительно оценивает историю ваших окрашиваний и подбирает безопасную схему перехода.' },
+    { q: 'Как долго держится результат после процедур ухода?', a: 'Ботокс и кератин — до 3 месяцев при правильном домашнем уходе, который мы подберём. Окрашивание держит тон 4–6 недель. Точные сроки зависят от структуры волос — мастер расскажет на консультации.' },
+    { q: 'Могу ли я прийти с картинкой из Пинтерест, и вы сделаете точно так же?', a: 'Конечно, приносите референс! Но мы обязательно обсудим, как желаемый результат ляжет на вашу структуру и текстуру волос. Честность — наш принцип: если оттенок на ваших волосах будет отличаться, мы предложим альтернативу, которая сработает именно у вас.' },
+    { q: 'Как вы стерилизуете инструменты?', a: 'Тройная обработка: дезинфекция, предстерилизационная очистка и сухожар при 180°C. Каждый инструмент хранится в запечатанном крафт-пакете — вскрываем строго при вас. Для маникюра и бровей используем только одноразовые расходники.' },
+    { q: 'Можно ли записаться сразу на несколько услуг?', a: 'Да, мы подберём удобный слот для комплекса — например, стрижка + маникюр или окрашивание + брови. Укажите это при онлайн-записи или скажите нашему консьержу, и мы составим оптимальное расписание.' },
+  ]
+
+  return (
+    <section id="faq" className="scroll-mt-20 py-28 sm:py-36" style={{ background: CHOCOLATE }}>
+      <div className="mx-auto max-w-3xl px-5 sm:px-8">
+        <FadeIn>
+          <p className="font-picasso-body text-[12px] uppercase tracking-[0.4em] mb-5 select-none text-center" style={{ color: GOLD }}>FAQ</p>
+        </FadeIn>
+        <FadeIn delay={0.1}>
+          <TiltHeading className="font-picasso-display text-3xl sm:text-4xl lg:text-5xl font-medium text-center leading-[1.15]" style={{ color: TEXT }}>
+            Частые <GoldSpan>вопросы</GoldSpan>
+          </TiltHeading>
+        </FadeIn>
+        <div className="mt-16">
+          {faqs.map((f, i) => (
+            <FadeIn key={f.q} delay={i * 0.06}>
+              <FAQItem q={f.q} a={f.a} isOpen={openIdx === i} onToggle={() => setOpenIdx(openIdx === i ? null : i)} />
+            </FadeIn>
+          ))}
+        </div>
+      </div>
+    </section>
+  )
+}
+
+function Booking() {
+  const [name, setName] = useState('')
+  const [phone, setPhone] = useState('')
+  const [sent, setSent] = useState(false)
+
+  return (
+    <section id="booking" className="scroll-mt-20 py-28 sm:py-36 relative overflow-hidden" style={{ background: BG }}>
+      <div className="absolute inset-0 pointer-events-none">
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] rounded-full blur-[200px]" style={{ background: 'rgba(201,168,122,0.03)' }} />
+      </div>
+      <DustParticles />
+      <div className="mx-auto max-w-xl px-5 sm:px-8 text-center relative z-10">
+        <FadeIn>
+          <p className="font-picasso-body text-[12px] uppercase tracking-[0.4em] mb-5 select-none" style={{ color: `${GOLD}88` }}>Запись</p>
+        </FadeIn>
+        <FadeIn delay={0.1}>
+          <TiltHeading as="h2" className="font-picasso-display text-3xl sm:text-4xl font-medium leading-tight" style={{ color: TEXT }}>
+            Ваш следующий <GoldSpan>визит</GoldSpan>
+          </TiltHeading>
+        </FadeIn>
+        <FadeIn delay={0.2}>
+          <p className="mt-5 text-base font-light leading-relaxed" style={{ color: TEXT_SOFT }}>Оставьте заявку — подберём удобное время и мастера</p>
+        </FadeIn>
+        <FadeIn delay={0.3}>
+          <AnimatePresence mode="wait">
+            {!sent ? (
+              <motion.form key="form" className="mt-12 flex flex-col gap-5"
+                onSubmit={(e) => { e.preventDefault(); setSent(true); setName(''); setPhone('') }}>
+                <input type="text" value={name} onChange={(e) => setName(e.target.value)} placeholder="Ваше имя" required
+                  className="w-full bg-transparent px-5 py-4 text-base outline-none transition-all font-picasso-body"
+                  style={{ border: `1px solid ${BORDER}`, borderRadius: 12, color: TEXT }} />
+                <input type="tel" value={phone} onChange={(e) => setPhone(e.target.value)} placeholder="+7 (___) ___-__-__" required
+                  className="w-full bg-transparent px-5 py-4 text-base outline-none transition-all font-picasso-body"
+                  style={{ border: `1px solid ${BORDER}`, borderRadius: 12, color: TEXT }} />
+                <motion.button type="submit"
+                  whileHover={{ boxShadow: '0 6px 30px rgba(201,168,122,0.2), inset 0 1px 0 rgba(255,255,255,0.15)' }}
+                  whileTap={{ boxShadow: '0 2px 12px rgba(201,168,122,0.1)' }}
+                  className="mt-3 w-full py-4 font-picasso-body text-[13px] font-medium uppercase tracking-[0.14em] transition-all duration-300 cursor-pointer"
+                  style={{ background: `linear-gradient(to bottom, ${GOLD_BRIGHT} 0%, ${GOLD} 40%, ${GOLD_DIM} 100%)`, color: BG, borderRadius: 9999, boxShadow: '0 4px 20px rgba(201,168,122,0.12), inset 0 1px 0 rgba(255,255,255,0.2), inset 0 -1px 0 rgba(0,0,0,0.15)' }}>
+                  Записаться
+                </motion.button>
+              </motion.form>
+            ) : (
+              <motion.div key="success" initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} transition={{ duration: 0.5 }} className="mt-12 py-10" style={{ borderTop: `1px solid ${BORDER}`, borderBottom: `1px solid ${BORDER}` }}>
+                <p className="font-picasso-display text-2xl italic" style={{ color: TEXT }}>Спасибо!</p>
+                <p className="mt-3 text-base font-light" style={{ color: TEXT_SOFT }}>Мы свяжемся с вами в ближайшее время</p>
+              </motion.div>
+            )}
+          </AnimatePresence>
+        </FadeIn>
+      </div>
+    </section>
+  )
+}
+
+function Contacts() {
+  return (
+    <section id="contacts" className="scroll-mt-20 py-20 sm:py-24" style={{ background: CHOCOLATE }}>
+      <div className="mx-auto max-w-6xl px-5 sm:px-8">
+        <FadeIn>
+          <TiltHeading as="h2" className="font-picasso-display text-2xl sm:text-3xl font-medium text-center leading-[1.15] mb-12" style={{ color: TEXT }}>
+            Контакты
+          </TiltHeading>
+        </FadeIn>
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-8 text-center">
+          <FadeIn delay={0.1}>
+            <div className="flex flex-col items-center gap-3">
+              <div className="w-12 h-12 flex items-center justify-center" style={{ border: `1px solid ${BORDER_H}`, borderRadius: 9999 }}>
+                <MapPin size={20} style={{ color: GOLD }} strokeWidth={1.5} />
+              </div>
+              <p className="text-[15px] font-light leading-relaxed" style={{ color: TEXT_SOFT }}>г. Москва, ул. Примерная, 42</p>
+              <p className="text-[13px] font-light" style={{ color: MUTED }}>2-й этаж, вход с улицы</p>
+            </div>
+          </FadeIn>
+          <FadeIn delay={0.15}>
+            <div className="flex flex-col items-center gap-3">
+              <div className="w-12 h-12 flex items-center justify-center" style={{ border: `1px solid ${BORDER_H}`, borderRadius: 9999 }}>
+                <Phone size={20} style={{ color: GOLD }} strokeWidth={1.5} />
+              </div>
+              <a href="tel:+74951234567" className="text-[15px] font-light transition-colors hover:underline" style={{ color: TEXT_SOFT }}>+7 (495) 123-45-67</a>
+              <p className="text-[13px] font-light" style={{ color: MUTED }}>WhatsApp / Telegram</p>
+            </div>
+          </FadeIn>
+          <FadeIn delay={0.2}>
+            <div className="flex flex-col items-center gap-3">
+              <div className="w-12 h-12 flex items-center justify-center" style={{ border: `1px solid ${BORDER_H}`, borderRadius: 9999 }}>
+                <Clock3 size={20} style={{ color: GOLD }} strokeWidth={1.5} />
+              </div>
+              <p className="text-[15px] font-light" style={{ color: TEXT_SOFT }}>Ежедневно 09:00 — 21:00</p>
+              <p className="text-[13px] font-light" style={{ color: MUTED }}>Без выходных</p>
+            </div>
+          </FadeIn>
+        </div>
+      </div>
+    </section>
+  )
+}
+
+function Footer() {
+  return (
+    <footer className="py-10" style={{ background: BG, borderTop: `1px solid ${BORDER}` }}>
+      <div className="mx-auto max-w-6xl px-5 sm:px-8">
+        <div className="flex flex-col sm:flex-row items-center justify-between gap-5">
+          <div className="flex items-center gap-4">
+            <span className="font-picasso-display text-lg" style={{ color: GOLD, textShadow: '0 0 20px rgba(201,168,122,0.1)' }}>PICASSO</span>
+            <span className="text-xs" style={{ color: `${MUTED}30` }}>&copy; 2026</span>
+          </div>
+          <div className="flex items-center gap-3">
+            <a href="https://vk.com" target="_blank" rel="noopener noreferrer" className="w-8 h-8 flex items-center justify-center transition-colors hover:opacity-70" style={{ border: `1px solid ${BORDER}`, borderRadius: 9999, color: MUTED }}>
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M12.785 16.241s.288-.032.436-.194c.136-.148.132-.427.132-.427s-.02-1.304.587-1.496c.598-.188 1.368 1.259 2.183 1.815.616.42 1.084.328 1.084.328l2.175-.03s1.14-.07.6-.964c-.044-.073-.314-.661-1.618-1.869-1.366-1.265-1.183-1.06.462-3.246.998-1.328 1.397-2.14 1.273-2.487-.119-.332-.852-.244-.852-.244l-2.475.015s-.184-.025-.32.057c-.133.08-.218.266-.218.266s-.391 1.04-.913 1.923c-1.1 1.867-1.539 1.966-1.718 1.848-.418-.27-.313-1.084-.313-1.664 0-1.81.275-2.564-.535-2.76-.269-.065-.466-.107-1.153-.114-.88-.009-1.624.003-2.046.209-.281.137-.497.443-.365.46.163.022.533.1.729.365.253.344.244 1.118.244 1.118s.145 2.131-.34 2.394c-.332.18-.788-.187-1.765-1.865-.5-.86-.879-1.81-.879-1.81s-.073-.178-.203-.274c-.158-.116-.378-.153-.378-.153l-2.352.015s-.353.01-.483.164c-.115.137-.009.42-.009.42s1.856 4.338 3.958 6.523c1.928 2.005 4.117 1.876 4.117 1.876h.993z"/></svg>
+            </a>
+            <a href="https://instagram.com" target="_blank" rel="noopener noreferrer" className="w-8 h-8 flex items-center justify-center transition-colors hover:opacity-70" style={{ border: `1px solid ${BORDER}`, borderRadius: 9999, color: MUTED }}>
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="2" y="2" width="20" height="20" rx="5"/><circle cx="12" cy="12" r="5"/><circle cx="17.5" cy="6.5" r="1.5" fill="currentColor" stroke="none"/></svg>
+            </a>
+          </div>
+        </div>
+        <div className="mt-6 pt-5 text-center" style={{ borderTop: `1px solid ${BORDER}` }}>
+          <p className="font-picasso-body text-[11px] tracking-[0.05em]" style={{ color: 'rgba(255,255,255,0.25)' }}>
+            Создано в <a href="https://github.com/anomalyco/opencode" target="_blank" rel="noopener noreferrer" className="transition-colors hover:opacity-80" style={{ color: 'rgba(255,255,255,0.35)' }}>Нейро Цехе</a>
+          </p>
+        </div>
+      </div>
+    </footer>
+  )
+}
+
+export default function Picasso() {
+  useEffect(() => {
+    const lenis = new Lenis({
+      duration: 1.2,
+      easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
+      touchMultiplier: 2,
+    })
+    window.__lenis = lenis
+    let ticking = false
+    lenis.on('scroll', () => {
+      if (!ticking) {
+        ticking = true
+        requestAnimationFrame(() => {
+          window.dispatchEvent(new Event('scroll'))
+          ticking = false
+        })
+      }
+    })
+    function raf(time) { lenis.raf(time); requestAnimationFrame(raf) }
+    const id = requestAnimationFrame(raf)
+    window.scrollTo(0, 0)
+    return () => { cancelAnimationFrame(id); lenis.destroy() }
+  }, [])
+
+  return (
+    <div className="min-h-screen font-picasso-body" style={{ background: BG, color: TEXT, lineHeight: 1.7 }}>
+      <ConciergeWidget />
+      <Nav />
+      <Hero />
+      <About />
+      <Services />
+      <Prices />
+      <Gallery />
+      <Team />
+      <Reviews />
+      <FAQ />
+      <Booking />
+      <Contacts />
+      <Footer />
+    </div>
+  )
+}

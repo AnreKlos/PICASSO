@@ -1,0 +1,129 @@
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500&family=Inter:wght@300;400;500;600&display=swap');
+@import "tailwindcss";
+
+@theme {
+  --font-picasso-display: 'Playfair Display', Georgia, serif;
+  --font-picasso-body: 'Inter', system-ui, sans-serif;
+  --color-picasso-bg: #0E0C0B;
+  --color-picasso-surface: #1A1714;
+  --color-picasso-surface-light: #262220;
+  --color-picasso-border: rgba(255,255,255,0.06);
+  --color-picasso-border-hover: rgba(255,255,255,0.14);
+  --color-picasso-text: #F0EBE3;
+  --color-picasso-text-muted: #9A938B;
+  --color-picasso-gold: #C9A87A;
+  --color-picasso-gold-dim: #A68B5A;
+  --color-picasso-rose: #B8928A;
+}
+
+@layer base {
+  html {
+    scroll-behavior: smooth;
+    scroll-padding-top: 80px;
+  }
+
+  body {
+    background-color: var(--color-picasso-bg);
+    color: var(--color-picasso-text);
+    font-family: var(--font-picasso-body);
+    font-size: 17px;
+    line-height: 1.7;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  ::selection {
+    background-color: rgba(201,168,122,0.3);
+    color: #F0EBE3;
+  }
+
+  img {
+    -webkit-user-select: none;
+    user-select: none;
+  }
+}
+
+@keyframes shineSweep {
+  0%, 82% {
+    transform: translate3d(-150%, 0, 0) skewX(-15deg);
+    opacity: 0;
+  }
+  83% {
+    opacity: 1;
+    transform: translate3d(-150%, 0, 0) skewX(-15deg);
+  }
+  96% {
+    opacity: 0;
+    transform: translate3d(250%, 0, 0) skewX(-15deg);
+  }
+  97%, 100% {
+    transform: translate3d(250%, 0, 0) skewX(-15deg);
+    opacity: 0;
+  }
+}
+
+.btn-shine {
+  position: relative;
+  overflow: hidden;
+}
+
+.btn-shine::after {
+  content: '';
+  position: absolute;
+  top: -50%;
+  left: 0;
+  width: 60%;
+  height: 200%;
+  background: linear-gradient(
+    105deg,
+    transparent 20%,
+    rgba(255,255,255,0.08) 35%,
+    rgba(255,255,255,0.14) 50%,
+    rgba(255,255,255,0.08) 65%,
+    transparent 80%
+  );
+  transform: translate3d(-150%, 0, 0) skewX(-15deg);
+  animation: shineSweep 7s cubic-bezier(0.16, 1, 0.3, 1) 2s infinite;
+  pointer-events: none;
+  mix-blend-mode: soft-light;
+}
+
+@keyframes smokeDrift1 {
+  0% { opacity: 0.6; transform: translate3d(-20%, 0, 0) scale(1.1); }
+  40% { opacity: 0.35; }
+  100% { opacity: 0; transform: translate3d(15%, -30%, 0) scale(1.5); }
+}
+@keyframes smokeDrift2 {
+  0% { opacity: 0.5; transform: translate3d(10%, 0, 0) scale(1.2); }
+  50% { opacity: 0.25; }
+  100% { opacity: 0; transform: translate3d(-20%, -25%, 0) scale(1.6); }
+}
+@keyframes smokeDrift3 {
+  0% { opacity: 0.45; transform: translate3d(5%, 5%, 0) scale(1); }
+  60% { opacity: 0.2; }
+  100% { opacity: 0; transform: translate3d(-10%, -35%, 0) scale(1.4); }
+}
+
+.smoke-reveal {
+  position: relative;
+}
+.smoke-layer {
+  position: absolute;
+  inset: -40%;
+  pointer-events: none;
+  border-radius: 50%;
+  filter: blur(60px);
+  mix-blend-mode: screen;
+}
+.smoke-layer-1 {
+  background: radial-gradient(ellipse 60% 50% at 45% 55%, rgba(201,168,122,0.08) 0%, rgba(184,146,138,0.06) 30%, transparent 70%);
+  animation: smokeDrift1 2.4s cubic-bezier(0.16, 1, 0.3, 1) 0.1s both;
+}
+.smoke-layer-2 {
+  background: radial-gradient(ellipse 50% 60% at 55% 45%, rgba(201,168,122,0.06) 0%, rgba(160,130,100,0.05) 35%, transparent 70%);
+  animation: smokeDrift2 2.6s cubic-bezier(0.16, 1, 0.3, 1) 0.3s both;
+}
+.smoke-layer-3 {
+  background: radial-gradient(ellipse 70% 40% at 50% 50%, rgba(240,235,227,0.04) 0%, rgba(201,168,122,0.03) 40%, transparent 65%);
+  animation: smokeDrift3 2.8s cubic-bezier(0.16, 1, 0.3, 1) 0.5s both;
+}
