@@ -11,11 +11,11 @@ export default defineConfig(({ mode }) => {
       historyApiFallback: true,
       proxy: {
         '/api/chat': {
-          target: 'https://api.fireworks.ai',
+          target: 'https://openrouter.ai',
           changeOrigin: true,
-          rewrite: (path) => path.replace(/^\/api\/chat/, '/inference/v1/chat/completions'),
+          rewrite: (path) => path.replace(/^\/api\/chat/, '/api/v1/chat/completions'),
           headers: {
-            Authorization: `Bearer ${env.FIREWORKS_API_KEY}`,
+            Authorization: `Bearer ${env.OPENROUTER_API_KEY}`,
           },
         },
       },
