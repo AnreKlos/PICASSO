@@ -147,6 +147,7 @@ function DustParticles() {
   const frameRef = useRef(null)
 
   useEffect(() => {
+    if (window.innerWidth < 768) return
     const FALL = 22
     const DRIFT = 10
     const LARGE = 4
@@ -226,7 +227,16 @@ function DustParticles() {
     return () => { cancelAnimationFrame(frameRef.current); window.removeEventListener('resize', onResize) }
   }, [])
 
-  return <canvas ref={canvasRef} className="absolute inset-0 pointer-events-none z-10 will-change-transform" style={{ filter: 'blur(0.8px)' }} aria-hidden="true" />
+  const [visible, setVisible] = useState(false)
+  useEffect(() => {
+    const mql = window.matchMedia('(min-width: 768px)')
+    setVisible(mql.matches)
+    const handler = (e) => setVisible(e.matches)
+    mql.addEventListener('change', handler)
+    return () => mql.removeEventListener('change', handler)
+  }, [])
+  if (!visible) return null
+  return <canvas ref={canvasRef} className="absolute inset-0 pointer-events-none z-10 will-change-transform hidden md:block" style={{ filter: 'blur(0.8px)' }} aria-hidden="true" />
 }
 
 function FAQItem({ q, a, isOpen, onToggle }) {
@@ -262,7 +272,7 @@ function ConciergeWidget() {
   }, [messages])
 
   useEffect(() => {
-    const timer = setTimeout(() => setShowTooltip(true), 3000)
+    const timer = setTimeout(() => setShowTooltip(true), 10000)
     return () => clearTimeout(timer)
   }, [])
 
@@ -287,9 +297,13 @@ function ConciergeWidget() {
           temperature: 0.7,
         }),
       })
-      if (!res.ok) throw new Error()
+      if (!res.ok) {
+        const err = await res.json().catch(() => null)
+        throw new Error(err?.error || `Ошибка ${res.status}`)
+      }
       const data = await res.json()
-      setMessages([...updated, { from: 'bot', text: data.choices?.[0]?.message?.content || 'Попробуйте ещё раз.' }])
+      const reply = data.choices?.[0]?.message?.content || data.error?.message || 'Попробуйте ещё раз.'
+      setMessages([...updated, { from: 'bot', text: reply }])
     } catch {
       setMessages([...updated, { from: 'bot', text: 'Связь прервалась. Попробуйте снова.' }])
     } finally { setLoading(false) }
@@ -301,7 +315,7 @@ function ConciergeWidget() {
         {open && (
           <motion.div initial={{ opacity: 0, y: 20, scale: 0.92 }} animate={{ opacity: 1, y: 0, scale: 1 }} exit={{ opacity: 0, y: 20, scale: 0.92 }} transition={{ duration: 0.35, ease: EASE }}
             data-lenis-prevent
-            className="absolute bottom-[72px] right-0 w-[340px] sm:w-[400px] overflow-hidden" style={{ background: SURFACE, border: `1px solid ${BORDER}`, borderRadius: 16, boxShadow: '0 12px 60px rgba(0,0,0,0.5)' }}>
+            className="absolute bottom-[72px] right-0 w-[320px] sm:w-[400px] overflow-hidden" style={{ background: SURFACE, border: `1px solid ${BORDER}`, borderRadius: 16, boxShadow: '0 12px 60px rgba(0,0,0,0.5)' }}>
             <div className="flex items-center justify-between px-6 py-5" style={{ borderBottom: `1px solid ${BORDER}` }}>
               <div>
                 <p className="font-picasso-display text-sm font-semibold" style={{ color: TEXT }}>PICASSO Concierge</p>
@@ -309,7 +323,7 @@ function ConciergeWidget() {
               </div>
               <button onClick={() => setOpen(false)} className="cursor-pointer" style={{ color: MUTED }}><X size={18} /></button>
             </div>
-            <div ref={scrollRef} className="h-72 overflow-y-auto px-6 py-5 flex flex-col gap-3">
+            <div ref={scrollRef} className="h-80 overflow-y-auto px-6 py-5 flex flex-col gap-3">
               {messages.map((m, i) => (
                 <div key={i} className={`max-w-[85%] px-4 py-3 text-sm font-picasso-body leading-relaxed ${m.from === 'bot' ? 'self-start' : 'self-end'}`}
                   style={{ background: m.from === 'bot' ? SURFACE_L : GOLD, color: m.from === 'bot' ? TEXT : BG, borderRadius: 12 }}>
@@ -338,8 +352,8 @@ function ConciergeWidget() {
             exit={{ opacity: 0, x: 10, scale: 0.9 }}
             transition={{ duration: 0.35, ease: EASE }}
             onClick={() => { setOpen(true); setShowTooltip(false) }}
-            className="absolute bottom-4 right-[68px] whitespace-nowrap px-4 py-2.5 font-picasso-body text-[13px] cursor-pointer"
-            style={{ background: SURFACE, color: TEXT, border: `1px solid ${BORDER_H}`, borderRadius: 9999, boxShadow: '0 4px 20px rgba(0,0,0,0.3)' }}
+            className="absolute bottom-4 right-[68px] max-w-[calc(100vw-90px)] sm:max-w-none min-w-[220px] sm:min-w-[280px] px-5 py-3 font-picasso-body text-[14px] sm:text-[14px] cursor-pointer whitespace-normal leading-relaxed"
+            style={{ background: SURFACE, color: TEXT, border: `1px solid ${BORDER_H}`, borderRadius: window.innerWidth < 640 ? 16 : 9999, boxShadow: '0 4px 20px rgba(0,0,0,0.3)', right: '68px' }}
           >
             Я ИИ-консьерж. Помочь подобрать время?
           </motion.div>
@@ -383,7 +397,7 @@ function Nav() {
 
   return (
     <motion.nav initial={{ y: -40, opacity: 0 }} animate={{ y: 0, opacity: 1 }} transition={{ duration: 0.6, ease: EASE }}
-      className={`fixed top-0 left-0 right-0 z-40 transition-all duration-500 ${scrolled ? 'backdrop-blur-lg' : ''}`}
+      className={`fixed top-0 left-0 right-0 w-full z-40 transition-all duration-500 overflow-hidden ${scrolled ? 'backdrop-blur-lg' : ''}`}
       style={{ background: scrolled ? 'rgba(14,12,11,0.92)' : 'transparent', borderBottom: `1px solid ${scrolled ? BORDER : 'transparent'}` }}>
       <div className="mx-auto max-w-6xl px-5 sm:px-8 flex items-center justify-between h-16">
         <a href="#" className="font-picasso-display text-xl font-semibold tracking-[0.08em] select-none" style={{ color: GOLD, textShadow: '0 0 20px rgba(201,168,122,0.15)' }}>PICASSO</a>
@@ -474,28 +488,41 @@ function TiltGlare({ children, className = '', style = {} }) {
 
 function Hero() {
   const ref = useRef(null)
+  const [isMobile, setIsMobile] = useState(false)
   const { scrollYProgress } = useScroll({ target: ref, offset: ['start start', 'end start'] })
-  const heroY = useTransform(scrollYProgress, [0, 1], [0, -120])
+  const heroY = useTransform(scrollYProgress, [0, 1], isMobile ? [0, 0] : [0, -120])
   const heroOpacity = useTransform(scrollYProgress, [0, 0.6], [1, 0])
   const bgY = useTransform(scrollYProgress, [0, 1], [0, 500])
   const midY = useTransform(scrollYProgress, [0, 1], [0, 250])
-  const imgY = useTransform(scrollYProgress, [0, 1], [0, 150])
+  const imgY = useTransform(scrollYProgress, [0, 1], isMobile ? [0, 0] : [0, 150])
+
+  useEffect(() => {
+    const mql = window.matchMedia('(max-width: 767px)')
+    setIsMobile(mql.matches)
+    const handler = (e) => setIsMobile(e.matches)
+    mql.addEventListener('change', handler)
+    return () => mql.removeEventListener('change', handler)
+  }, [])
 
   return (
     <section ref={ref} className="relative min-h-screen flex items-center overflow-hidden" style={{ background: BG }}>
 
-      <motion.div style={{ y: bgY, willChange: 'transform' }} className="absolute -top-[400px] -bottom-[400px] left-0 right-0 pointer-events-none">
-        <div className="absolute top-[15%] left-[10%] w-[900px] h-[900px] rounded-full blur-[200px]" style={{ background: 'rgba(201,168,122,0.035)' }} />
-        <div className="absolute bottom-[10%] right-[5%] w-[700px] h-[700px] rounded-full blur-[160px]" style={{ background: 'rgba(184,146,138,0.025)' }} />
-      </motion.div>
-      <motion.div style={{ y: midY, willChange: 'transform' }} className="absolute -top-[200px] -bottom-[200px] left-0 right-0 pointer-events-none">
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[1100px] h-[1100px] rounded-full blur-[240px]" style={{ background: 'rgba(201,168,122,0.018)' }} />
-      </motion.div>
-
-      <div className="absolute inset-0 pointer-events-none" style={{ background: 'radial-gradient(ellipse 70% 55% at 50% 42%, rgba(201,168,122,0.05) 0%, transparent 65%)' }} />
-      <div className="absolute inset-0 pointer-events-none" style={{ background: 'radial-gradient(ellipse 100% 100% at 50% 50%, transparent 40%, rgba(14,12,11,0.7) 75%, rgba(14,12,11,0.95) 100%)' }} />
-
-      <DustParticles />
+      <div className="absolute inset-0 overflow-hidden pointer-events-none w-full">
+        {!isMobile && (
+          <>
+            <motion.div style={{ y: bgY, willChange: 'transform' }} className="absolute -top-[400px] -bottom-[400px] left-0 right-0">
+              <div className="absolute top-[15%] left-[10%] w-[80vw] max-w-[420px] h-[80vw] max-h-[420px] rounded-full blur-[200px]" style={{ background: 'rgba(201,168,122,0.035)' }} />
+              <div className="absolute bottom-[10%] right-[5%] w-[70vw] max-w-[360px] h-[70vw] max-h-[360px] rounded-full blur-[160px]" style={{ background: 'rgba(184,146,138,0.025)' }} />
+            </motion.div>
+            <motion.div style={{ y: midY, willChange: 'transform' }} className="absolute -top-[200px] -bottom-[200px] left-0 right-0">
+              <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[90vw] max-w-[500px] h-[90vw] max-h-[500px] rounded-full blur-[240px]" style={{ background: 'rgba(201,168,122,0.018)' }} />
+            </motion.div>
+          </>
+        )}
+        <div className="absolute inset-0" style={{ background: 'radial-gradient(ellipse 70% 55% at 50% 42%, rgba(201,168,122,0.05) 0%, transparent 65%)' }} />
+        <div className="absolute inset-0" style={{ background: 'radial-gradient(ellipse 100% 100% at 50% 50%, transparent 40%, rgba(14,12,11,0.7) 75%, rgba(14,12,11,0.95) 100%)' }} />
+        {!isMobile && <DustParticles />}
+      </div>
 
       <div className="relative z-[5] w-full pointer-events-auto">
         <div className="mx-auto max-w-6xl px-5 sm:px-8 flex flex-col lg:flex-row items-center gap-12 lg:gap-16 pt-28 pb-16">
@@ -505,10 +532,12 @@ function Hero() {
                 <p className="font-picasso-body text-[12px] uppercase tracking-[0.4em] mb-8 select-none" style={{ color: GOLD }}>Premium Beauty Studio</p>
               </motion.div>
 
-              <div className="smoke-reveal">
-                <div className="smoke-layer smoke-layer-1" />
-                <div className="smoke-layer smoke-layer-2" />
-                <div className="smoke-layer smoke-layer-3" />
+              <div className="relative">
+                <div className="hidden md:block">
+                  <div className="smoke-layer smoke-layer-1" />
+                  <div className="smoke-layer smoke-layer-2" />
+                  <div className="smoke-layer smoke-layer-3" />
+                </div>
                 <motion.div
                   initial={{ opacity: 0, filter: 'blur(20px) brightness(2.5)' }}
                   animate={{ opacity: 1, filter: 'blur(0px) brightness(1)' }}
@@ -540,7 +569,7 @@ function Hero() {
               </motion.p>
 
               <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.7, ease: EASE, delay: 0.8 }}
-                className="flex flex-col sm:flex-row items-center justify-center lg:justify-start gap-4 mt-12">
+                className="flex flex-col sm:flex-row items-center justify-center lg:justify-start gap-4 mt-12 overflow-hidden">
           <MagneticButton href="#booking" onClick={(e) => { e.preventDefault(); scrollTo('#booking') }}
                   whileHover={{ boxShadow: '0 6px 40px rgba(201,168,122,0.25), inset 0 1px 0 rgba(255,255,255,0.15)' }}
                   whileTap={{ boxShadow: '0 2px 12px rgba(201,168,122,0.15)' }}
@@ -559,8 +588,8 @@ function Hero() {
             </motion.div>
           </div>
 
-          <div className="flex-1 relative max-w-md lg:max-w-none">
-            <motion.div style={{ y: imgY, willChange: 'transform' }} className="relative">
+          <div className="flex-1 relative max-w-md lg:max-w-none max-w-full">
+            <motion.div style={{ y: imgY, willChange: 'transform' }} className="relative overflow-hidden">
               <TiltGlare className="relative overflow-hidden rounded-3xl" style={{ boxShadow: '0 20px 60px rgba(0,0,0,0.5), 0 0 80px rgba(201,168,122,0.04)' }}>
                 <motion.div
                   initial={{ opacity: 0, scale: 1.08, filter: 'blur(20px) brightness(2) saturate(0)' }}
@@ -568,12 +597,12 @@ function Hero() {
                   transition={{ duration: 2.2, ease: EASE, delay: 0.6 }}
                   className="w-full"
                 >
-                  <img src="/images/hair/hair_1.webp" alt="PICASSO hair styling" className="w-full aspect-[3/4] object-cover" />
+                  <img src="/images/hair/hair_1.webp" alt="PICASSO hair styling" className="w-full max-w-full aspect-[3/4] object-cover" />
                 </motion.div>
                 <div className="absolute inset-0" style={{ background: 'linear-gradient(to top, rgba(14,12,11,0.7) 0%, transparent 40%), linear-gradient(to right, rgba(14,12,11,0.4) 0%, transparent 30%)' }} />
               </TiltGlare>
-              <div className="absolute -bottom-6 -left-6 w-32 h-32 rounded-full blur-[60px]" style={{ background: 'rgba(201,168,122,0.06)' }} />
-              <div className="absolute -top-4 -right-4 w-24 h-24 rounded-full blur-[40px]" style={{ background: 'rgba(184,146,138,0.04)' }} />
+              {!isMobile && <div className="absolute -bottom-6 -left-6 w-32 h-32 rounded-full blur-[60px]" style={{ background: 'rgba(201,168,122,0.06)' }} />}
+              {!isMobile && <div className="absolute -top-4 -right-4 w-24 h-24 rounded-full blur-[40px]" style={{ background: 'rgba(184,146,138,0.04)' }} />}
             </motion.div>
          </div>
        </div>
@@ -586,13 +615,13 @@ function About() {
   const [lightbox, setLightbox] = useState(null)
 
   return (
-    <section id="about" className="scroll-mt-20 py-28 sm:py-36 relative" style={{ background: CHOCOLATE }}>
-      <div className="absolute inset-0 pointer-events-none">
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[700px] h-[700px] rounded-full blur-[200px]" style={{ background: 'rgba(201,168,122,0.02)' }} />
+    <section id="about" className="scroll-mt-12 sm:scroll-mt-20 py-28 sm:py-36 relative overflow-hidden" style={{ background: CHOCOLATE }}>
+      <div className="absolute inset-0 overflow-hidden pointer-events-none w-full">
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[70vw] max-w-[380px] h-[70vw] max-h-[380px] rounded-full blur-[200px]" style={{ background: 'rgba(201,168,122,0.02)' }} />
       </div>
       <div className="mx-auto max-w-6xl px-5 sm:px-8 relative z-10">
         <div className="flex flex-col lg:flex-row items-center gap-16">
-          <div className="flex-1">
+          <div className="flex-1 min-w-0">
             <FadeIn>
               <p className="font-picasso-body text-[12px] uppercase tracking-[0.4em] mb-5 select-none" style={{ color: GOLD }}>О салоне</p>
             </FadeIn>
@@ -607,19 +636,19 @@ function About() {
               </p>
             </FadeIn>
             <FadeIn delay={0.3}>
-              <div className="mt-10 grid grid-cols-2 gap-6">
+              <div className="mt-10 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6">
                 {[
                   { Icon: Shield, label: 'Абсолютная стерильность' },
                   { Icon: Clock, label: 'Гарантия качества' },
                   { Icon: Coffee, label: 'Премиум сервис' },
                   { Icon: Diamond, label: 'Профессиональные материалы' },
                 ].map((item) => (
-                  <div key={item.label} className="flex items-start gap-3 p-4" style={{ border: '1px solid rgba(255,255,255,0.1)', borderRadius: 12, background: 'rgba(255,255,255,0.03)' }}>
-                    <div className="w-10 h-10 shrink-0 flex items-center justify-center" style={{ border: `1px solid ${BORDER_H}`, borderRadius: 9999, background: 'rgba(201,168,122,0.06)' }}>
-                      <item.Icon size={16} style={{ color: GOLD }} strokeWidth={1.5} />
-                    </div>
-                    <p className="text-[14px] font-light leading-snug pt-2" style={{ color: TEXT_SOFT }}>{item.label}</p>
-                  </div>
+                  <div key={item.label} className="flex flex-col items-center text-center md:flex-row md:items-start md:text-left gap-3 p-4 w-full" style={{ border: '1px solid rgba(255,255,255,0.1)', borderRadius: 12, background: 'rgba(255,255,255,0.03)', overflow: 'hidden' }}>
+                     <div className="w-10 h-10 shrink-0 flex items-center justify-center" style={{ border: `1px solid ${BORDER_H}`, borderRadius: 9999, background: 'rgba(201,168,122,0.06)' }}>
+                       <item.Icon size={16} style={{ color: GOLD }} strokeWidth={1.5} />
+                     </div>
+                     <p className="text-[13px] md:text-[14px] font-light leading-snug md:pt-2" style={{ color: TEXT_SOFT }}>{item.label}</p>
+                   </div>
                 ))}
               </div>
             </FadeIn>
@@ -628,7 +657,7 @@ function About() {
             <FadeIn>
               <div className="group relative overflow-hidden bg-[#050505] cursor-pointer" style={{ borderRadius: 12, filter: 'brightness(0.94) contrast(1.15) saturate(0.87) sepia(0.10) hue-rotate(-8deg)', WebkitMaskImage: 'linear-gradient(to bottom, black 70%, transparent 100%)', maskImage: 'linear-gradient(to bottom, black 70%, transparent 100%)' }}
                 onClick={() => setLightbox({ src: '/images/interior/whod_s_ulitci.webp', alt: 'Вход в салон PICASSO' })}>
-                <img src="/images/interior/whod_s_ulitci.webp" alt="Вход в салон PICASSO" className="w-full h-full object-cover transform-gpu scale-[1.01] group-hover:scale-[1.03] transition-transform duration-500 ease-out aspect-[4/3] pointer-events-none" style={{ backfaceVisibility: 'hidden', willChange: 'transform' }} loading="lazy" />
+                <img src="/images/interior/whod_s_ulitci.webp" alt="Вход в салон PICASSO" className="w-full max-w-full h-full object-cover transform-gpu scale-[1.01] group-hover:scale-[1.03] transition-transform duration-500 ease-out aspect-[4/3] pointer-events-none" style={{ backfaceVisibility: 'hidden', willChange: 'transform' }} loading="lazy" />
                 <div className="absolute inset-0 pointer-events-none" style={{ background: 'radial-gradient(ellipse at 50% 40%, rgba(201,168,122,0.11) 0%, rgba(138,106,74,0.08) 50%, transparent 80%)' }} />
                 <div className="absolute inset-0 pointer-events-none" style={{ boxShadow: 'inset 0 0 100px 40px rgba(14,12,11,0.35)' }} />
                 <div className="absolute inset-0 pointer-events-none transition-opacity duration-500 opacity-40 group-hover:opacity-20" style={{ background: 'rgba(14,12,11,0.4)' }} />
@@ -638,14 +667,14 @@ function About() {
               <FadeIn delay={0.1}>
                 <div className="group relative overflow-hidden bg-[#050505] cursor-pointer" style={{ borderRadius: 12, filter: 'brightness(0.75) contrast(1.15) saturate(0.85)', WebkitMaskImage: 'linear-gradient(to bottom, black 60%, transparent 100%)', maskImage: 'linear-gradient(to bottom, black 60%, transparent 100%)' }}
                   onClick={() => setLightbox({ src: '/images/interior/kabinet_1.webp', alt: 'Кабинет салона' })}>
-                  <img src="/images/interior/kabinet_1.webp" alt="Кабинет салона" className="w-full h-full object-cover transform-gpu scale-[1.01] group-hover:scale-[1.03] transition-transform duration-500 ease-out aspect-square pointer-events-none" style={{ backfaceVisibility: 'hidden', willChange: 'transform' }} loading="lazy" />
+                  <img src="/images/interior/kabinet_1.webp" alt="Кабинет салона" className="w-full max-w-full h-full object-cover transform-gpu scale-[1.01] group-hover:scale-[1.03] transition-transform duration-500 ease-out aspect-square pointer-events-none" style={{ backfaceVisibility: 'hidden', willChange: 'transform' }} loading="lazy" />
                   <div className="absolute inset-0 pointer-events-none transition-opacity duration-500 opacity-40 group-hover:opacity-20" style={{ background: 'rgba(14,12,11,0.4)' }} />
                 </div>
               </FadeIn>
               <FadeIn delay={0.15}>
                 <div className="group relative overflow-hidden bg-[#050505] cursor-pointer" style={{ borderRadius: 12, filter: 'brightness(0.75) contrast(1.15) saturate(0.85)', WebkitMaskImage: 'linear-gradient(to bottom, black 60%, transparent 100%)', maskImage: 'linear-gradient(to bottom, black 60%, transparent 100%)' }}
                   onClick={() => setLightbox({ src: '/images/interior/pritmnaya.webp', alt: 'Интерьер салона' })}>
-                  <img src="/images/interior/pritmnaya.webp" alt="Интерьер салона" className="w-full h-full object-cover transform-gpu scale-[1.01] group-hover:scale-[1.03] transition-transform duration-500 ease-out aspect-square pointer-events-none" style={{ backfaceVisibility: 'hidden', willChange: 'transform' }} loading="lazy" />
+                  <img src="/images/interior/pritmnaya.webp" alt="Интерьер салона" className="w-full max-w-full h-full object-cover transform-gpu scale-[1.01] group-hover:scale-[1.03] transition-transform duration-500 ease-out aspect-square pointer-events-none" style={{ backfaceVisibility: 'hidden', willChange: 'transform' }} loading="lazy" />
                   <div className="absolute inset-0 pointer-events-none transition-opacity duration-500 opacity-40 group-hover:opacity-20" style={{ background: 'rgba(14,12,11,0.4)' }} />
                 </div>
               </FadeIn>
@@ -665,23 +694,31 @@ function ServiceCard({ Icon, title, desc, image, featured }) {
   const cardRef = useRef(null)
 
   const { scrollYProgress } = useScroll({ target: cardRef, offset: ['start end', 'end start'] })
-  const imgY = useTransform(scrollYProgress, [0, 1], [60, -60])
+  const [isMobile, setIsMobile] = useState(false)
+  useEffect(() => {
+    const mql = window.matchMedia('(max-width: 767px)')
+    setIsMobile(mql.matches)
+    const handler = (e) => setIsMobile(e.matches)
+    mql.addEventListener('change', handler)
+    return () => mql.removeEventListener('change', handler)
+  }, [])
+  const imgY = useTransform(scrollYProgress, [0, 1], isMobile ? [0, 0] : [60, -60])
 
   if (featured) {
     return (
       <FadeIn>
         <div ref={cardRef} className="group bg-[#050505] cursor-pointer" style={{ borderRadius: 16 }}
           onClick={() => setShowLightbox(true)}>
-          <div className="relative overflow-hidden bg-[#050505] aspect-[16/9]" style={{ borderRadius: 16 }}>
+          <div className="relative overflow-hidden bg-[#050505] aspect-[4/3] sm:aspect-[16/9]" style={{ borderRadius: 16 }}>
             <motion.div style={{ y: imgY, willChange: 'transform' }} className="absolute inset-0">
               <img
                 src={image} alt={title}
-                className="w-full h-full object-cover transform-gpu scale-[1.19] group-hover:scale-[1.21] transition-transform duration-500 ease-out pointer-events-none"
+                className="w-full max-w-full h-full object-cover transform-gpu scale-[1.19] group-hover:scale-[1.21] transition-transform duration-500 ease-out pointer-events-none"
                 style={{ backfaceVisibility: 'hidden', willChange: 'transform' }}
                 loading="lazy" />
             </motion.div>
             <div className="absolute inset-0 pointer-events-none transition-opacity duration-500 opacity-30 group-hover:opacity-10" style={{ background: 'rgba(14,12,11,0.35)' }} />
-            <div className="absolute inset-0" style={{ background: 'linear-gradient(to top, rgba(14,12,11,0.95) 0%, rgba(14,12,11,0.6) 40%, transparent 65%)' }} />
+            <div className="absolute inset-0" style={{ background: isMobile ? 'linear-gradient(to top, rgba(14,12,11,0.96) 0%, rgba(14,12,11,0.88) 38%, rgba(14,12,11,0.52) 68%, rgba(14,12,11,0.12) 100%)' : 'linear-gradient(to top, rgba(14,12,11,0.95) 0%, rgba(14,12,11,0.7) 50%, transparent 80%)' }} />
             <div className="absolute bottom-0 left-0 right-0 p-6 sm:p-8">
               <div className="flex items-center gap-3 mb-3">
                 <div className="w-10 h-10 flex items-center justify-center" style={{ border: `1px solid ${BORDER_H}`, borderRadius: 9999, background: 'rgba(201,168,122,0.06)' }}>
@@ -689,8 +726,8 @@ function ServiceCard({ Icon, title, desc, image, featured }) {
                 </div>
                 <p className="font-picasso-body text-[11px] uppercase tracking-[0.2em]" style={{ color: GOLD }}>Главное направление</p>
               </div>
-              <h3 className="font-picasso-display text-2xl sm:text-3xl font-medium" style={{ color: TEXT }}>{title}</h3>
-              <p className="mt-3 text-[15px] font-light leading-relaxed max-w-md" style={{ color: TEXT_SOFT }}>{desc}</p>
+              <h3 className="font-picasso-display text-2xl sm:text-3xl font-medium" style={{ color: TEXT, textShadow: isMobile ? '0 2px 10px rgba(0,0,0,0.85), 0 1px 2px rgba(0,0,0,0.9)' : 'none' }}>{title}</h3>
+              <p className="mt-3 text-[15px] font-light leading-relaxed max-w-md" style={{ color: isMobile ? '#E8E0D6' : TEXT_SOFT, textShadow: isMobile ? '0 2px 8px rgba(0,0,0,0.9)' : 'none' }}>{desc}</p>
             </div>
           </div>
         </div>
@@ -860,13 +897,13 @@ function Lightbox({ src, alt, onClose }) {
   return (
     <motion.div
       initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: 0.3 }}
-      className="fixed inset-0 z-[60] w-full h-full flex items-center justify-center p-4 cursor-pointer"
+      className="fixed inset-0 z-[60] w-full h-[100dvh] flex items-center justify-center overflow-hidden cursor-pointer"
       style={{ background: 'rgba(0,0,0,0.92)', backdropFilter: 'blur(20px)' }}
       onClick={onClose}>
       <motion.img
         initial={{ scale: 0.85, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} exit={{ scale: 0.85, opacity: 0 }}
         transition={{ duration: 0.35, ease: EASE }}
-        src={src} alt={alt} className="block max-w-full max-h-full object-contain pointer-events-none" style={{ borderRadius: 8 }} />
+        src={src} alt={alt} className="block max-w-[95vw] max-h-[80vh] w-auto h-auto object-contain pointer-events-none" style={{ borderRadius: 8 }} />
       <button onClick={onClose} className="absolute top-6 right-6 w-10 h-10 flex items-center justify-center cursor-pointer"
         style={{ background: SURFACE, border: `1px solid ${BORDER}`, borderRadius: 9999, color: TEXT }}>
         <X size={18} />
@@ -957,7 +994,7 @@ function Gallery() {
                       if (i === selectedIndex) setLightbox({ src: w.src, alt: w.alt })
                       else emblaApi?.scrollTo(i)
                     }}>
-                    <img src={w.src} alt={w.alt} className="w-full h-full object-cover" loading="lazy" draggable={false} />
+                    <img src={w.src} alt={w.alt} className="w-full max-w-full h-full object-cover" loading="lazy" draggable={false} />
                     <div className="absolute inset-0" style={{
                       background: i === selectedIndex
                         ? 'linear-gradient(to top, rgba(14,12,11,0.5) 0%, transparent 35%)'
@@ -1008,19 +1045,19 @@ function MasterModal({ master, onClose }) {
   return (
     <motion.div
       initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: 0.3 }}
-      className="fixed inset-0 z-[60] flex items-center justify-center p-4 cursor-pointer"
+      className="fixed inset-0 z-[60] flex items-center justify-center p-4 w-full h-[100dvh] overflow-hidden cursor-pointer"
       style={{ background: 'rgba(0,0,0,0.88)', backdropFilter: 'blur(20px)' }}
       onClick={onClose}>
       <motion.div
         initial={{ opacity: 0, y: 30, scale: 0.95 }} animate={{ opacity: 1, y: 0, scale: 1 }} exit={{ opacity: 0, y: 30, scale: 0.95 }}
         transition={{ duration: 0.4, ease: EASE }}
-        className="w-full max-w-3xl max-h-[90vh] overflow-y-auto cursor-default"
+        className="w-full max-w-[90vw] sm:max-w-3xl max-h-[90vh] overflow-y-auto cursor-default"
         style={{ background: SURFACE, border: `1px solid ${BORDER_H}`, borderRadius: 20 }}
         onClick={(e) => e.stopPropagation()}
         data-lenis-prevent>
         <div className="flex flex-col sm:flex-row gap-8 p-6 sm:p-8">
-          <div className="shrink-0 sm:w-[220px]">
-            <img src={master.image} alt={master.name} className="w-full aspect-[3/4] object-cover pointer-events-none" style={{ borderRadius: 12 }} />
+          <div className="shrink-0 sm:w-[220px] max-h-[40vh] sm:max-h-none overflow-hidden" style={{ borderRadius: 12 }}>
+            <img src={master.image} alt={master.name} className="w-full max-w-[90vw] sm:max-w-full h-full aspect-[3/4] object-cover pointer-events-none" style={{ borderRadius: 12 }} />
           </div>
           <div className="flex-1 min-w-0">
             <p className="font-picasso-body text-[11px] uppercase tracking-[0.2em] mb-2" style={{ color: GOLD }}>{master.role}</p>
@@ -1097,8 +1134,9 @@ function Team() {
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 mt-20">
           {masters.map((m, i) => (
             <FadeIn key={m.name} delay={i * 0.1}>
-              <div className="group overflow-hidden h-full relative bg-[#050505]" style={{ borderRadius: 16 }}>
-                <div className="relative aspect-[3/4] overflow-hidden">
+              <div className="group overflow-hidden h-full bg-[#050505]" style={{ borderRadius: 16 }}
+                onClick={() => m.details.length > 0 ? setSelectedMaster(m) : undefined}>
+                <div className="relative w-full aspect-[3/4] max-h-[55vh] sm:max-h-none overflow-hidden cursor-pointer">
                   {m.image ? (
                     <img src={m.image} alt={m.name} className="w-full h-full object-cover transform-gpu scale-[1.01] group-hover:scale-[1.03] transition-transform duration-500 ease-out pointer-events-none" style={{ backfaceVisibility: 'hidden', willChange: 'transform' }} loading="lazy" />
                   ) : (
@@ -1108,17 +1146,30 @@ function Team() {
                   )}
                   <div className="absolute inset-0 pointer-events-none transition-opacity duration-500 opacity-25 group-hover:opacity-5" style={{ background: 'rgba(14,12,11,0.35)' }} />
                   <div className="absolute inset-0" style={{ background: 'linear-gradient(to top, rgba(14,12,11,0.95) 0%, rgba(14,12,11,0.5) 35%, transparent 55%)' }} />
-                  <div className="absolute bottom-0 left-0 right-0 p-6">
+                  <div className="absolute bottom-0 left-0 right-0 p-5 sm:p-6">
                     <p className="font-picasso-body text-[11px] uppercase tracking-[0.2em] mb-2" style={{ color: GOLD }}>{m.role}</p>
-                    <h3 className="font-picasso-display text-xl font-medium" style={{ color: TEXT }}>{m.name}</h3>
-                    <p className="mt-1 text-[13px] font-light" style={{ color: TEXT_SOFT }}>{m.exp}</p>
-                    <p className="mt-2 text-[13px] font-light" style={{ color: MUTED }}>{m.specialty}</p>
+                    <h3 className="font-picasso-display text-lg sm:text-xl font-medium" style={{ color: TEXT }}>{m.name}</h3>
+                    <p className="mt-1 text-[12px] sm:text-[13px] font-light" style={{ color: TEXT_SOFT }}>{m.exp}</p>
+                    <p className="mt-2 text-[12px] sm:text-[13px] font-light" style={{ color: MUTED }}>{m.specialty}</p>
                     {m.details.length > 0 && (
-                      <button onClick={() => setSelectedMaster(m)} className="mt-4 font-picasso-body text-[12px] uppercase tracking-[0.14em] cursor-pointer transition-opacity hover:opacity-70"
-                        style={{ color: GOLD }}>Подробнее →</button>
+                      <span className="mt-3 inline-block font-picasso-body text-[11px] sm:text-[12px] uppercase tracking-[0.14em] cursor-pointer transition-opacity hover:opacity-70"
+                        style={{ color: GOLD }}>Подробнее →</span>
                     )}
                   </div>
                 </div>
+                {m.details.length > 0 && (
+                  <div className="md:hidden p-4">
+                    <div className="flex flex-col gap-2">
+                      {m.details.slice(0, 3).map((d, j) => (
+                        <div key={j} className="flex items-start gap-2">
+                          <span className="mt-[6px] shrink-0 w-1.5 h-1.5 rounded-full" style={{ background: GOLD }} />
+                          <p className="text-[12px] font-light leading-snug break-words min-w-0" style={{ color: TEXT_SOFT }}>{d}</p>
+                        </div>
+                      ))}
+                      <span onClick={(e) => { e.stopPropagation(); setSelectedMaster(m) }} className="mt-1 font-picasso-body text-[11px] uppercase tracking-[0.14em] cursor-pointer" style={{ color: GOLD }}>Ещё →</span>
+                    </div>
+                  </div>
+                )}
               </div>
             </FadeIn>
           ))}
@@ -1182,7 +1233,7 @@ function FAQ() {
   ]
 
   return (
-    <section id="faq" className="scroll-mt-20 py-28 sm:py-36" style={{ background: CHOCOLATE }}>
+    <section id="faq" className="scroll-mt-16 sm:scroll-mt-20 py-28 sm:py-36" style={{ background: CHOCOLATE }}>
       <div className="mx-auto max-w-3xl px-5 sm:px-8">
         <FadeIn>
           <p className="font-picasso-body text-[12px] uppercase tracking-[0.4em] mb-5 select-none text-center" style={{ color: GOLD }}>FAQ</p>
@@ -1211,8 +1262,8 @@ function Booking() {
 
   return (
     <section id="booking" className="scroll-mt-20 py-28 sm:py-36 relative overflow-hidden" style={{ background: BG }}>
-      <div className="absolute inset-0 pointer-events-none">
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] rounded-full blur-[200px]" style={{ background: 'rgba(201,168,122,0.03)' }} />
+      <div className="absolute inset-0 overflow-hidden pointer-events-none w-full">
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[min(800px,80vw)] h-[min(800px,80vw)] rounded-full blur-[200px]" style={{ background: 'rgba(201,168,122,0.03)' }} />
       </div>
       <DustParticles />
       <div className="mx-auto max-w-xl px-5 sm:px-8 text-center relative z-10">
@@ -1355,7 +1406,7 @@ export default function Picasso() {
   }, [])
 
   return (
-    <div className="min-h-screen font-picasso-body" style={{ background: BG, color: TEXT, lineHeight: 1.7 }}>
+    <div className="relative w-full overflow-hidden flex flex-col min-h-screen font-picasso-body" style={{ background: BG, color: TEXT, lineHeight: 1.7 }}>
       <ConciergeWidget />
       <Nav />
       <Hero />

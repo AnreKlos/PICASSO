@@ -20,6 +20,10 @@
   html {
     scroll-behavior: smooth;
     scroll-padding-top: 80px;
+    overflow-x: hidden;
+    max-width: 100vw;
+    width: 100%;
+    position: relative;
   }
 
   body {
@@ -28,6 +32,10 @@
     font-family: var(--font-picasso-body);
     font-size: 17px;
     line-height: 1.7;
+    overflow-x: hidden;
+    max-width: 100vw;
+    width: 100%;
+    position: relative;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
   }
@@ -109,7 +117,9 @@
 }
 .smoke-layer {
   position: absolute;
-  inset: -40%;
+  inset: -10%;
+  max-width: 120%;
+  max-height: 120%;
   pointer-events: none;
   border-radius: 50%;
   filter: blur(60px);
