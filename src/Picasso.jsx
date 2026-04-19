@@ -620,7 +620,7 @@ function About() {
         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[70vw] max-w-[380px] h-[70vw] max-h-[380px] rounded-full blur-[200px]" style={{ background: 'rgba(201,168,122,0.02)' }} />
       </div>
       <div className="mx-auto max-w-6xl px-5 sm:px-8 relative z-10">
-        <div className="flex flex-col lg:flex-row items-center gap-16">
+        <div className="flex flex-col lg:flex-row items-center lg:items-end gap-16">
           <div className="flex-1 min-w-0">
             <FadeIn>
               <p className="font-picasso-body text-[12px] uppercase tracking-[0.4em] mb-5 select-none" style={{ color: GOLD }}>О салоне</p>
@@ -636,18 +636,47 @@ function About() {
               </p>
             </FadeIn>
             <FadeIn delay={0.3}>
-              <div className="mt-10 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6">
+              <div className="mt-12 grid grid-cols-2 gap-4 sm:gap-5">
                 {[
-                  { Icon: Shield, label: 'Абсолютная стерильность' },
-                  { Icon: Clock, label: 'Гарантия качества' },
-                  { Icon: Coffee, label: 'Премиум сервис' },
-                  { Icon: Diamond, label: 'Профессиональные материалы' },
+                  { Icon: Shield, title: 'Абсолютная стерильность' },
+                  { Icon: Clock, title: 'Гарантированное качество' },
+                  { Icon: Coffee, title: 'Премиальные сервисы' },
+                  { Icon: Diamond, title: 'Проф. материалы' },
                 ].map((item) => (
-                  <div key={item.label} className="flex flex-col items-center text-center md:flex-row md:items-start md:text-left gap-3 p-4 w-full" style={{ border: '1px solid rgba(255,255,255,0.1)', borderRadius: 12, background: 'rgba(255,255,255,0.03)', overflow: 'hidden' }}>
-                     <div className="w-10 h-10 shrink-0 flex items-center justify-center" style={{ border: `1px solid ${BORDER_H}`, borderRadius: 9999, background: 'rgba(201,168,122,0.06)' }}>
-                       <item.Icon size={16} style={{ color: GOLD }} strokeWidth={1.5} />
-                     </div>
-                     <p className="text-[13px] md:text-[14px] font-light leading-snug md:pt-2" style={{ color: TEXT_SOFT }}>{item.label}</p>
+                  <div
+                    key={item.title}
+                    className="group relative overflow-hidden min-h-[150px] px-4 py-6 sm:px-5 sm:py-6 flex flex-col items-center justify-center text-center"
+                    style={{
+                      border: '1px solid rgba(255,255,255,0.08)',
+                      borderRadius: 18,
+                      background: 'linear-gradient(180deg, rgba(255,255,255,0.035) 0%, rgba(255,255,255,0.018) 100%)',
+                      boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.04), 0 10px 30px rgba(0,0,0,0.12)'
+                    }}
+                  >
+                    <div
+                      className="absolute inset-0 pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity duration-500"
+                      style={{
+                        background: 'radial-gradient(circle at top left, rgba(201,168,122,0.08), transparent 45%)'
+                      }}
+                    />
+                    <div
+                      className="relative w-12 h-12 flex items-center justify-center mb-4 shrink-0"
+                      style={{
+                        border: `1px solid ${BORDER_H}`,
+                        borderRadius: 9999,
+                        background: 'linear-gradient(180deg, rgba(201,168,122,0.09), rgba(201,168,122,0.03))',
+                        boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.05)'
+                      }}
+                    >
+                      <item.Icon size={18} style={{ color: GOLD }} strokeWidth={1.5} />
+                    </div>
+
+                    <h3
+                      className="relative font-picasso-display text-[15px] sm:text-[17px] leading-snug text-center max-w-[14ch]"
+                      style={{ color: TEXT }}
+                    >
+                      {item.title}
+                    </h3>
                    </div>
                 ))}
               </div>
