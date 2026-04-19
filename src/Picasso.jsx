@@ -450,8 +450,17 @@ function Nav() {
     if (!el) return
     const rect = el.getBoundingClientRect()
     const scrollMargin = parseInt(getComputedStyle(el).scrollMarginTop) || 0
-    const top = rect.top + window.scrollY - scrollMargin
+    let top = rect.top + window.scrollY - scrollMargin
     if (window.__lenis) {
+      if (href === '#about' && window.innerWidth <= 767) { // Apply additional offset for '#about' section on mobile
+        top += 120; // Add 120 pixels for mobile and #about section
+      }
+      if (href === '#faq' && window.innerWidth <= 767) { // Apply additional offset for '#faq' section on mobile
+        top += 90; // Add 50 pixels for mobile and #faq section
+      }
+      if (href === '#contacts' && window.innerWidth <= 767) { // Apply additional offset for '#contacts' section on mobile
+        top += 50; // Add 50 pixels for mobile and #contacts section
+      }
       window.__lenis.scrollTo(top, { duration: 1.2 })
     } else {
       window.scrollTo({ top, behavior: 'smooth' })
@@ -1570,8 +1579,8 @@ function Contacts() {
               <div className="w-12 h-12 flex items-center justify-center" style={{ border: `1px solid ${BORDER_H}`, borderRadius: 9999 }}>
                 <MapPin size={20} style={{ color: GOLD }} strokeWidth={1.5} />
               </div>
-              <p className="text-[15px] font-light leading-relaxed" style={{ color: TEXT_SOFT }}>г. Москва, ул. Примерная, 42</p>
-              <p className="text-[13px] font-light" style={{ color: MUTED }}>2-й этаж, вход с улицы</p>
+              <p className="text-[15px] font-light leading-relaxed" style={{ color: TEXT_SOFT }}>г. Брянск, Московский просп., 106</p>
+              <p className="text-[13px] font-light" style={{ color: MUTED }}>вход с улицы</p>
             </div>
           </FadeIn>
           <FadeIn delay={0.15}>
@@ -1579,7 +1588,7 @@ function Contacts() {
               <div className="w-12 h-12 flex items-center justify-center" style={{ border: `1px solid ${BORDER_H}`, borderRadius: 9999 }}>
                 <Phone size={20} style={{ color: GOLD }} strokeWidth={1.5} />
               </div>
-              <a href="tel:+74951234567" className="text-[15px] font-light transition-colors hover:underline" style={{ color: TEXT_SOFT }}>+7 (495) 123-45-67</a>
+              <a href="tel:+79208510105" className="text-[15px] font-light transition-colors hover:underline" style={{ color: TEXT_SOFT }}>+7 (920) 851-01-05</a>
               <p className="text-[13px] font-light" style={{ color: MUTED }}>WhatsApp / Telegram</p>
             </div>
           </FadeIn>
