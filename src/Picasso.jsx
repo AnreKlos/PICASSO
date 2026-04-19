@@ -458,6 +458,14 @@ function Nav() {
     }
   }, [])
 
+  const scrollToTop = useCallback(() => {
+    if (window.__lenis) {
+      window.__lenis.scrollTo(0, { duration: 1.1 })
+    } else {
+      window.scrollTo({ top: 0, behavior: 'smooth' })
+    }
+  }, [])
+
   const links = [
     { href: '#about', label: 'О салоне' },
     { href: '#services', label: 'Услуги' },
@@ -473,9 +481,38 @@ function Nav() {
       className={`fixed top-0 left-0 right-0 w-full z-40 transition-all duration-500 overflow-hidden ${scrolled ? 'backdrop-blur-lg' : ''}`}
       style={{ background: scrolled ? 'rgba(14,12,11,0.92)' : 'transparent', borderBottom: `1px solid ${scrolled ? BORDER : 'transparent'}` }}>
       <div className="mx-auto max-w-6xl px-5 sm:px-8 flex items-center justify-between h-16">
-        <a href="#" className="font-picasso-display text-xl font-semibold tracking-[0.08em] select-none" style={{ color: GOLD, textShadow: '0 0 20px rgba(201,168,122,0.15)' }}>PICASSO</a>
+        <a
+          href="#"
+          onClick={(e) => {
+            e.preventDefault()
+            scrollToTop()
+          }}
+          onDoubleClick={(e) => {
+            e.preventDefault()
+            scrollToTop()
+          }}
+          className="font-picasso-display text-xl font-semibold tracking-[0.08em] select-none cursor-pointer"
+          style={{ color: GOLD, textShadow: '0 0 20px rgba(201,168,122,0.15)' }}
+        >
+          PICASSO
+        </a>
         <div className="hidden lg:flex items-center gap-7 font-picasso-body text-[13px] font-medium uppercase tracking-[0.12em]" style={{ color: MUTED }}>
-          {links.map(l => <a key={l.href} href={l.href} onClick={(e) => { e.preventDefault(); scrollTo(l.href) }} className="hover:text-[var(--color-picasso-text)] transition-colors duration-200" style={{ color: MUTED }}>{l.label}</a>)}
+          {links.map(l => (
+            <a
+              key={l.href}
+              href={l.href}
+              onClick={(e) => {
+                e.preventDefault()
+                scrollTo(l.href)
+              }}
+              onDoubleClick={(e) => {
+                e.preventDefault()
+                scrollToTop()
+              }}
+              className="hover:text-[var(--color-picasso-text)] transition-colors duration-200"
+              style={{ color: MUTED }}
+            >{l.label}</a>
+          ))}
           <MagneticButton href="#booking"
             className="inline-flex items-center gap-2 px-5 py-2 transition-all duration-300 font-picasso-body text-[13px] font-medium uppercase tracking-[0.12em]"
             style={{ background: `linear-gradient(to bottom, ${GOLD_BRIGHT} 0%, ${GOLD} 50%, ${GOLD_DIM} 100%)`, color: BG, borderRadius: 9999, boxShadow: '0 2px 12px rgba(201,168,122,0.15), inset 0 1px 0 rgba(255,255,255,0.2), inset 0 -1px 0 rgba(0,0,0,0.12)' }}>
@@ -491,7 +528,24 @@ function Nav() {
           <motion.div initial={{ height: 0, opacity: 0 }} animate={{ height: 'auto', opacity: 1 }} exit={{ height: 0, opacity: 0 }} transition={{ duration: 0.3 }}
             className="lg:hidden overflow-hidden" style={{ background: 'rgba(14,12,11,0.97)', borderTop: `1px solid ${BORDER}` }}>
             <div className="flex flex-col gap-4 px-6 py-6 font-picasso-body text-[14px] uppercase tracking-[0.1em]" style={{ color: MUTED }}>
-              {links.map(l => <a key={l.href} href={l.href} onClick={(e) => { e.preventDefault(); setMobileOpen(false); scrollTo(l.href) }} className="py-1" style={{ color: MUTED }}>{l.label}</a>)}
+              {links.map(l => (
+                <a
+                  key={l.href}
+                  href={l.href}
+                  onClick={(e) => {
+                    e.preventDefault()
+                    setMobileOpen(false)
+                    scrollTo(l.href)
+                  }}
+                  onDoubleClick={(e) => {
+                    e.preventDefault()
+                    setMobileOpen(false)
+                    scrollToTop()
+                  }}
+                  className="py-1"
+                  style={{ color: MUTED }}
+                >{l.label}</a>
+              ))}
               <a href="#booking" onClick={(e) => { e.preventDefault(); setMobileOpen(false); scrollTo('#booking') }} className="mt-2 inline-flex items-center justify-center gap-2 px-5 py-3" style={{ background: GOLD, color: BG, borderRadius: 9999 }}>Записаться</a>
             </div>
           </motion.div>
@@ -552,9 +606,28 @@ function TiltGlare({ children, className = '', style = {} }) {
   }, [])
 
   return (
-    <div ref={ref} className={className} style={{ ...style, transformStyle: 'preserve-3d' }}>
+    <div
+      ref={ref}
+      className={className}
+      style={{
+        ...style,
+        transformStyle: 'preserve-3d',
+        backfaceVisibility: 'hidden',
+        WebkitBackfaceVisibility: 'hidden',
+        transform: 'translateZ(0)',
+        willChange: 'transform',
+      }}
+    >
       {children}
-      <div className="tilt-glare absolute inset-0 pointer-events-none rounded-3xl" style={{ mixBlendMode: 'overlay' }} />
+      <div
+        className="tilt-glare absolute inset-0 pointer-events-none"
+        style={{
+          mixBlendMode: 'overlay',
+          borderRadius: 'inherit',
+          backfaceVisibility: 'hidden',
+          WebkitBackfaceVisibility: 'hidden',
+        }}
+      />
     </div>
   )
 }
@@ -662,18 +735,33 @@ function Hero() {
           </div>
 
           <div className="flex-1 relative max-w-md lg:max-w-none max-w-full">
-            <motion.div style={{ y: imgY, willChange: 'transform' }} className="relative overflow-hidden">
-              <TiltGlare className="relative overflow-hidden rounded-3xl" style={{ boxShadow: '0 20px 60px rgba(0,0,0,0.5), 0 0 80px rgba(201,168,122,0.04)' }}>
-                <motion.div
-                  initial={{ opacity: 0, scale: 1.08, filter: 'blur(20px) brightness(2) saturate(0)' }}
-                  animate={{ opacity: 1, scale: 1, filter: 'blur(0px) brightness(1) saturate(1)' }}
-                  transition={{ duration: 2.2, ease: EASE, delay: 0.6 }}
-                  className="w-full"
-                >
-                  <img src="/images/hair/hair_1.webp" alt="PICASSO hair styling" className="w-full max-w-full aspect-[3/4] object-cover" />
-                </motion.div>
-                <div className="absolute inset-0" style={{ background: 'linear-gradient(to top, rgba(14,12,11,0.7) 0%, transparent 40%), linear-gradient(to right, rgba(14,12,11,0.4) 0%, transparent 30%)' }} />
-              </TiltGlare>
+            <motion.div style={{ y: imgY, willChange: 'transform' }} className="relative">
+              <div
+                className="relative overflow-hidden rounded-3xl"
+                style={{ boxShadow: '0 20px 60px rgba(0,0,0,0.5), 0 0 80px rgba(201,168,122,0.04)' }}
+              >
+                <TiltGlare className="relative">
+                  <motion.div
+                    initial={{ opacity: 0, scale: 1.08, filter: 'blur(20px) brightness(2) saturate(0)' }}
+                    animate={{ opacity: 1, scale: 1, filter: 'blur(0px) brightness(1) saturate(1)' }}
+                    transition={{ duration: 2.2, ease: EASE, delay: 0.6 }}
+                    className="w-full"
+                  >
+                    <img
+                      src="/images/hair/hair_1.webp"
+                      alt="PICASSO hair styling"
+                      className="w-full max-w-full aspect-[3/4] object-cover block rounded-3xl"
+                      style={{
+                        backfaceVisibility: 'hidden',
+                        WebkitBackfaceVisibility: 'hidden',
+                        transform: 'translateZ(0)',
+                        willChange: 'transform',
+                      }}
+                    />
+                  </motion.div>
+                  <div className="absolute inset-0" style={{ background: 'linear-gradient(to top, rgba(14,12,11,0.7) 0%, transparent 40%), linear-gradient(to right, rgba(14,12,11,0.4) 0%, transparent 30%)' }} />
+                </TiltGlare>
+              </div>
               {!isMobile && <div className="absolute -bottom-6 -left-6 w-32 h-32 rounded-full blur-[60px]" style={{ background: 'rgba(201,168,122,0.06)' }} />}
               {!isMobile && <div className="absolute -top-4 -right-4 w-24 h-24 rounded-full blur-[40px]" style={{ background: 'rgba(184,146,138,0.04)' }} />}
             </motion.div>
