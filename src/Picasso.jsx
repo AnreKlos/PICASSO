@@ -665,7 +665,7 @@ function About() {
       </div>
 
       <div className="mx-auto max-w-6xl px-5 sm:px-8 relative z-10">
-        <div className="flex flex-col lg:flex-row items-center lg:items-start gap-16">
+        <div className="flex flex-col lg:flex-row items-center lg:items-end gap-16">
           <div className="flex-1 min-w-0">
             <FadeIn>
               <p
