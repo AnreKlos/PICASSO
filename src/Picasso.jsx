@@ -302,15 +302,41 @@ function ConciergeWidget() {
   const [loading, setLoading] = useState(false)
   const [showTooltip, setShowTooltip] = useState(false)
   const scrollRef = useRef(null)
+  const inputRef = useRef(null)
+  const widgetRef = useRef(null)
 
   useEffect(() => {
     if (scrollRef.current) scrollRef.current.scrollTop = scrollRef.current.scrollHeight
   }, [messages])
 
   useEffect(() => {
+    if (open) {
+      setTimeout(() => inputRef.current?.focus(), 50)
+    }
+  }, [open])
+
+  useEffect(() => {
     const timer = setTimeout(() => setShowTooltip(true), 10000)
     return () => clearTimeout(timer)
   }, [])
+
+  useEffect(() => {
+    function handleClickOutside(e) {
+      if (widgetRef.current && !widgetRef.current.contains(e.target)) {
+        setOpen(false)
+      }
+    }
+
+    if (open) {
+      document.addEventListener('mousedown', handleClickOutside)
+      document.addEventListener('touchstart', handleClickOutside, { passive: true })
+    }
+
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside)
+      document.removeEventListener('touchstart', handleClickOutside)
+    }
+  }, [open])
 
   async function handleSend() {
     const text = input.trim()
@@ -342,11 +368,14 @@ function ConciergeWidget() {
       setMessages([...updated, { from: 'bot', text: reply }])
     } catch {
       setMessages([...updated, { from: 'bot', text: 'Связь прервалась. Попробуйте снова.' }])
-    } finally { setLoading(false) }
+    } finally {
+      setLoading(false)
+      setTimeout(() => inputRef.current?.focus(), 0)
+    }
   }
 
   return (
-    <div className="fixed bottom-6 right-6 z-50">
+    <div ref={widgetRef} className="fixed bottom-6 right-6 z-50">
       <AnimatePresence>
         {open && (
           <motion.div initial={{ opacity: 0, y: 20, scale: 0.92 }} animate={{ opacity: 1, y: 0, scale: 1 }} exit={{ opacity: 0, y: 20, scale: 0.92 }} transition={{ duration: 0.35, ease: EASE }}
@@ -369,8 +398,16 @@ function ConciergeWidget() {
               {loading && <div className="self-start max-w-[85%] px-4 py-3 text-sm font-picasso-body italic" style={{ background: SURFACE_L, color: MUTED, borderRadius: 12 }}>Консьерж подбирает ответ...</div>}
             </div>
             <div className="px-5 py-4 flex items-center gap-3" style={{ borderTop: `1px solid ${BORDER}` }}>
-              <input value={input} onChange={(e) => setInput(e.target.value)} onKeyDown={(e) => e.key === 'Enter' && handleSend()} placeholder="Ваш вопрос..."
-                className="flex-1 bg-transparent text-sm font-picasso-body outline-none" style={{ color: TEXT }} disabled={loading} />
+              <input
+                ref={inputRef}
+                value={input}
+                onChange={(e) => setInput(e.target.value)}
+                onKeyDown={(e) => e.key === 'Enter' && handleSend()}
+                placeholder="Ваш вопрос..."
+                className="flex-1 bg-transparent text-sm font-picasso-body outline-none"
+                style={{ color: TEXT }}
+                readOnly={loading}
+              />
               <button onClick={handleSend} disabled={loading || !input.trim()} className="shrink-0 cursor-pointer transition-colors disabled:opacity-40" style={{ color: MUTED }}><Send size={16} /></button>
             </div>
           </motion.div>
