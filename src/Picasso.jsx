@@ -141,102 +141,138 @@ function MagneticButton({ children, className = '', style = {}, ...rest }) {
   )
 }
 
-function DustParticles() {
+function DustParticles({ className = '', density = 1, opacityBoost = 1 }) {
   const canvasRef = useRef(null)
-  const particlesRef = useRef([])
   const frameRef = useRef(null)
+  const particlesRef = useRef([])
 
   useEffect(() => {
-    if (window.innerWidth < 768) return
-    const FALL = 22
-    const DRIFT = 10
-    const LARGE = 4
-    const particles = []
+    const canvas = canvasRef.current
+    if (!canvas) return
 
-    for (let i = 0; i < FALL; i++) {
-      particles.push({
-        x: Math.random() * window.innerWidth,
-        y: Math.random() * window.innerHeight,
-        size: Math.random() * 1.6 + 0.5,
-        speedX: (Math.random() - 0.5) * 0.08,
-        speedY: Math.random() * 0.18 + 0.03,
-        opacity: Math.random() * 0.2 + 0.04,
-        type: 'fall',
-      })
+    const isDesktop = window.matchMedia('(min-width: 768px)').matches
+    if (!isDesktop) return
+
+    const ctx = canvas.getContext('2d')
+    if (!ctx) return
+
+    const setup = () => {
+      const parent = canvas.parentElement
+      const width = parent?.offsetWidth || window.innerWidth
+      const height = parent?.offsetHeight || 600
+      const dpr = Math.min(window.devicePixelRatio || 1, 2)
+
+      canvas.width = width * dpr
+      canvas.height = height * dpr
+      canvas.style.width = `${width}px`
+      canvas.style.height = `${height}px`
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0)
+
+      const fallCount = Math.round(26 * density)
+      const driftCount = Math.round(12 * density)
+      const largeCount = Math.round(5 * density)
+
+      const particles = []
+
+      for (let i = 0; i < fallCount; i++) {
+        particles.push({
+          x: Math.random() * width,
+          y: Math.random() * height,
+          r: Math.random() * 1.4 + 0.4,
+          vx: (Math.random() - 0.5) * 0.06,
+          vy: Math.random() * 0.18 + 0.03,
+          a: (Math.random() * 0.18 + 0.05) * opacityBoost,
+          type: 'fall',
+        })
+      }
+
+      for (let i = 0; i < driftCount; i++) {
+        const dir = i < driftCount / 2 ? 1 : -1
+        particles.push({
+          x: dir === 1 ? -20 : width + 20,
+          y: Math.random() * height,
+          r: Math.random() * 1.8 + 0.7,
+          vx: dir * (Math.random() * 0.22 + 0.08),
+          vy: Math.random() * 0.05 + 0.01,
+          a: (Math.random() * 0.22 + 0.08) * opacityBoost,
+          type: 'drift',
+        })
+      }
+
+      for (let i = 0; i < largeCount; i++) {
+        particles.push({
+          x: Math.random() * width,
+          y: Math.random() * height,
+          r: Math.random() * 2.2 + 1.8,
+          vx: (Math.random() - 0.5) * 0.02,
+          vy: Math.random() * 0.05 + 0.01,
+          a: (Math.random() * 0.06 + 0.025) * opacityBoost,
+          type: 'large',
+        })
+      }
+
+      particlesRef.current = particles
     }
 
-    for (let i = 0; i < DRIFT; i++) {
-      const dir = i < DRIFT / 2 ? 1 : -1
-      particles.push({
-        x: dir === 1 ? -10 : window.innerWidth + 10,
-        y: Math.random() * window.innerHeight,
-        size: Math.random() * 1.8 + 0.8,
-        speedX: dir * (Math.random() * 0.35 + 0.15),
-        speedY: Math.random() * 0.08 + 0.02,
-        opacity: Math.random() * 0.28 + 0.1,
-        type: 'drift',
-      })
-    }
+    const render = () => {
+      const width = canvas.clientWidth
+      const height = canvas.clientHeight
 
-    for (let i = 0; i < LARGE; i++) {
-      particles.push({
-        x: Math.random() * window.innerWidth,
-        y: Math.random() * window.innerHeight,
-        size: Math.random() * 2.5 + 2.5,
-        speedX: (Math.random() - 0.5) * 0.03,
-        speedY: Math.random() * 0.06 + 0.01,
-        opacity: Math.random() * 0.08 + 0.03,
-        type: 'fall',
-      })
-    }
+      ctx.clearRect(0, 0, width, height)
 
-    particlesRef.current = particles
-
-    function animate() {
-      const canvas = canvasRef.current
-      if (!canvas) return
-      const ctx = canvas.getContext('2d')
-      ctx.clearRect(0, 0, canvas.width, canvas.height)
       for (const p of particlesRef.current) {
-        p.x += p.speedX
-        p.y += p.speedY
-        if (p.type === 'fall') {
-          if (p.y > canvas.height + 10) { p.y = -10; p.x = Math.random() * canvas.width }
-          if (p.x > canvas.width + 10) p.x = -10
-          if (p.x < -10) p.x = canvas.width + 10
-        } else {
-          if (p.y > canvas.height + 10) p.y = -10
-          if (p.speedX > 0 && p.x > canvas.width + 10) { p.x = -10; p.y = Math.random() * canvas.height }
-          if (p.speedX < 0 && p.x < -10) { p.x = canvas.width + 10; p.y = Math.random() * canvas.height }
+        p.x += p.vx
+        p.y += p.vy
+
+        if (p.type === 'fall' || p.type === 'large') {
+          if (p.y > height + 12) {
+            p.y = -12
+            p.x = Math.random() * width
+          }
+          if (p.x > width + 12) p.x = -12
+          if (p.x < -12) p.x = width + 12
         }
+
+        if (p.type === 'drift') {
+          if (p.vx > 0 && p.x > width + 20) {
+            p.x = -20
+            p.y = Math.random() * height
+          }
+          if (p.vx < 0 && p.x < -20) {
+            p.x = width + 20
+            p.y = Math.random() * height
+          }
+          if (p.y > height + 12) p.y = -12
+        }
+
         ctx.beginPath()
-        ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2)
-        ctx.fillStyle = `rgba(201,168,122,${p.opacity})`
+        ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2)
+      ctx.fillStyle = `rgba(201,168,122,${Math.min(p.a * 0.55, 0.12)})`
         ctx.fill()
       }
-      frameRef.current = requestAnimationFrame(animate)
+
+      frameRef.current = requestAnimationFrame(render)
     }
 
-    function onResize() {
-      const canvas = canvasRef.current
-      if (canvas) { canvas.width = window.innerWidth; canvas.height = window.innerHeight }
-    }
-    onResize()
-    window.addEventListener('resize', onResize, { passive: true })
-    frameRef.current = requestAnimationFrame(animate)
-    return () => { cancelAnimationFrame(frameRef.current); window.removeEventListener('resize', onResize) }
-  }, [])
+    setup()
+    render()
 
-  const [visible, setVisible] = useState(false)
-  useEffect(() => {
-    const mql = window.matchMedia('(min-width: 768px)')
-    setVisible(mql.matches)
-    const handler = (e) => setVisible(e.matches)
-    mql.addEventListener('change', handler)
-    return () => mql.removeEventListener('change', handler)
-  }, [])
-  if (!visible) return null
-  return <canvas ref={canvasRef} className="absolute inset-0 pointer-events-none z-10 will-change-transform hidden md:block" style={{ filter: 'blur(0.8px)' }} aria-hidden="true" />
+    window.addEventListener('resize', setup, { passive: true })
+
+    return () => {
+      if (frameRef.current) cancelAnimationFrame(frameRef.current)
+      window.removeEventListener('resize', setup)
+    }
+  }, [density, opacityBoost])
+
+  return (
+    <canvas
+      ref={canvasRef}
+      className={`absolute inset-0 pointer-events-none hidden md:block ${className}`}
+      style={{ zIndex: 3, opacity: 0.7, filter: 'blur(1.4px)' }}
+      aria-hidden="true"
+    />
+  )
 }
 
 function FAQItem({ q, a, isOpen, onToggle }) {
@@ -615,26 +651,53 @@ function About() {
   const [lightbox, setLightbox] = useState(null)
 
   return (
-    <section id="about" className="scroll-mt-12 sm:scroll-mt-20 py-28 sm:py-36 relative overflow-hidden" style={{ background: CHOCOLATE }}>
+    <section
+      id="about"
+      className="scroll-mt-12 sm:scroll-mt-20 py-28 sm:py-36 relative overflow-hidden"
+      style={{ background: CHOCOLATE }}
+    >
       <div className="absolute inset-0 overflow-hidden pointer-events-none w-full">
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[70vw] max-w-[380px] h-[70vw] max-h-[380px] rounded-full blur-[200px]" style={{ background: 'rgba(201,168,122,0.02)' }} />
+        <div
+          className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[70vw] max-w-[380px] h-[70vw] max-h-[380px] rounded-full blur-[200px]"
+          style={{ background: 'rgba(201,168,122,0.02)' }}
+        />
+        <DustParticles />
       </div>
+
       <div className="mx-auto max-w-6xl px-5 sm:px-8 relative z-10">
-        <div className="flex flex-col lg:flex-row items-center lg:items-end gap-16">
+        <div className="flex flex-col lg:flex-row items-center lg:items-start gap-16">
           <div className="flex-1 min-w-0">
             <FadeIn>
-              <p className="font-picasso-body text-[12px] uppercase tracking-[0.4em] mb-5 select-none" style={{ color: GOLD }}>О салоне</p>
-            </FadeIn>
-            <FadeIn delay={0.1}>
-              <TiltHeading className="font-picasso-display text-3xl sm:text-4xl lg:text-5xl font-medium leading-[1.15]" style={{ color: TEXT }}>
-                Пространство,<br />где хочется <GoldSpan>оставаться</GoldSpan>
-              </TiltHeading>
-            </FadeIn>
-            <FadeIn delay={0.2}>
-              <p className="mt-7 text-[16px] font-light leading-relaxed max-w-lg" style={{ color: TEXT_SOFT }}>
-                PICASSO — это не просто салон. Это место, где стиль встречается с заботой, а каждая деталь продумана ради вашего комфорта. Свежесваренный кофе, шелковые халаты, тишина и мастера, которым доверяют.
+              <p
+                className="font-picasso-body text-[12px] uppercase tracking-[0.4em] mb-5 select-none"
+                style={{ color: GOLD }}
+              >
+                О салоне
               </p>
             </FadeIn>
+
+            <FadeIn delay={0.1}>
+              <TiltHeading
+                className="font-picasso-display text-3xl sm:text-4xl lg:text-5xl font-medium leading-[1.15]"
+                style={{ color: TEXT }}
+              >
+                Пространство,
+                <br />
+                где хочется <GoldSpan>оставаться</GoldSpan>
+              </TiltHeading>
+            </FadeIn>
+
+            <FadeIn delay={0.2}>
+              <p
+                className="mt-7 text-[16px] font-light leading-relaxed max-w-lg"
+                style={{ color: TEXT_SOFT }}
+              >
+                PICASSO — это не просто салон. Это место, где стиль встречается с заботой,
+                а каждая деталь продумана ради вашего комфорта. Свежесваренный кофе,
+                шелковые халаты, тишина и мастера, которым доверяют.
+              </p>
+            </FadeIn>
+
             <FadeIn delay={0.3}>
               <div className="mt-12 grid grid-cols-2 gap-4 sm:gap-5">
                 {[
@@ -649,23 +712,28 @@ function About() {
                     style={{
                       border: '1px solid rgba(255,255,255,0.08)',
                       borderRadius: 18,
-                      background: 'linear-gradient(180deg, rgba(255,255,255,0.035) 0%, rgba(255,255,255,0.018) 100%)',
-                      boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.04), 0 10px 30px rgba(0,0,0,0.12)'
+                      background:
+                        'linear-gradient(180deg, rgba(255,255,255,0.035) 0%, rgba(255,255,255,0.018) 100%)',
+                      boxShadow:
+                        'inset 0 1px 0 rgba(255,255,255,0.04), 0 10px 30px rgba(0,0,0,0.12)',
                     }}
                   >
                     <div
                       className="absolute inset-0 pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity duration-500"
                       style={{
-                        background: 'radial-gradient(circle at top left, rgba(201,168,122,0.08), transparent 45%)'
+                        background:
+                          'radial-gradient(circle at top left, rgba(201,168,122,0.08), transparent 45%)',
                       }}
                     />
+
                     <div
                       className="relative w-12 h-12 flex items-center justify-center mb-4 shrink-0"
                       style={{
                         border: `1px solid ${BORDER_H}`,
                         borderRadius: 9999,
-                        background: 'linear-gradient(180deg, rgba(201,168,122,0.09), rgba(201,168,122,0.03))',
-                        boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.05)'
+                        background:
+                          'linear-gradient(180deg, rgba(201,168,122,0.09), rgba(201,168,122,0.03))',
+                        boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.05)',
                       }}
                     >
                       <item.Icon size={18} style={{ color: GOLD }} strokeWidth={1.5} />
@@ -677,42 +745,128 @@ function About() {
                     >
                       {item.title}
                     </h3>
-                   </div>
+                  </div>
                 ))}
               </div>
             </FadeIn>
           </div>
+
           <div className="flex-1 flex flex-col gap-4">
             <FadeIn>
-              <div className="group relative overflow-hidden bg-[#050505] cursor-pointer" style={{ borderRadius: 12, filter: 'brightness(0.94) contrast(1.15) saturate(0.87) sepia(0.10) hue-rotate(-8deg)', WebkitMaskImage: 'linear-gradient(to bottom, black 70%, transparent 100%)', maskImage: 'linear-gradient(to bottom, black 70%, transparent 100%)' }}
-                onClick={() => setLightbox({ src: '/images/interior/whod_s_ulitci.webp', alt: 'Вход в салон PICASSO' })}>
-                <img src="/images/interior/whod_s_ulitci.webp" alt="Вход в салон PICASSO" className="w-full max-w-full h-full object-cover transform-gpu scale-[1.01] group-hover:scale-[1.03] transition-transform duration-500 ease-out aspect-[4/3] pointer-events-none" style={{ backfaceVisibility: 'hidden', willChange: 'transform' }} loading="lazy" />
-                <div className="absolute inset-0 pointer-events-none" style={{ background: 'radial-gradient(ellipse at 50% 40%, rgba(201,168,122,0.11) 0%, rgba(138,106,74,0.08) 50%, transparent 80%)' }} />
-                <div className="absolute inset-0 pointer-events-none" style={{ boxShadow: 'inset 0 0 100px 40px rgba(14,12,11,0.35)' }} />
-                <div className="absolute inset-0 pointer-events-none transition-opacity duration-500 opacity-40 group-hover:opacity-20" style={{ background: 'rgba(14,12,11,0.4)' }} />
+              <div
+                className="group relative overflow-hidden bg-[#050505] cursor-pointer"
+                style={{
+                  borderRadius: 12,
+                  filter:
+                    'brightness(0.94) contrast(1.15) saturate(0.87) sepia(0.10) hue-rotate(-8deg)',
+                  WebkitMaskImage: 'linear-gradient(to bottom, black 70%, transparent 100%)',
+                  maskImage: 'linear-gradient(to bottom, black 70%, transparent 100%)',
+                }}
+                onClick={() =>
+                  setLightbox({
+                    src: '/images/interior/whod_s_ulitci.webp',
+                    alt: 'Вход в салон PICASSO',
+                  })
+                }
+              >
+                <img
+                  src="/images/interior/whod_s_ulitci.webp"
+                  alt="Вход в салон PICASSO"
+                  className="w-full max-w-full h-full object-cover transform-gpu scale-[1.01] group-hover:scale-[1.03] transition-transform duration-500 ease-out aspect-[4/3] pointer-events-none"
+                  style={{ backfaceVisibility: 'hidden', willChange: 'transform' }}
+                  loading="lazy"
+                />
+                <div
+                  className="absolute inset-0 pointer-events-none"
+                  style={{
+                    background:
+                      'radial-gradient(ellipse at 50% 40%, rgba(201,168,122,0.11) 0%, rgba(138,106,74,0.08) 50%, transparent 80%)',
+                  }}
+                />
+                <div
+                  className="absolute inset-0 pointer-events-none"
+                  style={{ boxShadow: 'inset 0 0 100px 40px rgba(14,12,11,0.35)' }}
+                />
+                <div
+                  className="absolute inset-0 pointer-events-none transition-opacity duration-500 opacity-40 group-hover:opacity-20"
+                  style={{ background: 'rgba(14,12,11,0.4)' }}
+                />
               </div>
             </FadeIn>
+
             <div className="grid grid-cols-2 gap-4">
               <FadeIn delay={0.1}>
-                <div className="group relative overflow-hidden bg-[#050505] cursor-pointer" style={{ borderRadius: 12, filter: 'brightness(0.75) contrast(1.15) saturate(0.85)', WebkitMaskImage: 'linear-gradient(to bottom, black 60%, transparent 100%)', maskImage: 'linear-gradient(to bottom, black 60%, transparent 100%)' }}
-                  onClick={() => setLightbox({ src: '/images/interior/kabinet_1.webp', alt: 'Кабинет салона' })}>
-                  <img src="/images/interior/kabinet_1.webp" alt="Кабинет салона" className="w-full max-w-full h-full object-cover transform-gpu scale-[1.01] group-hover:scale-[1.03] transition-transform duration-500 ease-out aspect-square pointer-events-none" style={{ backfaceVisibility: 'hidden', willChange: 'transform' }} loading="lazy" />
-                  <div className="absolute inset-0 pointer-events-none transition-opacity duration-500 opacity-40 group-hover:opacity-20" style={{ background: 'rgba(14,12,11,0.4)' }} />
+                <div
+                  className="group relative overflow-hidden bg-[#050505] cursor-pointer"
+                  style={{
+                    borderRadius: 12,
+                    filter: 'brightness(0.75) contrast(1.15) saturate(0.85)',
+                    WebkitMaskImage: 'linear-gradient(to bottom, black 60%, transparent 100%)',
+                    maskImage: 'linear-gradient(to bottom, black 60%, transparent 100%)',
+                  }}
+                  onClick={() =>
+                    setLightbox({
+                      src: '/images/interior/kabinet_1.webp',
+                      alt: 'Кабинет салона',
+                    })
+                  }
+                >
+                  <img
+                    src="/images/interior/kabinet_1.webp"
+                    alt="Кабинет салона"
+                    className="w-full max-w-full h-full object-cover transform-gpu scale-[1.01] group-hover:scale-[1.03] transition-transform duration-500 ease-out aspect-square pointer-events-none"
+                    style={{ backfaceVisibility: 'hidden', willChange: 'transform' }}
+                    loading="lazy"
+                  />
+                  <div
+                    className="absolute inset-0 pointer-events-none transition-opacity duration-500 opacity-40 group-hover:opacity-20"
+                    style={{ background: 'rgba(14,12,11,0.4)' }}
+                  />
                 </div>
               </FadeIn>
+
               <FadeIn delay={0.15}>
-                <div className="group relative overflow-hidden bg-[#050505] cursor-pointer" style={{ borderRadius: 12, filter: 'brightness(0.75) contrast(1.15) saturate(0.85)', WebkitMaskImage: 'linear-gradient(to bottom, black 60%, transparent 100%)', maskImage: 'linear-gradient(to bottom, black 60%, transparent 100%)' }}
-                  onClick={() => setLightbox({ src: '/images/interior/pritmnaya.webp', alt: 'Интерьер салона' })}>
-                  <img src="/images/interior/pritmnaya.webp" alt="Интерьер салона" className="w-full max-w-full h-full object-cover transform-gpu scale-[1.01] group-hover:scale-[1.03] transition-transform duration-500 ease-out aspect-square pointer-events-none" style={{ backfaceVisibility: 'hidden', willChange: 'transform' }} loading="lazy" />
-                  <div className="absolute inset-0 pointer-events-none transition-opacity duration-500 opacity-40 group-hover:opacity-20" style={{ background: 'rgba(14,12,11,0.4)' }} />
+                <div
+                  className="group relative overflow-hidden bg-[#050505] cursor-pointer"
+                  style={{
+                    borderRadius: 12,
+                    filter: 'brightness(0.75) contrast(1.15) saturate(0.85)',
+                    WebkitMaskImage: 'linear-gradient(to bottom, black 60%, transparent 100%)',
+                    maskImage: 'linear-gradient(to bottom, black 60%, transparent 100%)',
+                  }}
+                  onClick={() =>
+                    setLightbox({
+                      src: '/images/interior/pritmnaya.webp',
+                      alt: 'Интерьер салона',
+                    })
+                  }
+                >
+                  <img
+                    src="/images/interior/pritmnaya.webp"
+                    alt="Интерьер салона"
+                    className="w-full max-w-full h-full object-cover transform-gpu scale-[1.01] group-hover:scale-[1.03] transition-transform duration-500 ease-out aspect-square pointer-events-none"
+                    style={{ backfaceVisibility: 'hidden', willChange: 'transform' }}
+                    loading="lazy"
+                  />
+                  <div
+                    className="absolute inset-0 pointer-events-none transition-opacity duration-500 opacity-40 group-hover:opacity-20"
+                    style={{ background: 'rgba(14,12,11,0.4)' }}
+                  />
                 </div>
               </FadeIn>
             </div>
           </div>
         </div>
       </div>
+
       <AnimatePresence>
-        {lightbox && <Lightbox src={lightbox.src} alt={lightbox.alt} onClose={() => setLightbox(null)} />}
+        {lightbox && (
+          <Lightbox
+            src={lightbox.src}
+            alt={lightbox.alt}
+            onClose={() => setLightbox(null)}
+          />
+        )}
       </AnimatePresence>
     </section>
   )
@@ -1116,7 +1270,7 @@ function Team() {
   const masters = [
     {
       name: 'Юлия Котомина', role: 'Мастер-универсал', exp: 'Опыт 15+ лет', specialty: 'Стрижки, окрашивания, свадебный стилист',
-      image: '/images/team/yulia_kotomina.webp',
+      image: '/images/team/yulia_kotomina.png',
       details: [
         'Опыт работы 15 лет',
         'Стрижки женские и мужские любой сложности, сложные окрашивания',
@@ -1130,7 +1284,7 @@ function Team() {
     },
     {
       name: 'Виктория Бобкова', role: 'Топ-стилист', exp: 'Опыт 8+ лет', specialty: 'Окрашивание, сложные стрижки, кератин',
-      image: '/images/team/viktoria_bobkova.webp',
+      image: '/images/team/viktoria_bobkova.png',
       details: [
         '2017–2020 ГБПОУ Брянский Техникум Профессиональных технологий и Сферы услуг — парикмахер-модельер 4 разряда',
         'С 2019 — работает в студии PICASSO',
