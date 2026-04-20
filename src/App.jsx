@@ -22,8 +22,16 @@ class ErrorBoundary extends Component {
 
 function PageLoader() {
   return (
-    <div className="min-h-screen flex items-center justify-center" style={{ background: '#0E0C0B' }}>
-      <div className="text-sm uppercase tracking-[0.3em] animate-pulse" style={{ color: '#9A938B', fontFamily: 'Inter, system-ui, sans-serif' }}>Загрузка...</div>
+    <div
+      className="fixed inset-0 z-[999] flex items-center justify-center overflow-hidden w-screen h-[100dvh]"
+      style={{ background: '#0E0C0B' }}
+    >
+      <div
+        className="text-sm uppercase tracking-[0.3em] animate-pulse select-none"
+        style={{ color: '#9A938B', fontFamily: 'Inter, system-ui, sans-serif' }}
+      >
+        Загрузка...
+      </div>
     </div>
   )
 }
