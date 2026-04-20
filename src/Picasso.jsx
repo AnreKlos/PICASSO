@@ -316,7 +316,7 @@ function ConciergeWidget() {
   }, [open])
 
   useEffect(() => {
-    const timer = setTimeout(() => setShowTooltip(true), 10000)
+    const timer = setTimeout(() => setShowTooltip(true), 25000)
     return () => clearTimeout(timer)
   }, [])
 
@@ -436,35 +436,13 @@ function ConciergeWidget() {
   )
 }
 
-function Nav() {
+function Nav({ scrollTo, scrollToTop }) {
   const [scrolled, setScrolled] = useState(false)
   const [mobileOpen, setMobileOpen] = useState(false)
   useEffect(() => {
     const fn = () => setScrolled(window.scrollY > 40)
     window.addEventListener('scroll', fn, { passive: true })
     return () => window.removeEventListener('scroll', fn)
-  }, [])
-
-  const scrollTo = useCallback((href) => {
-    const el = document.querySelector(href)
-    if (!el) return
-    const rect = el.getBoundingClientRect()
-    const scrollMargin = parseInt(getComputedStyle(el).scrollMarginTop) || 0
-    let top = rect.top + window.scrollY - scrollMargin
-    if (window.__lenis) {
-      if (href === '#about' && window.innerWidth <= 767) { // Apply additional offset for '#about' section on mobile
-        top += 120; // Add 120 pixels for mobile and #about section
-      }
-      if (href === '#faq' && window.innerWidth <= 767) { // Apply additional offset for '#faq' section on mobile
-        top += 90; // Add 50 pixels for mobile and #faq section
-      }
-      if (href === '#contacts' && window.innerWidth <= 767) { // Apply additional offset for '#contacts' section on mobile
-        top += 50; // Add 50 pixels for mobile and #contacts section
-      }
-      window.__lenis.scrollTo(top, { duration: 1.2 })
-    } else {
-      window.scrollTo({ top, behavior: 'smooth' })
-    }
   }, [])
 
   const links = [
@@ -482,10 +460,17 @@ function Nav() {
       className={`fixed top-0 left-0 right-0 w-full z-40 transition-all duration-500 overflow-hidden ${scrolled ? 'backdrop-blur-lg' : ''}`}
       style={{ background: scrolled ? 'rgba(14,12,11,0.92)' : 'transparent', borderBottom: `1px solid ${scrolled ? BORDER : 'transparent'}` }}>
       <div className="mx-auto max-w-6xl px-5 sm:px-8 flex items-center justify-between h-16">
-        <a href="#" className="font-picasso-display text-xl font-semibold tracking-[0.08em] select-none" style={{ color: GOLD, textShadow: '0 0 20px rgba(201,168,122,0.15)' }}>PICASSO</a>
+        <button
+          type="button"
+          onClick={scrollToTop}
+          className="font-picasso-display text-xl font-semibold tracking-[0.08em] select-none cursor-pointer"
+          style={{ color: GOLD, textShadow: '0 0 20px rgba(201,168,122,0.15)' }}
+        >
+          PICASSO
+        </button>
         <div className="hidden lg:flex items-center gap-7 font-picasso-body text-[13px] font-medium uppercase tracking-[0.12em]" style={{ color: MUTED }}>
           {links.map(l => <a key={l.href} href={l.href} onClick={(e) => { e.preventDefault(); scrollTo(l.href) }} className="hover:text-[var(--color-picasso-text)] transition-colors duration-200" style={{ color: MUTED }}>{l.label}</a>)}
-          <MagneticButton href="#booking"
+          <MagneticButton onClick={(e) => { e.preventDefault(); scrollTo('#booking') }}
             className="inline-flex items-center gap-2 px-5 py-2 transition-all duration-300 font-picasso-body text-[13px] font-medium uppercase tracking-[0.12em]"
             style={{ background: `linear-gradient(to bottom, ${GOLD_BRIGHT} 0%, ${GOLD} 50%, ${GOLD_DIM} 100%)`, color: BG, borderRadius: 9999, boxShadow: '0 2px 12px rgba(201,168,122,0.15), inset 0 1px 0 rgba(255,255,255,0.2), inset 0 -1px 0 rgba(0,0,0,0.12)' }}>
             Записаться
@@ -501,7 +486,7 @@ function Nav() {
             className="lg:hidden overflow-hidden" style={{ background: 'rgba(14,12,11,0.97)', borderTop: `1px solid ${BORDER}` }}>
             <div className="flex flex-col gap-4 px-6 py-6 font-picasso-body text-[14px] uppercase tracking-[0.1em]" style={{ color: MUTED }}>
               {links.map(l => <a key={l.href} href={l.href} onClick={(e) => { e.preventDefault(); setMobileOpen(false); scrollTo(l.href) }} className="py-1" style={{ color: MUTED }}>{l.label}</a>)}
-              <a href="#booking" onClick={(e) => { e.preventDefault(); setMobileOpen(false); scrollTo('#booking') }} className="mt-2 inline-flex items-center justify-center gap-2 px-5 py-3" style={{ background: GOLD, color: BG, borderRadius: 9999 }}>Записаться</a>
+              <a onClick={(e) => { e.preventDefault(); setMobileOpen(false); scrollTo('#booking') }} className="mt-2 inline-flex items-center justify-center gap-2 px-5 py-3 cursor-pointer" style={{ background: GOLD, color: BG, borderRadius: 9999 }}>Записаться</a>
             </div>
           </motion.div>
         )}
@@ -568,7 +553,7 @@ function TiltGlare({ children, className = '', style = {} }) {
   )
 }
 
-function Hero() {
+function Hero({ scrollTo }) {
   const ref = useRef(null)
   const [isMobile, setIsMobile] = useState(false)
   const { scrollYProgress } = useScroll({ target: ref, offset: ['start start', 'end start'] })
@@ -652,17 +637,17 @@ function Hero() {
 
               <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.7, ease: EASE, delay: 0.8 }}
                 className="flex flex-col sm:flex-row items-center justify-center lg:justify-start gap-4 mt-12 overflow-hidden">
-          <MagneticButton href="#booking" onClick={(e) => { e.preventDefault(); scrollTo('#booking') }}
+          <MagneticButton onClick={(e) => { e.preventDefault(); scrollTo('#booking') }}
                   whileHover={{ boxShadow: '0 6px 40px rgba(201,168,122,0.25), inset 0 1px 0 rgba(255,255,255,0.15)' }}
                   whileTap={{ boxShadow: '0 2px 12px rgba(201,168,122,0.15)' }}
-                  className="btn-shine group inline-flex items-center justify-center gap-2 px-9 py-4 font-picasso-body text-[13px] font-medium uppercase tracking-[0.14em] transition-all duration-300"
+                  className="btn-shine group inline-flex items-center justify-center gap-2 px-9 py-4 font-picasso-body text-[13px] font-medium uppercase tracking-[0.14em] transition-all duration-300 cursor-pointer"
                   style={{ background: `linear-gradient(to bottom, ${GOLD_BRIGHT} 0%, ${GOLD} 40%, ${GOLD_DIM} 100%)`, color: BG, borderRadius: 9999, boxShadow: '0 1px 0 rgba(255,255,255,0.25) inset, 0 -2px 0 rgba(0,0,0,0.2) inset, 0 4px 8px rgba(0,0,0,0.3), 0 8px 30px rgba(201,168,122,0.18)', textShadow: '0 1px 2px rgba(0,0,0,0.25)' }}>
                   Онлайн запись <ArrowRight size={15} className="transition-transform group-hover:translate-x-1" />
                 </MagneticButton>
-                <MagneticButton href="#gallery"
+                <MagneticButton onClick={(e) => { e.preventDefault(); scrollTo('#gallery') }}
                   whileHover={{ boxShadow: '0 6px 30px rgba(0,0,0,0.4), inset 0 1px 0 rgba(255,255,255,0.06)' }}
                   whileTap={{ boxShadow: '0 2px 10px rgba(0,0,0,0.3)' }}
-                  className="inline-flex items-center justify-center font-picasso-body text-[13px] font-medium uppercase tracking-[0.14em] px-9 py-4 transition-all duration-300"
+                  className="inline-flex items-center justify-center font-picasso-body text-[13px] font-medium uppercase tracking-[0.14em] px-9 py-4 transition-all duration-300 cursor-pointer"
                   style={{ border: `1px solid ${BORDER_H}`, color: TEXT, borderRadius: 9999, boxShadow: '0 4px 20px rgba(0,0,0,0.25), inset 0 1px 0 rgba(255,255,255,0.04), inset 0 -1px 0 rgba(0,0,0,0.2)' }}>
                   Наши работы
                 </MagneticButton>
@@ -964,7 +949,7 @@ function ServiceCard({ Icon, title, desc, image, featured }) {
         <div ref={cardRef} className="group bg-[#050505] cursor-pointer" style={{ borderRadius: 16 }}
           onClick={() => setShowLightbox(true)}>
           <div className="relative overflow-hidden bg-[#050505] aspect-[4/3] sm:aspect-[16/9]" style={{ borderRadius: 16 }}>
-            <motion.div style={{ y: imgY, willChange: 'transform' }} className="absolute inset-0">
+            <motion.div style={{ y: imgY, willChange: 'transform' }} className="absolute -inset-2">
               <img
                 src={image} alt={title}
                 className="w-full max-w-full h-full object-cover transform-gpu scale-[1.19] group-hover:scale-[1.21] transition-transform duration-500 ease-out pointer-events-none"
@@ -972,7 +957,7 @@ function ServiceCard({ Icon, title, desc, image, featured }) {
                 loading="lazy" />
             </motion.div>
             <div className="absolute inset-0 pointer-events-none transition-opacity duration-500 opacity-30 group-hover:opacity-10" style={{ background: 'rgba(14,12,11,0.35)' }} />
-            <div className="absolute inset-0" style={{ background: isMobile ? 'linear-gradient(to top, rgba(14,12,11,0.96) 0%, rgba(14,12,11,0.88) 38%, rgba(14,12,11,0.52) 68%, rgba(14,12,11,0.12) 100%)' : 'linear-gradient(to top, rgba(14,12,11,0.95) 0%, rgba(14,12,11,0.7) 50%, transparent 80%)' }} />
+            <div className="absolute inset-0" style={{ background: isMobile ? 'linear-gradient(to top, rgba(14,12,11,0.96) 0%, rgba(14,12,11,0.88) 38%, rgba(14,12,11,0.52) 58%, rgba(14,12,11,0.12) 100%)' : 'linear-gradient(to top, rgba(14,12,11,0.95) 0%, rgba(14,12,11,0.7) 50%, transparent 80%)' }} />
             <div className="absolute bottom-0 left-0 right-0 p-6 sm:p-8">
               <div className="flex items-center gap-3 mb-3">
                 <div className="w-10 h-10 flex items-center justify-center" style={{ border: `1px solid ${BORDER_H}`, borderRadius: 9999, background: 'rgba(201,168,122,0.06)' }}>
@@ -980,8 +965,8 @@ function ServiceCard({ Icon, title, desc, image, featured }) {
                 </div>
                 <p className="font-picasso-body text-[11px] uppercase tracking-[0.2em]" style={{ color: GOLD }}>Главное направление</p>
               </div>
-              <h3 className="font-picasso-display text-2xl sm:text-3xl font-medium" style={{ color: TEXT, textShadow: isMobile ? '0 2px 10px rgba(0,0,0,0.85), 0 1px 2px rgba(0,0,0,0.9)' : 'none' }}>{title}</h3>
-              <p className="mt-3 text-[15px] font-light leading-relaxed max-w-md" style={{ color: isMobile ? '#E8E0D6' : TEXT_SOFT, textShadow: isMobile ? '0 2px 8px rgba(0,0,0,0.9)' : 'none' }}>{desc}</p>
+              <h3 className="font-picasso-display text-2xl sm:text-3xl font-medium" style={{ color: TEXT, textShadow: isMobile ? '0 2px 10px rgba(0,0,0,0.85), 0 1px 2px rgba(0,0,0,0.9)' : 'none' }}>{title}</h3> {/* Added line-clamp to desc */}
+              <p className="mt-3 text-[15px] font-light leading-relaxed max-w-md line-clamp-3 sm:line-clamp-4" style={{ color: isMobile ? '#E8E0D6' : TEXT_SOFT, textShadow: isMobile ? '0 2px 8px rgba(0,0,0,0.9)' : 'none' }}>{desc}</p>
             </div>
           </div>
         </div>
@@ -1000,9 +985,9 @@ function ServiceCard({ Icon, title, desc, image, featured }) {
             <div className="w-10 h-10 flex items-center justify-center" style={{ border: `1px solid ${BORDER_H}`, borderRadius: 9999, background: 'rgba(201,168,122,0.06)' }}>
               <Icon size={18} style={{ color: GOLD }} strokeWidth={1.5} />
             </div>
-            <h3 className="font-picasso-display text-lg font-medium" style={{ color: TEXT }}>{title}</h3>
+            <h3 className="font-picasso-display text-lg font-medium" style={{ color: TEXT }}>{title}</h3> {/* Added line-clamp to desc */}
           </div>
-          <p className="text-[14px] font-light leading-relaxed" style={{ color: TEXT_SOFT }}>{desc}</p>
+          <p className="text-[14px] font-light leading-relaxed line-clamp-3 sm:line-clamp-4" style={{ color: TEXT_SOFT }}>{desc}</p>
         </div>
       </div>
     </FadeIn>
@@ -1597,7 +1582,7 @@ function Contacts() {
               <div className="w-12 h-12 flex items-center justify-center" style={{ border: `1px solid ${BORDER_H}`, borderRadius: 9999 }}>
                 <Clock3 size={20} style={{ color: GOLD }} strokeWidth={1.5} />
               </div>
-              <p className="text-[15px] font-light" style={{ color: TEXT_SOFT }}>Ежедневно 09:00 — 21:00</p>
+              <p className="text-[15px] font-light" style={{ color: TEXT_SOFT }}>Ежедневно 10:00 — 19:00</p>
               <p className="text-[13px] font-light" style={{ color: MUTED }}>Без выходных</p>
             </div>
           </FadeIn>
@@ -1659,11 +1644,81 @@ export default function Picasso() {
     return () => { cancelAnimationFrame(id); lenis.destroy() }
   }, [])
 
+  const scrollTo = useCallback((href) => {
+    const el = document.querySelector(href)
+    if (!el) return
+    const rect = el.getBoundingClientRect()
+    const scrollMargin = parseInt(getComputedStyle(el).scrollMarginTop) || 0
+    let top = rect.top + window.scrollY - scrollMargin
+    if (window.__lenis) {
+      if (href === '#about' && window.innerWidth <= 767) { // Apply additional offset for '#about' section on mobile
+        top += 120; // Add 120 pixels for mobile and #about section
+      } else if (href === '#about' && window.innerWidth === 853) { // Specific offset for Asus Zenbook Fold
+        top += 20; // Scroll 50 pixels shorter
+      } else if (href === '#about' && window.innerWidth > 767) { // Apply additional offset for '#about' section on desktop
+        top += 90; // Add 30 pixels for desktop and #about section
+      }
+      if (href === '#faq' && window.innerWidth <= 767) { // Apply additional offset for '#faq' section on mobile
+        top += 90; // Add 50 pixels for mobile and #faq section
+      } else if (href === '#services' && window.innerWidth === 1024) { // Specific offset for Nest Hub
+        top += 253;
+      } else if (href === '#services' && window.innerWidth === 853) { // Specific offset for Asus Zenbook Fold
+        top -= 250; // Scroll 50 pixels shorter
+      } else if (href === '#services' && window.innerWidth > 767) { // Apply additional offset for '#services' section on desktop/tablet
+        top -= 150; // Add 50 pixels for desktop/tablet and #services section
+      } else if (href === '#faq' && window.innerWidth > 767) { // Apply additional offset for '#faq' section on desktop
+        top += 20; // Scroll 100px shorter
+      }
+      if (href === '#contacts' && window.innerWidth <= 767) { // Apply additional offset for '#contacts' section on mobile
+        top += 50; // Add 50 pixels for mobile and #contacts section
+      }
+      if (href === '#team') {
+        if (window.innerWidth === 1280) { // Specific offset for Nest Hub Max
+          top += 50; // Add 100 pixels for Nest Hub Max and #team section
+        } else if (window.innerWidth > 767) { // Apply additional offset for '#team' section on desktop/tablet (general)
+          top -= 118; // Scroll 159px shorter
+        }
+      }
+      if (href === '#gallery') {
+        if (window.innerWidth <= 430) { // iPhone 14 Pro Max
+          top += 41;
+        } else if (window.innerWidth === 853) { // Asus Zenbook Fold
+          top -= 120;
+        } else {
+          top += 50; // General case
+        }
+      }
+      if (href === '#booking') {
+        if (window.innerWidth === 1280) { // Specific offset for Nest Hub Max
+          top += 60; // Scroll 50px shorter
+        } else if (window.innerWidth > 767) { // General desktop
+          top += 100;
+        } else if (window.innerWidth <= 390) { // iPhone 12 Pro
+          top += 100;
+        }
+      }
+      if (href === '#reviews' && window.innerWidth === 853) { // Specific offset for Asus Zenbook Fold
+        top -= 130; // Scroll 100 pixels shorter
+      }
+      window.__lenis.scrollTo(top, { duration: 1.2 })
+    } else {
+      window.scrollTo({ top, behavior: 'smooth' })
+    }
+  }, [])
+
+  const scrollToTop = useCallback(() => {
+    if (window.__lenis) {
+      window.__lenis.scrollTo(0, { duration: 1.1 })
+    } else {
+      window.scrollTo({ top: 0, behavior: 'smooth' })
+    }
+  }, [])
+
   return (
     <div className="relative w-full overflow-hidden flex flex-col min-h-screen font-picasso-body" style={{ background: BG, color: TEXT, lineHeight: 1.7 }}>
       <ConciergeWidget />
-      <Nav />
-      <Hero />
+      <Nav scrollTo={scrollTo} scrollToTop={scrollToTop} />
+      <Hero scrollTo={scrollTo} />
       <About />
       <Services />
       <Prices />
