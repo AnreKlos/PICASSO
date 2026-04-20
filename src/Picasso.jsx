@@ -611,7 +611,7 @@ function Hero({ scrollTo }) {
                   transition={{ duration: 2, ease: EASE, delay: 0.2 }}
                 >
                   <TiltHeading as="h1" className="font-picasso-display font-medium tracking-[-0.01em] leading-[1.1]" style={{ color: TEXT }}>
-я                    <span className="text-4xl sm:text-5xl lg:text-[3.8rem] xl:text-[4.5rem]" style={{ color: TEXT }}>Салон эстетики</span> <span className="block italic text-5xl sm:text-6xl lg:text-[5.5rem] xl:text-[6.5rem]" style={{
+                    <span className="text-4xl sm:text-5xl lg:text-[3.8rem] xl:text-[4.5rem]" style={{ color: TEXT }}>Салон эстетики</span> <span className="block italic text-5xl sm:text-6xl lg:text-[5.5rem] xl:text-[6.5rem]" style={{
                   color: GOLD,
                   textShadow: `
                     0 1px 0 #A68B5A,
