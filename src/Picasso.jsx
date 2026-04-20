@@ -297,7 +297,9 @@ function FAQItem({ q, a, isOpen, onToggle }) {
 
 function ConciergeWidget() {
   const [open, setOpen] = useState(false)
-  const [messages, setMessages] = useState([{ from: 'bot', text: 'Здравствуйте! Я цифровой консьерж PICASSO. Чем могу помочь?' }])
+  const [messages, setMessages] = useState([
+    { from: 'bot', text: 'Здравствуйте! Я цифровой консьерж PICASSO. Чем могу помочь?' },
+  ])
   const [input, setInput] = useState('')
   const [loading, setLoading] = useState(false)
   const [showTooltip, setShowTooltip] = useState(false)
@@ -352,8 +354,15 @@ function ConciergeWidget() {
         body: JSON.stringify({
           model: 'openai/gpt-4o-mini',
           messages: [
-            { role: 'system', content: `Ты — цифровой консьерж премиум салона красоты «PICASSO». Салон полного цикла: парикмахерские услуги, ногтевой сервис, брови, шугаринг, уход за лицом. Отвечай сдержанно, элегантно, как luxury-консультант. Кратко (2-4 предложения), без эмодзи, на «вы». Цены: стрижка от 2000₽, окрашивание от 4500₽, маникюр от 1800₽, архитектура бровей от 1200₽, шугаринг от 800₽, УЗ-чистка от 1500₽, пилинг от 1800₽. СТРОГОЕ ПРАВИЛО: Отвечай только финальным текстом ответа. Никогда не показывай шаги своих рассуждений, анализ, планирование или рассуждения (Analyze, Identify, Consider, Plan и т.д.). Сразу давай готовый ответ.` },
-            ...updated.map(m => ({ role: m.from === 'bot' ? 'assistant' : 'user', content: m.text })),
+            {
+              role: 'system',
+              content:
+                'Ты — цифровой консьерж премиум салона красоты «PICASSO». Салон полного цикла: парикмахерские услуги, ногтевой сервис, брови, шугаринг, уход за лицом. Отвечай сдержанно, элегантно, как luxury-консультант. Кратко (2-4 предложения), без эмодзи, на «вы». Цены: стрижка от 2000₽, окрашивание от 4500₽, маникюр от 1800₽, архитектура бровей от 1200₽, шугаринг от 800₽, УЗ-чистка от 1500₽, пилинг от 1800₽. СТРОГОЕ ПРАВИЛО: Отвечай только финальным текстом ответа. Никогда не показывай шаги своих рассуждений, анализ, планирование или рассуждения (Analyze, Identify, Consider, Plan и т.д.). Сразу давай готовый ответ.',
+            },
+            ...updated.map((m) => ({
+              role: m.from === 'bot' ? 'assistant' : 'user',
+              content: m.text,
+            })),
           ],
           max_tokens: 300,
           temperature: 0.7,
@@ -364,7 +373,8 @@ function ConciergeWidget() {
         throw new Error(err?.error || `Ошибка ${res.status}`)
       }
       const data = await res.json()
-      const reply = data.choices?.[0]?.message?.content || data.error?.message || 'Попробуйте ещё раз.'
+      const reply =
+        data.choices?.[0]?.message?.content || data.error?.message || 'Попробуйте ещё раз.'
       setMessages([...updated, { from: 'bot', text: reply }])
     } catch {
       setMessages([...updated, { from: 'bot', text: 'Связь прервалась. Попробуйте снова.' }])
@@ -375,32 +385,84 @@ function ConciergeWidget() {
   }
 
   return (
-    <div ref={widgetRef} className="fixed bottom-6 right-6 z-50">
+    <div ref={widgetRef} className="fixed bottom-4 right-4 z-50">
       <AnimatePresence>
         {open && (
-          <motion.div initial={{ opacity: 0, y: 20, scale: 0.92 }} animate={{ opacity: 1, y: 0, scale: 1 }} exit={{ opacity: 0, y: 20, scale: 0.92 }} transition={{ duration: 0.35, ease: EASE }}
+          <motion.div
+            initial={{ opacity: 0, y: 20, scale: 0.92 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            exit={{ opacity: 0, y: 20, scale: 0.92 }}
+            transition={{ duration: 0.35, ease: EASE }}
             data-lenis-prevent
-            /* Добавили flex flex-col, max-h и безопасную ширину для телефона */
-            className="absolute bottom-[72px] right-0 w-[calc(100vw-48px)] sm:w-[400px] max-h-[calc(100dvh-120px)] flex flex-col overflow-hidden"
-            style={{ background: SURFACE, border: `1px solid ${BORDER}`, borderRadius: 16, boxShadow: '0 12px 60px rgba(0,0,0,0.5)' }}>
-            <div className="flex items-center justify-between px-6 py-5" style={{ borderBottom: `1px solid ${BORDER}` }}>
+            className="absolute right-0 w-[320px] sm:w-[400px] max-w-[calc(100vw-24px)] overflow-hidden"
+            style={{
+              background: SURFACE,
+              border: `1px solid ${BORDER}`,
+              borderRadius: 16,
+              boxShadow: '0 12px 60px rgba(0,0,0,0.5)',
+              bottom: 0,
+            }}
+          >
+            <div
+              className="flex items-center justify-between px-6 py-5"
+              style={{ borderBottom: `1px solid ${BORDER}` }}
+            >
               <div>
-                <p className="font-picasso-display text-sm font-semibold" style={{ color: TEXT }}>PICASSO Concierge</p>
-                <p className="text-[12px] font-picasso-body" style={{ color: MUTED }}>Онлайн 24/7</p>
+                <p
+                  className="font-picasso-display text-sm font-semibold"
+                  style={{ color: TEXT }}
+                >
+                  PICASSO Concierge
+                </p>
+                <p
+                  className="text-[12px] font-picasso-body"
+                  style={{ color: MUTED }}
+                >
+                  Онлайн 24/7
+                </p>
               </div>
-              <button onClick={() => setOpen(false)} className="cursor-pointer" style={{ color: MUTED }} aria-label="Закрыть чат"><X size={18} /></button>
+              <button
+                onClick={() => setOpen(false)}
+                className="cursor-pointer"
+                style={{ color: MUTED }}
+                aria-label="Закрыть чат"
+              >
+                <X size={18} />
+              </button>
             </div>
-            {/* Убрали жесткую высоту h-80, добавили flex-1 */}
-            <div ref={scrollRef} className="flex-1 overflow-y-auto px-6 py-5 flex flex-col gap-3 min-h-[200px] sm:h-80 sm:min-h-0">
+
+            <div
+              ref={scrollRef}
+              className="h-80 overflow-y-auto px-6 py-5 flex flex-col gap-3"
+            >
               {messages.map((m, i) => (
-                <div key={i} className={`max-w-[85%] px-4 py-3 text-sm font-picasso-body leading-relaxed ${m.from === 'bot' ? 'self-start' : 'self-end'}`}
-                  style={{ background: m.from === 'bot' ? SURFACE_L : GOLD, color: m.from === 'bot' ? TEXT : BG, borderRadius: 12 }}>
+                <div
+                  key={i}
+                  className={`max-w-[85%] px-4 py-3 text-sm font-picasso-body leading-relaxed ${m.from === 'bot' ? 'self-start' : 'self-end'
+                    }`}
+                  style={{
+                    background: m.from === 'bot' ? SURFACE_L : GOLD,
+                    color: m.from === 'bot' ? TEXT : BG,
+                    borderRadius: 12,
+                  }}
+                >
                   {m.text}
                 </div>
               ))}
-              {loading && <div className="self-start max-w-[85%] px-4 py-3 text-sm font-picasso-body italic" style={{ background: SURFACE_L, color: MUTED, borderRadius: 12 }}>Консьерж подбирает ответ...</div>}
+              {loading && (
+                <div
+                  className="self-start max-w-[85%] px-4 py-3 text-sm font-picasso-body italic"
+                  style={{ background: SURFACE_L, color: MUTED, borderRadius: 12 }}
+                >
+                  Консьерж подбирает ответ...
+                </div>
+              )}
             </div>
-            <div className="px-5 py-4 flex items-center gap-3" style={{ borderTop: `1px solid ${BORDER}` }}>
+
+            <div
+              className="px-5 py-4 flex items-center gap-3"
+              style={{ borderTop: `1px solid ${BORDER}` }}
+            >
               <input
                 ref={inputRef}
                 value={input}
@@ -411,42 +473,53 @@ function ConciergeWidget() {
                 style={{ color: TEXT }}
                 readOnly={loading}
               />
-              <button onClick={handleSend} disabled={loading || !input.trim()}
+              <button
+                onClick={handleSend}
+                disabled={loading || !input.trim()}
                 className="shrink-0 cursor-pointer transition-all disabled:opacity-40"
                 style={{
                   background: input.trim() ? GOLD : 'transparent',
                   color: input.trim() ? BG : MUTED,
                   border: `1px solid ${input.trim() ? GOLD : BORDER_H}`,
                   borderRadius: 9999,
-                  width: 40, height: 40,
-                  display: 'flex', alignItems: 'center', justifyContent: 'center',
-                  transition: 'all 0.2s ease',
+                  width: 40,
+                  height: 40,
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
                   flexShrink: 0,
                 }}
-                aria-label="Отправить сообщение">
+                aria-label="Отправить сообщение"
+              >
                 <Send size={16} />
               </button>
             </div>
           </motion.div>
         )}
       </AnimatePresence>
+
       {!open && (
         <motion.button
           whileHover={{ scale: 1.05 }}
           whileTap={{ scale: 0.95 }}
-          onClick={() => { setOpen(true); setShowTooltip(false) }}
+          onClick={() => {
+            setOpen(true)
+            setShowTooltip(false)
+          }}
           aria-label="Открыть чат"
           className="w-14 h-14 flex items-center justify-center cursor-pointer"
           style={{
             background: `linear-gradient(to bottom, ${GOLD_BRIGHT} 0%, ${GOLD} 50%, ${GOLD_DIM} 100%)`,
             color: BG,
             borderRadius: 9999,
-            boxShadow: '0 4px 30px rgba(201,168,122,0.2), inset 0 1px 0 rgba(255,255,255,0.25), inset 0 -1px 0 rgba(0,0,0,0.15)',
+            boxShadow:
+              '0 4px 30px rgba(201,168,122,0.2), inset 0 1px 0 rgba(255,255,255,0.25), inset 0 -1px 0 rgba(0,0,0,0.15)',
           }}
         >
           <MessageCircle size={20} />
         </motion.button>
       )}
+
       <AnimatePresence>
         {showTooltip && !open && (
           <motion.div
@@ -454,9 +527,18 @@ function ConciergeWidget() {
             animate={{ opacity: 1, x: 0, scale: 1 }}
             exit={{ opacity: 0, x: 10, scale: 0.9 }}
             transition={{ duration: 0.35, ease: EASE }}
-            onClick={() => { setOpen(true); setShowTooltip(false) }}
+            onClick={() => {
+              setOpen(true)
+              setShowTooltip(false)
+            }}
             className="absolute bottom-4 right-[68px] max-w-[calc(100vw-90px)] sm:max-w-none min-w-[220px] sm:min-w-[280px] px-5 py-3 font-picasso-body text-[14px] sm:text-[14px] cursor-pointer whitespace-normal leading-relaxed"
-            style={{ background: SURFACE, color: TEXT, border: `1px solid ${BORDER_H}`, borderRadius: window.innerWidth < 640 ? 16 : 9999, boxShadow: '0 4px 20px rgba(0,0,0,0.3)', right: '68px' }}
+            style={{
+              background: SURFACE,
+              color: TEXT,
+              border: `1px solid ${BORDER_H}`,
+              borderRadius: window.innerWidth < 640 ? 16 : 9999,
+              boxShadow: '0 4px 20px rgba(0,0,0,0.3)',
+            }}
           >
             Я ИИ-консьерж. Помочь подобрать время?
           </motion.div>
