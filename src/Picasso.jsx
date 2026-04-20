@@ -1335,7 +1335,7 @@ function Team() {
   const masters = [
     {
       name: 'Юлия Котомина', role: 'Мастер-универсал', exp: 'Опыт 15+ лет', specialty: 'Стрижки, окрашивания, свадебный стилист',
-      image: '/images/team/yulia_kotomina.png',
+      image: '/images/team/yulia_kotomina.webp',
       details: [
         'Опыт работы 15 лет',
         'Стрижки женские и мужские любой сложности, сложные окрашивания',
@@ -1349,7 +1349,7 @@ function Team() {
     },
     {
       name: 'Виктория Бобкова', role: 'Топ-стилист', exp: 'Опыт 8+ лет', specialty: 'Окрашивание, сложные стрижки, кератин',
-      image: '/images/team/viktoria_bobkova.png',
+      image: '/images/team/viktoria_bobkova.webp',
       details: [
         '2017–2020 ГБПОУ Брянский Техникум Профессиональных технологий и Сферы услуг — парикмахер-модельер 4 разряда',
         'С 2019 — работает в студии PICASSO',
