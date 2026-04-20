@@ -1365,7 +1365,7 @@ function Team() {
         'Подбор домашнего ухода, коррекция и окрашивание бровей',
       ],
     },
-    { name: 'Место в команде', role: 'Мы ищем мастеров', exp: 'PICASSO растёт', specialty: 'Присоединяйтесь к нашей команде', image: null, details: [] },
+    { name: 'Место в команде', role: 'Мы ищем мастеров', exp: 'PICASSO растёт', specialty: 'Присоединяйтесь к нашей команде', image: '/images/team/PICASSO_JOB.webp', details: [] },
   ]
 
   return (
@@ -1508,47 +1508,134 @@ function Booking() {
   const [phone, setPhone] = useState('')
   const [sent, setSent] = useState(false)
 
+  const inputStyle = {
+    width: '100%',
+    border: `1px solid ${BORDER_H}`,
+    borderRadius: 12,
+    color: TEXT,
+    background: 'rgba(26, 23, 20, 0.88)',
+    boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.04), 0 8px 30px rgba(0,0,0,0.18)',
+    WebkitAppearance: 'none',
+    appearance: 'none',
+    outline: 'none',
+    caretColor: GOLD,
+  }
+
   return (
-    <section id="booking" className="scroll-mt-20 py-28 sm:py-36 relative overflow-hidden" style={{ background: BG }}>
+    <section
+      id="booking"
+      className="scroll-mt-20 py-28 sm:py-36 relative overflow-hidden"
+      style={{ background: BG }}
+    >
       <div className="absolute inset-0 overflow-hidden pointer-events-none w-full">
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[min(800px,80vw)] h-[min(800px,80vw)] rounded-full blur-[200px]" style={{ background: 'rgba(201,168,122,0.03)' }} />
+        <div
+          className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[min(640px,72vw)] h-[min(640px,72vw)] rounded-full blur-[180px]"
+          style={{ background: 'rgba(201,168,122,0.018)' }}
+        />
       </div>
+
       <DustParticles />
+
       <div className="mx-auto max-w-xl px-5 sm:px-8 text-center relative z-10">
         <FadeIn>
-          <p className="font-picasso-body text-[12px] uppercase tracking-[0.4em] mb-5 select-none" style={{ color: `${GOLD}88` }}>Запись</p>
+          <p
+            className="font-picasso-body text-[12px] uppercase tracking-[0.4em] mb-5 select-none"
+            style={{ color: `${GOLD}88` }}
+          >
+            Запись
+          </p>
         </FadeIn>
+
         <FadeIn delay={0.1}>
-          <TiltHeading as="h2" className="font-picasso-display text-3xl sm:text-4xl font-medium leading-tight" style={{ color: TEXT }}>
+          <TiltHeading
+            as="h2"
+            className="font-picasso-display text-3xl sm:text-4xl font-medium leading-tight"
+            style={{ color: TEXT }}
+          >
             Ваш следующий <GoldSpan>визит</GoldSpan>
           </TiltHeading>
         </FadeIn>
+
         <FadeIn delay={0.2}>
-          <p className="mt-5 text-base font-light leading-relaxed" style={{ color: TEXT_SOFT }}>Оставьте заявку — подберём удобное время и мастера</p>
+          <p className="mt-5 text-base font-light leading-relaxed" style={{ color: TEXT_SOFT }}>
+            Оставьте заявку — подберём удобное время и мастера
+          </p>
         </FadeIn>
+
         <FadeIn delay={0.3}>
           <AnimatePresence mode="wait">
             {!sent ? (
-              <motion.form key="form" className="mt-12 flex flex-col gap-5"
-                onSubmit={(e) => { e.preventDefault(); setSent(true); setName(''); setPhone('') }}>
-                <input type="text" value={name} onChange={(e) => setName(e.target.value)} placeholder="Ваше имя" required
-                  className="w-full bg-transparent px-5 py-4 text-base outline-none transition-all font-picasso-body"
-                  style={{ border: `1px solid ${BORDER}`, borderRadius: 12, color: TEXT }} />
-                <input type="tel" value={phone} onChange={(e) => setPhone(e.target.value)} placeholder="+7 (___) ___-__-__" required
-                  className="w-full bg-transparent px-5 py-4 text-base outline-none transition-all font-picasso-body"
-                  style={{ border: `1px solid ${BORDER}`, borderRadius: 12, color: TEXT }} />
-                <motion.button type="submit"
-                  whileHover={{ boxShadow: '0 6px 30px rgba(201,168,122,0.2), inset 0 1px 0 rgba(255,255,255,0.15)' }}
-                  whileTap={{ boxShadow: '0 2px 12px rgba(201,168,122,0.1)' }}
+              <motion.form
+                key="form"
+                className="mt-12 flex flex-col gap-5"
+                onSubmit={(e) => {
+                  e.preventDefault()
+                  setSent(true)
+                  setName('')
+                  setPhone('')
+                }}
+              >
+                <input
+                  type="text"
+                  value={name}
+                  onChange={(e) => setName(e.target.value)}
+                  placeholder="Ваше имя"
+                  autoComplete="name"
+                  required
+                  className="block px-5 py-4 text-base font-picasso-body transition-all placeholder:opacity-60"
+                  style={inputStyle}
+                />
+
+                <input
+                  type="tel"
+                  value={phone}
+                  onChange={(e) => setPhone(e.target.value)}
+                  placeholder="+7 (___) ___-__-__"
+                  autoComplete="tel"
+                  inputMode="tel"
+                  required
+                  className="block px-5 py-4 text-base font-picasso-body transition-all placeholder:opacity-60"
+                  style={inputStyle}
+                />
+
+                <motion.button
+                  type="submit"
+                  whileHover={{
+                    boxShadow: '0 6px 30px rgba(201,168,122,0.2), inset 0 1px 0 rgba(255,255,255,0.15)',
+                  }}
+                  whileTap={{
+                    boxShadow: '0 2px 12px rgba(201,168,122,0.1)',
+                  }}
                   className="mt-3 w-full py-4 font-picasso-body text-[13px] font-medium uppercase tracking-[0.14em] transition-all duration-300 cursor-pointer"
-                  style={{ background: `linear-gradient(to bottom, ${GOLD_BRIGHT} 0%, ${GOLD} 40%, ${GOLD_DIM} 100%)`, color: BG, borderRadius: 9999, boxShadow: '0 4px 20px rgba(201,168,122,0.12), inset 0 1px 0 rgba(255,255,255,0.2), inset 0 -1px 0 rgba(0,0,0,0.15)' }}>
+                  style={{
+                    background: `linear-gradient(to bottom, ${GOLD_BRIGHT} 0%, ${GOLD} 40%, ${GOLD_DIM} 100%)`,
+                    color: BG,
+                    borderRadius: 9999,
+                    boxShadow:
+                      '0 4px 20px rgba(201,168,122,0.12), inset 0 1px 0 rgba(255,255,255,0.2), inset 0 -1px 0 rgba(0,0,0,0.15)',
+                  }}
+                >
                   Записаться
                 </motion.button>
               </motion.form>
             ) : (
-              <motion.div key="success" initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} transition={{ duration: 0.5 }} className="mt-12 py-10" style={{ borderTop: `1px solid ${BORDER}`, borderBottom: `1px solid ${BORDER}` }}>
-                <p className="font-picasso-display text-2xl italic" style={{ color: TEXT }}>Спасибо!</p>
-                <p className="mt-3 text-base font-light" style={{ color: TEXT_SOFT }}>Мы свяжемся с вами в ближайшее время</p>
+              <motion.div
+                key="success"
+                initial={{ opacity: 0, scale: 0.95 }}
+                animate={{ opacity: 1, scale: 1 }}
+                transition={{ duration: 0.5 }}
+                className="mt-12 py-10"
+                style={{
+                  borderTop: `1px solid ${BORDER_H}`,
+                  borderBottom: `1px solid ${BORDER_H}`,
+                }}
+              >
+                <p className="font-picasso-display text-2xl italic" style={{ color: TEXT }}>
+                  Спасибо!
+                </p>
+                <p className="mt-3 text-base font-light" style={{ color: TEXT_SOFT }}>
+                  Мы свяжемся с вами в ближайшее время
+                </p>
               </motion.div>
             )}
           </AnimatePresence>
@@ -1732,16 +1819,18 @@ export default function Picasso() {
     <div className="relative w-full overflow-hidden flex flex-col min-h-screen font-picasso-body" style={{ background: BG, color: TEXT, lineHeight: 1.7 }}>
       <ConciergeWidget />
       <Nav scrollTo={scrollTo} scrollToTop={scrollToTop} />
-      <Hero scrollTo={scrollTo} />
-      <About />
-      <Services />
-      <Prices />
-      <Gallery />
-      <Team />
-      <Reviews />
-      <FAQ />
-      <Booking />
-      <Contacts />
+      <main>
+        <Hero scrollTo={scrollTo} />
+        <About />
+        <Services />
+        <Prices />
+        <Gallery />
+        <Team />
+        <Reviews />
+        <FAQ />
+        <Booking />
+        <Contacts />
+      </main>
       <Footer />
     </div>
   )

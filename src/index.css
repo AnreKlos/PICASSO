@@ -137,3 +137,28 @@
   background: radial-gradient(ellipse 70% 40% at 50% 50%, rgba(240,235,227,0.04) 0%, rgba(201,168,122,0.03) 40%, transparent 65%);
   animation: smokeDrift3 2.8s cubic-bezier(0.16, 1, 0.3, 1) 0.5s both;
 }
+
+
+input,
+textarea,
+select {
+  -webkit-appearance: none;
+  appearance: none;
+  border: none;
+  box-shadow: none;
+}
+
+input::placeholder,
+textarea::placeholder {
+  color: rgba(240, 235, 227, 0.55);
+}
+
+input:-webkit-autofill,
+input:-webkit-autofill:hover,
+input:-webkit-autofill:focus,
+textarea:-webkit-autofill,
+select:-webkit-autofill {
+  -webkit-text-fill-color: #F0EBE3;
+  -webkit-box-shadow: 0 0 0 1000px rgba(26, 23, 20, 0.88) inset;
+  transition: background-color 9999s ease-in-out 0s;
+}
