@@ -611,7 +611,7 @@ function Hero({ scrollTo }) {
                   transition={{ duration: 2, ease: EASE, delay: 0.2 }}
                 >
                   <TiltHeading as="h1" className="font-picasso-display font-medium tracking-[-0.01em] leading-[1.1]" style={{ color: TEXT }}>
-                <span className="text-4xl sm:text-5xl lg:text-[3.8rem] xl:text-[4.5rem]" style={{ color: TEXT }}>Салон<br />эстетики</span> <span className="italic text-5xl sm:text-6xl lg:text-[5.5rem] xl:text-[6.5rem]" style={{
+я                    <span className="text-4xl sm:text-5xl lg:text-[3.8rem] xl:text-[4.5rem]" style={{ color: TEXT }}>Салон эстетики</span> <span className="block italic text-5xl sm:text-6xl lg:text-[5.5rem] xl:text-[6.5rem]" style={{
                   color: GOLD,
                   textShadow: `
                     0 1px 0 #A68B5A,
@@ -948,11 +948,20 @@ function ServiceCard({ Icon, title, desc, image, featured }) {
       <FadeIn>
         <div ref={cardRef} className="group bg-[#050505] cursor-pointer" style={{ borderRadius: 16 }}
           onClick={() => setShowLightbox(true)}>
-          <div className="relative overflow-hidden bg-[#050505] aspect-[4/3] sm:aspect-[16/9]" style={{ borderRadius: 16 }}>
+          <div 
+            className="relative overflow-hidden aspect-[4/3] sm:aspect-[16/9]" 
+            style={{ 
+              borderRadius: 16, 
+              backgroundColor: '#0E0C0B',
+              // ЖЁСТКИЙ ФИКС БЕЛЫХ ПОЛОС НА КРАЯХ:
+              transform: 'translateZ(0)',
+              boxShadow: 'inset 0 0 0 1.5px #0E0C0B' // эта тень перекроет всё светлое по краям
+            }}
+          >
             <motion.div style={{ y: imgY, willChange: 'transform' }} className="absolute -inset-2">
               <img
                 src={image} alt={title}
-                className="w-full max-w-full h-full object-cover transform-gpu scale-[1.19] group-hover:scale-[1.21] transition-transform duration-500 ease-out pointer-events-none"
+                className="block w-full max-w-full h-full object-cover transform-gpu scale-[1.19] group-hover:scale-[1.21] transition-transform duration-500 ease-out pointer-events-none"
                 style={{ backfaceVisibility: 'hidden', willChange: 'transform' }}
                 loading="lazy" />
             </motion.div>
@@ -1652,7 +1661,9 @@ export default function Picasso() {
     let top = rect.top + window.scrollY - scrollMargin
     if (window.__lenis) {
       if (href === '#about' && window.innerWidth <= 767) { // Apply additional offset for '#about' section on mobile
-        top += 120; // Add 120 pixels for mobile and #about section
+        top += 120; // Existing mobile offset
+      } else if (href === '#about' && window.innerWidth === 540) { // Specific offset for 540px width
+        top -= 100; // Scroll 100 pixels shorter
       } else if (href === '#about' && window.innerWidth === 853) { // Specific offset for Asus Zenbook Fold
         top += 20; // Scroll 50 pixels shorter
       } else if (href === '#about' && window.innerWidth > 767) { // Apply additional offset for '#about' section on desktop
@@ -1660,14 +1671,16 @@ export default function Picasso() {
       }
       if (href === '#faq' && window.innerWidth <= 767) { // Apply additional offset for '#faq' section on mobile
         top += 90; // Add 50 pixels for mobile and #faq section
+      } else if (href === '#services' && window.innerWidth === 540) { // Specific offset for Surface Duo
+        top += 120;
       } else if (href === '#services' && window.innerWidth === 1024) { // Specific offset for Nest Hub
         top += 253;
       } else if (href === '#services' && window.innerWidth === 853) { // Specific offset for Asus Zenbook Fold
         top -= 250; // Scroll 50 pixels shorter
       } else if (href === '#services' && window.innerWidth > 767) { // Apply additional offset for '#services' section on desktop/tablet
-        top -= 150; // Add 50 pixels for desktop/tablet and #services section
+        top += 50; // Add 100 pixels for desktop/tablet and #services section
       } else if (href === '#faq' && window.innerWidth > 767) { // Apply additional offset for '#faq' section on desktop
-        top += 20; // Scroll 100px shorter
+        top += 50; // Scroll 100px shorter
       }
       if (href === '#contacts' && window.innerWidth <= 767) { // Apply additional offset for '#contacts' section on mobile
         top += 50; // Add 50 pixels for mobile and #contacts section
@@ -1676,12 +1689,13 @@ export default function Picasso() {
         if (window.innerWidth === 1280) { // Specific offset for Nest Hub Max
           top += 50; // Add 100 pixels for Nest Hub Max and #team section
         } else if (window.innerWidth > 767) { // Apply additional offset for '#team' section on desktop/tablet (general)
-          top -= 118; // Scroll 159px shorter
+         
+          top -= 18; // Scroll 218px shorter
         }
       }
       if (href === '#gallery') {
         if (window.innerWidth <= 430) { // iPhone 14 Pro Max
-          top += 41;
+          top -= 50;
         } else if (window.innerWidth === 853) { // Asus Zenbook Fold
           top -= 120;
         } else {
