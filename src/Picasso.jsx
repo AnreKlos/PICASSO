@@ -386,7 +386,7 @@ function ConciergeWidget() {
                 <p className="font-picasso-display text-sm font-semibold" style={{ color: TEXT }}>PICASSO Concierge</p>
                 <p className="text-[12px] font-picasso-body" style={{ color: MUTED }}>Онлайн 24/7</p>
               </div>
-              <button onClick={() => setOpen(false)} className="cursor-pointer" style={{ color: MUTED }}><X size={18} /></button>
+              <button onClick={() => setOpen(false)} className="cursor-pointer" style={{ color: MUTED }} aria-label="Закрыть чат"><X size={18} /></button>
             </div>
             <div ref={scrollRef} className="h-80 overflow-y-auto px-6 py-5 flex flex-col gap-3">
               {messages.map((m, i) => (
@@ -408,12 +408,12 @@ function ConciergeWidget() {
                 style={{ color: TEXT }}
                 readOnly={loading}
               />
-              <button onClick={handleSend} disabled={loading || !input.trim()} className="shrink-0 cursor-pointer transition-colors disabled:opacity-40" style={{ color: MUTED }}><Send size={16} /></button>
+              <button onClick={handleSend} disabled={loading || !input.trim()} className="shrink-0 cursor-pointer transition-colors disabled:opacity-40" style={{ color: MUTED }} aria-label="Отправить сообщение"><Send size={16} /></button>
             </div>
           </motion.div>
         )}
       </AnimatePresence>
-      <motion.button whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }} onClick={() => { setOpen(!open); setShowTooltip(false) }}
+      <motion.button whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }} onClick={() => { setOpen(!open); setShowTooltip(false) }} aria-label={open ? "Закрыть чат" : "Открыть чат"}
         className="w-14 h-14 flex items-center justify-center cursor-pointer" style={{ background: `linear-gradient(to bottom, ${GOLD_BRIGHT} 0%, ${GOLD} 50%, ${GOLD_DIM} 100%)`, color: BG, borderRadius: 9999, boxShadow: '0 4px 30px rgba(201,168,122,0.2), inset 0 1px 0 rgba(255,255,255,0.25), inset 0 -1px 0 rgba(0,0,0,0.15)' }}>
         {open ? <X size={20} /> : <MessageCircle size={20} />}
       </motion.button>
@@ -476,7 +476,7 @@ function Nav({ scrollTo, scrollToTop }) {
             Записаться
           </MagneticButton>
         </div>
-        <button className="lg:hidden cursor-pointer" style={{ color: TEXT }} onClick={() => setMobileOpen(!mobileOpen)}>
+        <button className="lg:hidden cursor-pointer" style={{ color: TEXT }} onClick={() => setMobileOpen(!mobileOpen)} aria-label={mobileOpen ? 'Закрыть меню' : 'Открыть меню'}>
           {mobileOpen ? <X size={24} /> : <Menu size={24} />}
         </button>
       </div>
@@ -1152,7 +1152,7 @@ function Lightbox({ src, alt, onClose }) {
         initial={{ scale: 0.85, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} exit={{ scale: 0.85, opacity: 0 }}
         transition={{ duration: 0.35, ease: EASE }}
         src={src} alt={alt} className="block max-w-[95vw] max-h-[80vh] w-auto h-auto object-contain pointer-events-none" style={{ borderRadius: 8 }} />
-      <button onClick={onClose} className="absolute top-6 right-6 w-10 h-10 flex items-center justify-center cursor-pointer"
+      <button onClick={onClose} className="absolute top-6 right-6 w-10 h-10 flex items-center justify-center cursor-pointer" aria-label="Закрыть"
         style={{ background: SURFACE, border: `1px solid ${BORDER}`, borderRadius: 9999, color: TEXT }}>
         <X size={18} />
       </button>
@@ -1255,11 +1255,13 @@ function Gallery() {
           </div>
 
           <button onClick={scrollPrev}
+            aria-label="Предыдущее фото"
             className="absolute left-0 sm:left-2 top-1/2 -translate-y-1/2 z-20 w-10 h-10 flex items-center justify-center cursor-pointer transition-opacity opacity-40 hover:opacity-80"
             style={{ background: SURFACE, border: `1px solid ${BORDER}`, borderRadius: 9999, color: TEXT }}>
             <ChevronDown size={18} style={{ transform: 'rotate(90deg)' }} />
           </button>
           <button onClick={scrollNext}
+            aria-label="Следующее фото"
             className="absolute right-0 sm:right-2 top-1/2 -translate-y-1/2 z-20 w-10 h-10 flex items-center justify-center cursor-pointer transition-opacity opacity-40 hover:opacity-80"
             style={{ background: SURFACE, border: `1px solid ${BORDER}`, borderRadius: 9999, color: TEXT }}>
             <ChevronDown size={18} style={{ transform: 'rotate(-90deg)' }} />
@@ -1268,9 +1270,13 @@ function Gallery() {
 
         <div className="flex justify-center gap-2 mt-8">
           {works.map((_, i) => (
-            <button key={i} onClick={() => emblaApi?.scrollTo(i)}
-              className="w-2 h-2 rounded-full transition-all duration-300 cursor-pointer"
-              style={{ background: i === selectedIndex ? GOLD : `${MUTED}40`, transform: i === selectedIndex ? 'scale(1.4)' : 'scale(1)' }} />
+            <button key={i} onClick={() => emblaApi?.scrollTo(i)} aria-label={`Перейти к слайду ${i + 1}`}
+              className="w-12 h-12 flex items-center justify-center cursor-pointer"
+            >
+              <span
+                className="w-2 h-2 rounded-full transition-all duration-300 block"
+                style={{ background: i === selectedIndex ? GOLD : `${MUTED}40`, transform: i === selectedIndex ? 'scale(1.4)' : 'scale(1)' }} />
+            </button>
           ))}
         </div>
       </div>
@@ -1321,7 +1327,7 @@ function MasterModal({ master, onClose }) {
             </div>
           </div>
         </div>
-        <button onClick={onClose} className="absolute top-4 right-4 w-10 h-10 flex items-center justify-center cursor-pointer"
+        <button onClick={onClose} className="absolute top-4 right-4 w-10 h-10 flex items-center justify-center cursor-pointer" aria-label="Закрыть информацию о мастере"
           style={{ background: SURFACE, border: `1px solid ${BORDER}`, borderRadius: 9999, color: TEXT }}>
           <X size={18} />
         </button>
@@ -1695,13 +1701,13 @@ function Footer() {
         <div className="flex flex-col sm:flex-row items-center justify-between gap-5">
           <div className="flex items-center gap-4">
             <span className="font-picasso-display text-lg" style={{ color: GOLD, textShadow: '0 0 20px rgba(201,168,122,0.1)' }}>PICASSO</span>
-            <span className="text-xs" style={{ color: `${MUTED}30` }}>&copy; 2026</span>
+            <span className="text-xs" style={{ color: `${MUTED}99` }}>&copy; 2026</span>
           </div>
           <div className="flex items-center gap-3">
-            <a href="https://vk.com" target="_blank" rel="noopener noreferrer" className="w-8 h-8 flex items-center justify-center transition-colors hover:opacity-70" style={{ border: `1px solid ${BORDER}`, borderRadius: 9999, color: MUTED }}>
+            <a href="https://vk.com" target="_blank" rel="noopener noreferrer" className="w-8 h-8 flex items-center justify-center transition-colors hover:opacity-70" style={{ border: `1px solid ${BORDER}`, borderRadius: 9999, color: MUTED }} aria-label="Мы ВКонтакте">
               <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M12.785 16.241s.288-.032.436-.194c.136-.148.132-.427.132-.427s-.02-1.304.587-1.496c.598-.188 1.368 1.259 2.183 1.815.616.42 1.084.328 1.084.328l2.175-.03s1.14-.07.6-.964c-.044-.073-.314-.661-1.618-1.869-1.366-1.265-1.183-1.06.462-3.246.998-1.328 1.397-2.14 1.273-2.487-.119-.332-.852-.244-.852-.244l-2.475.015s-.184-.025-.32.057c-.133.08-.218.266-.218.266s-.391 1.04-.913 1.923c-1.1 1.867-1.539 1.966-1.718 1.848-.418-.27-.313-1.084-.313-1.664 0-1.81.275-2.564-.535-2.76-.269-.065-.466-.107-1.153-.114-.88-.009-1.624.003-2.046.209-.281.137-.497.443-.365.46.163.022.533.1.729.365.253.344.244 1.118.244 1.118s.145 2.131-.34 2.394c-.332.18-.788-.187-1.765-1.865-.5-.86-.879-1.81-.879-1.81s-.073-.178-.203-.274c-.158-.116-.378-.153-.378-.153l-2.352.015s-.353.01-.483.164c-.115.137-.009.42-.009.42s1.856 4.338 3.958 6.523c1.928 2.005 4.117 1.876 4.117 1.876h.993z"/></svg>
             </a>
-            <a href="https://instagram.com" target="_blank" rel="noopener noreferrer" className="w-8 h-8 flex items-center justify-center transition-colors hover:opacity-70" style={{ border: `1px solid ${BORDER}`, borderRadius: 9999, color: MUTED }}>
+            <a href="https://instagram.com" target="_blank" rel="noopener noreferrer" className="w-8 h-8 flex items-center justify-center transition-colors hover:opacity-70" style={{ border: `1px solid ${BORDER}`, borderRadius: 9999, color: MUTED }} aria-label="Мы в Instagram">
               <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="2" y="2" width="20" height="20" rx="5"/><circle cx="12" cy="12" r="5"/><circle cx="17.5" cy="6.5" r="1.5" fill="currentColor" stroke="none"/></svg>
             </a>
           </div>
@@ -1833,5 +1839,7 @@ export default function Picasso() {
       </main>
       <Footer />
     </div>
+  )
+}
   )
 }
