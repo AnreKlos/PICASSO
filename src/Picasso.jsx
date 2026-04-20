@@ -411,7 +411,21 @@ function ConciergeWidget() {
                 style={{ color: TEXT }}
                 readOnly={loading}
               />
-              <button onClick={handleSend} disabled={loading || !input.trim()} className="shrink-0 cursor-pointer transition-colors disabled:opacity-40" style={{ color: MUTED }} aria-label="Отправить сообщение"><Send size={16} /></button>
+              <button onClick={handleSend} disabled={loading || !input.trim()}
+                className="shrink-0 cursor-pointer transition-all disabled:opacity-40"
+                style={{
+                  background: input.trim() ? GOLD : 'transparent',
+                  color: input.trim() ? BG : MUTED,
+                  border: `1px solid ${input.trim() ? GOLD : BORDER_H}`,
+                  borderRadius: 9999,
+                  width: 40, height: 40,
+                  display: 'flex', alignItems: 'center', justifyContent: 'center',
+                  transition: 'all 0.2s ease',
+                  flexShrink: 0,
+                }}
+                aria-label="Отправить сообщение">
+                <Send size={16} />
+              </button>
             </div>
           </motion.div>
         )}
