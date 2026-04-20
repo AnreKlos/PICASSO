@@ -247,7 +247,7 @@ function DustParticles({ className = '', density = 1, opacityBoost = 1 }) {
 
         ctx.beginPath()
         ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2)
-      ctx.fillStyle = `rgba(201,168,122,${Math.min(p.a * 0.55, 0.12)})`
+        ctx.fillStyle = `rgba(201,168,122,${Math.min(p.a * 0.55, 0.12)})`
         ctx.fill()
       }
 
@@ -380,7 +380,9 @@ function ConciergeWidget() {
         {open && (
           <motion.div initial={{ opacity: 0, y: 20, scale: 0.92 }} animate={{ opacity: 1, y: 0, scale: 1 }} exit={{ opacity: 0, y: 20, scale: 0.92 }} transition={{ duration: 0.35, ease: EASE }}
             data-lenis-prevent
-            className="absolute bottom-[72px] right-0 w-[320px] sm:w-[400px] overflow-hidden" style={{ background: SURFACE, border: `1px solid ${BORDER}`, borderRadius: 16, boxShadow: '0 12px 60px rgba(0,0,0,0.5)' }}>
+            /* Добавили flex flex-col, max-h и безопасную ширину для телефона */
+            className="absolute bottom-[72px] right-0 w-[calc(100vw-48px)] sm:w-[400px] max-h-[calc(100dvh-120px)] flex flex-col overflow-hidden"
+            style={{ background: SURFACE, border: `1px solid ${BORDER}`, borderRadius: 16, boxShadow: '0 12px 60px rgba(0,0,0,0.5)' }}>
             <div className="flex items-center justify-between px-6 py-5" style={{ borderBottom: `1px solid ${BORDER}` }}>
               <div>
                 <p className="font-picasso-display text-sm font-semibold" style={{ color: TEXT }}>PICASSO Concierge</p>
@@ -388,7 +390,8 @@ function ConciergeWidget() {
               </div>
               <button onClick={() => setOpen(false)} className="cursor-pointer" style={{ color: MUTED }} aria-label="Закрыть чат"><X size={18} /></button>
             </div>
-            <div ref={scrollRef} className="h-80 overflow-y-auto px-6 py-5 flex flex-col gap-3">
+            {/* Убрали жесткую высоту h-80, добавили flex-1 */}
+            <div ref={scrollRef} className="flex-1 overflow-y-auto px-6 py-5 flex flex-col gap-3 min-h-[200px] sm:h-80 sm:min-h-0">
               {messages.map((m, i) => (
                 <div key={i} className={`max-w-[85%] px-4 py-3 text-sm font-picasso-body leading-relaxed ${m.from === 'bot' ? 'self-start' : 'self-end'}`}
                   style={{ background: m.from === 'bot' ? SURFACE_L : GOLD, color: m.from === 'bot' ? TEXT : BG, borderRadius: 12 }}>
@@ -486,7 +489,18 @@ function Nav({ scrollTo, scrollToTop }) {
             className="lg:hidden overflow-hidden" style={{ background: 'rgba(14,12,11,0.97)', borderTop: `1px solid ${BORDER}` }}>
             <div className="flex flex-col gap-4 px-6 py-6 font-picasso-body text-[14px] uppercase tracking-[0.1em]" style={{ color: MUTED }}>
               {links.map(l => <a key={l.href} href={l.href} onClick={(e) => { e.preventDefault(); setMobileOpen(false); scrollTo(l.href) }} className="py-1" style={{ color: MUTED }}>{l.label}</a>)}
-              <a onClick={(e) => { e.preventDefault(); setMobileOpen(false); scrollTo('#booking') }} className="mt-2 inline-flex items-center justify-center gap-2 px-5 py-3 cursor-pointer" style={{ background: GOLD, color: BG, borderRadius: 9999 }}>Записаться</a>
+              <button
+                type="button"
+                onClick={() => {
+                  setMobileOpen(false)
+                  scrollTo('#booking')
+                }}
+                className="mt-2 inline-flex items-center justify-center gap-2 px-5 py-3 cursor-pointer"
+                style={{ background: GOLD, color: BG, borderRadius: 9999 }}
+                aria-label="Перейти к записи"
+              >
+                Записаться
+              </button>
             </div>
           </motion.div>
         )}
@@ -612,8 +626,8 @@ function Hero({ scrollTo }) {
                 >
                   <TiltHeading as="h1" className="font-picasso-display font-medium tracking-[-0.01em] leading-[1.1]" style={{ color: TEXT }}>
                     <span className="text-4xl sm:text-5xl lg:text-[3.8rem] xl:text-[4.5rem]" style={{ color: TEXT }}>Салон эстетики</span> <span className="block italic text-5xl sm:text-6xl lg:text-[5.5rem] xl:text-[6.5rem]" style={{
-                  color: GOLD,
-                  textShadow: `
+                      color: GOLD,
+                      textShadow: `
                     0 1px 0 #A68B5A,
                     0 2px 0 #8A742B,
                     0 3px 0 #6E5D22,
@@ -625,7 +639,7 @@ function Hero({ scrollTo }) {
                     0 0 160px rgba(201,168,122,0.03),
                     0 0 260px rgba(201,168,122,0.01)
                   `,
-                }}>PICASSO</span>
+                    }}>PICASSO</span>
                   </TiltHeading>
                 </motion.div>
               </div>
@@ -637,7 +651,7 @@ function Hero({ scrollTo }) {
 
               <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.7, ease: EASE, delay: 0.8 }}
                 className="flex flex-col sm:flex-row items-center justify-center lg:justify-start gap-4 mt-12 overflow-hidden">
-          <MagneticButton onClick={(e) => { e.preventDefault(); scrollTo('#booking') }}
+                <MagneticButton onClick={(e) => { e.preventDefault(); scrollTo('#booking') }}
                   whileHover={{ boxShadow: '0 6px 40px rgba(201,168,122,0.25), inset 0 1px 0 rgba(255,255,255,0.15)' }}
                   whileTap={{ boxShadow: '0 2px 12px rgba(201,168,122,0.15)' }}
                   className="btn-shine group inline-flex items-center justify-center gap-2 px-9 py-4 font-picasso-body text-[13px] font-medium uppercase tracking-[0.14em] transition-all duration-300 cursor-pointer"
@@ -672,13 +686,25 @@ function Hero({ scrollTo }) {
 
                 {/* 2. Внутренний слой. Он обрезает фото, но крутится ВМЕСТЕ с TiltGlare */}
                 {/* isolation: 'isolate' — магия, которая не даёт углам ломаться в браузере при 3D */}
-                <div className="relative rounded-3xl overflow-hidden w-full h-full" style={{ isolation: 'isolate' }}>
+                <div
+                  className="relative rounded-3xl overflow-hidden w-full h-full"
+                  style={{
+                    isolation: 'isolate',
+                    background: '#0E0C0B',
+                    transform: 'translateZ(0)',
+                    backfaceVisibility: 'hidden',
+                    boxShadow: 'inset 0 0 0 2px #0E0C0B',
+                  }}
+                >
                   <div className="w-full h-full">
-                    {/* 3. Само фото тоже страхуем скруглением */}
                     <img
                       src="/images/hair/hair_1.webp"
                       alt="PICASSO hair styling"
-                      className="w-full max-w-full aspect-[3/4] object-cover block rounded-3xl"
+                      className="w-full max-w-full aspect-[3/4] object-cover block rounded-3xl transform-gpu scale-[1.03]"
+                      style={{
+                        backfaceVisibility: 'hidden',
+                        transform: 'translateZ(0)',
+                      }}
                     />
                   </div>
 
@@ -697,9 +723,9 @@ function Hero({ scrollTo }) {
 
             </motion.div>
           </div>
-       </div>
+        </div>
       </div>
-     </section>
+    </section>
   )
 }
 
@@ -941,29 +967,43 @@ function ServiceCard({ Icon, title, desc, image, featured }) {
     mql.addEventListener('change', handler)
     return () => mql.removeEventListener('change', handler)
   }, [])
-  const imgY = useTransform(scrollYProgress, [0, 1], isMobile ? [0, 0] : [60, -60])
+  const imgY = 0
 
   if (featured) {
     return (
       <FadeIn>
         <div ref={cardRef} className="group bg-[#050505] cursor-pointer" style={{ borderRadius: 16 }}
           onClick={() => setShowLightbox(true)}>
-          <div 
-            className="relative overflow-hidden aspect-[4/3] sm:aspect-[16/9]" 
-            style={{ 
-              borderRadius: 16, 
+          <div
+            className="relative overflow-hidden aspect-[4/3] sm:aspect-[16/9]"
+            style={{
+              borderRadius: 16,
               backgroundColor: '#0E0C0B',
               // ЖЁСТКИЙ ФИКС БЕЛЫХ ПОЛОС НА КРАЯХ:
               transform: 'translateZ(0)',
               boxShadow: 'inset 0 0 0 1.5px #0E0C0B' // эта тень перекроет всё светлое по краям
             }}
           >
-            <motion.div style={{ y: imgY, willChange: 'transform' }} className="absolute -inset-2">
+            <motion.div
+              style={{
+                y: imgY,
+                willChange: 'transform',
+                inset: '-6px',
+                transform: 'translateZ(0)',
+                backfaceVisibility: 'hidden',
+              }}
+              className="absolute"
+            >
               <img
                 src={image} alt={title}
-                className="block w-full max-w-full h-full object-cover transform-gpu scale-[1.19] group-hover:scale-[1.21] transition-transform duration-500 ease-out pointer-events-none"
-                style={{ backfaceVisibility: 'hidden', willChange: 'transform' }}
-                loading="lazy" />
+                className="block w-full h-full object-cover transform-gpu scale-[1.24] group-hover:scale-[1.26] transition-transform duration-500 ease-out pointer-events-none"
+                style={{
+                  backfaceVisibility: 'hidden',
+                  willChange: 'transform',
+                  transform: 'translateZ(0)',
+                }}
+                loading="lazy"
+              />
             </motion.div>
             <div className="absolute inset-0 pointer-events-none transition-opacity duration-500 opacity-30 group-hover:opacity-10" style={{ background: 'rgba(14,12,11,0.35)' }} />
             <div className="absolute inset-0" style={{ background: isMobile ? 'linear-gradient(to top, rgba(14,12,11,0.96) 0%, rgba(14,12,11,0.88) 38%, rgba(14,12,11,0.52) 58%, rgba(14,12,11,0.12) 100%)' : 'linear-gradient(to top, rgba(14,12,11,0.95) 0%, rgba(14,12,11,0.7) 50%, transparent 80%)' }} />
@@ -1006,38 +1046,38 @@ function ServiceCard({ Icon, title, desc, image, featured }) {
 function Services() {
   return (
     <section id="services" className="scroll-mt-0 py-28 sm:py-36" style={{ background: BG, scrollMarginTop: '-260px' }}>
-        <div className="mx-auto max-w-6xl px-5 sm:px-8">
-          <FadeIn>
-            <p className="font-picasso-body text-[12px] uppercase tracking-[0.4em] mb-5 select-none text-center" style={{ color: GOLD }}>Направления</p>
-          </FadeIn>
-          <FadeIn delay={0.1}>
-            <TiltHeading className="font-picasso-display text-3xl sm:text-4xl lg:text-5xl font-medium text-center leading-[1.15]" style={{ color: TEXT }}>
-              Полный цикл <GoldSpan>красоты</GoldSpan>
-            </TiltHeading>
-          </FadeIn>
-          <FadeIn delay={0.2}>
-            <p className="mt-6 text-center text-base font-light leading-relaxed max-w-md mx-auto" style={{ color: TEXT_SOFT }}>
-              Пять миров эстетики под одной крышей
-            </p>
-          </FadeIn>
+      <div className="mx-auto max-w-6xl px-5 sm:px-8">
+        <FadeIn>
+          <p className="font-picasso-body text-[12px] uppercase tracking-[0.4em] mb-5 select-none text-center" style={{ color: GOLD }}>Направления</p>
+        </FadeIn>
+        <FadeIn delay={0.1}>
+          <TiltHeading className="font-picasso-display text-3xl sm:text-4xl lg:text-5xl font-medium text-center leading-[1.15]" style={{ color: TEXT }}>
+            Полный цикл <GoldSpan>красоты</GoldSpan>
+          </TiltHeading>
+        </FadeIn>
+        <FadeIn delay={0.2}>
+          <p className="mt-6 text-center text-base font-light leading-relaxed max-w-md mx-auto" style={{ color: TEXT_SOFT }}>
+            Пять миров эстетики под одной крышей
+          </p>
+        </FadeIn>
 
-          <div className="mt-16 flex flex-col gap-5">
-            <ServiceCard Icon={Scissors} title="Hair — Парикмахерские услуги"
-              desc="Стрижки, окрашивание, кератин, укладки — главное направление PICASSO. Мастера-стилисты создают образ, который подчёркивает вашу индивидуальность."
-              image="/images/services/kabinet_parikmaherskaya.webp" featured />
+        <div className="mt-16 flex flex-col gap-5">
+          <ServiceCard Icon={Scissors} title="Hair — Парикмахерские услуги"
+            desc="Стрижки, окрашивание, кератин, укладки — главное направление PICASSO. Мастера-стилисты создают образ, который подчёркивает вашу индивидуальность."
+            image="/images/services/kabinet_parikmaherskaya.webp" featured />
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
-              <ServiceCard Icon={HandMetal} title="Nail сервис"
-                desc="Маникюр, педикюр, наращивание, дизайн. Премиальные материалы и техника выравнивания." />
-              <ServiceCard Icon={Eye} title="Брови"
-                desc="Архитектура, ламинирование, окрашивание. Форма, которая работает на ваш образ." />
-              <ServiceCard Icon={Flower2} title="Шугаринг"
-                desc="Депиляция сахарной пастой. Мягко, бережно, для всех зон." />
-              <ServiceCard Icon={FlaskConical} title="Уход за лицом"
-                desc="УЗ-чистка, кислотные пилинги, маски. Здоровая кожа — основа красоты." />
-            </div>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
+            <ServiceCard Icon={HandMetal} title="Nail сервис"
+              desc="Маникюр, педикюр, наращивание, дизайн. Премиальные материалы и техника выравнивания." />
+            <ServiceCard Icon={Eye} title="Брови"
+              desc="Архитектура, ламинирование, окрашивание. Форма, которая работает на ваш образ." />
+            <ServiceCard Icon={Flower2} title="Шугаринг"
+              desc="Депиляция сахарной пастой. Мягко, бережно, для всех зон." />
+            <ServiceCard Icon={FlaskConical} title="Уход за лицом"
+              desc="УЗ-чистка, кислотные пилинги, маски. Здоровая кожа — основа красоты." />
           </div>
         </div>
+      </div>
     </section>
   )
 }
@@ -1085,33 +1125,43 @@ function DirectionCard({ Icon, title, tagline, items, isOpen, onToggle, delay = 
 function Prices() {
   const [openIdx, setOpenIdx] = useState(0)
   const directions = [
-    { Icon: Scissors, title: 'Hair — Парикмахерские услуги', tagline: 'Стрижки, окрашивание, кератин, укладки', items: [
-      { name: 'Женская стрижка', price: 'от 2 000 ₽' },
-      { name: 'Окрашивание (однотонное)', price: 'от 4 500 ₽' },
-      { name: 'Кератиновое выпрямление', price: 'от 5 000 ₽' },
-      { name: 'Укладка / вечерняя', price: 'от 1 500 ₽' },
-    ]},
-    { Icon: HandMetal, title: 'Nail сервис', tagline: 'Маникюр, педикюр, наращивание, дизайн', items: [
-      { name: 'Маникюр «Всё включено»', price: 'от 1 800 ₽' },
-      { name: 'Smart-педикюр', price: 'от 2 200 ₽' },
-      { name: 'Наращивание ногтей', price: 'от 3 000 ₽' },
-      { name: 'Дизайн (Nail Art)', price: 'от 500 ₽' },
-    ]},
-    { Icon: Eye, title: 'Брови', tagline: 'Архитектура, ламинирование, окрашивание', items: [
-      { name: 'Архитектура бровей', price: 'от 1 200 ₽' },
-      { name: 'Ламинирование + ботокс', price: 'от 1 500 ₽' },
-      { name: 'Окрашивание (хна/краска)', price: 'от 600 ₽' },
-    ]},
-    { Icon: Flower2, title: 'Шугаринг', tagline: 'Депиляция сахарной пастой', items: [
-      { name: 'Ноги полностью', price: 'от 1 800 ₽' },
-      { name: 'Руки до локтя', price: 'от 700 ₽' },
-      { name: 'Бикини (классика)', price: 'от 1 200 ₽' },
-    ]},
-    { Icon: FlaskConical, title: 'Уход за лицом', tagline: 'УЗ-чистка, пилинги, маски', items: [
-      { name: 'УЗ-чистка лица', price: 'от 1 500 ₽' },
-      { name: 'Молочный пилинг', price: 'от 1 800 ₽' },
-      { name: 'Ретиноевый пилинг', price: 'от 3 000 ₽' },
-    ]},
+    {
+      Icon: Scissors, title: 'Hair — Парикмахерские услуги', tagline: 'Стрижки, окрашивание, кератин, укладки', items: [
+        { name: 'Женская стрижка', price: 'от 2 000 ₽' },
+        { name: 'Окрашивание (однотонное)', price: 'от 4 500 ₽' },
+        { name: 'Кератиновое выпрямление', price: 'от 5 000 ₽' },
+        { name: 'Укладка / вечерняя', price: 'от 1 500 ₽' },
+      ]
+    },
+    {
+      Icon: HandMetal, title: 'Nail сервис', tagline: 'Маникюр, педикюр, наращивание, дизайн', items: [
+        { name: 'Маникюр «Всё включено»', price: 'от 1 800 ₽' },
+        { name: 'Smart-педикюр', price: 'от 2 200 ₽' },
+        { name: 'Наращивание ногтей', price: 'от 3 000 ₽' },
+        { name: 'Дизайн (Nail Art)', price: 'от 500 ₽' },
+      ]
+    },
+    {
+      Icon: Eye, title: 'Брови', tagline: 'Архитектура, ламинирование, окрашивание', items: [
+        { name: 'Архитектура бровей', price: 'от 1 200 ₽' },
+        { name: 'Ламинирование + ботокс', price: 'от 1 500 ₽' },
+        { name: 'Окрашивание (хна/краска)', price: 'от 600 ₽' },
+      ]
+    },
+    {
+      Icon: Flower2, title: 'Шугаринг', tagline: 'Депиляция сахарной пастой', items: [
+        { name: 'Ноги полностью', price: 'от 1 800 ₽' },
+        { name: 'Руки до локтя', price: 'от 700 ₽' },
+        { name: 'Бикини (классика)', price: 'от 1 200 ₽' },
+      ]
+    },
+    {
+      Icon: FlaskConical, title: 'Уход за лицом', tagline: 'УЗ-чистка, пилинги, маски', items: [
+        { name: 'УЗ-чистка лица', price: 'от 1 500 ₽' },
+        { name: 'Молочный пилинг', price: 'от 1 800 ₽' },
+        { name: 'Ретиноевый пилинг', price: 'от 3 000 ₽' },
+      ]
+    },
   ]
 
   return (
@@ -1165,12 +1215,12 @@ function Gallery() {
   const [selectedIndex, setSelectedIndex] = useState(0)
 
   const works = [
-    { src: '/images/hair/hair_1.webp', alt: 'Hair styling 1' },
-    { src: '/images/hair/hair_2.webp', alt: 'Hair styling 2' },
-    { src: '/images/hair/hair_3.webp', alt: 'Hair transformation' },
-    { src: '/images/hair/hair_4.webp', alt: 'Hair colouring' },
-    { src: '/images/hair/hair_5.webp', alt: 'Hair styling 3' },
-    { src: '/images/hair/hair_6.webp', alt: 'Hair styling 4' },
+    { src: '/images/hair/hair_1.webp', alt: 'Окрашивание волос в салоне PICASSO' },
+    { src: '/images/hair/hair_2.webp', alt: 'Женская стрижка и укладка в салоне PICASSO' },
+    { src: '/images/hair/hair_3.webp', alt: 'Преображение волос после окрашивания' },
+    { src: '/images/hair/hair_4.webp', alt: 'Сложное окрашивание волос' },
+    { src: '/images/hair/hair_5.webp', alt: 'Укладка волос после салонного ухода' },
+    { src: '/images/hair/hair_6.webp', alt: 'Результат работы мастеров PICASSO' },
   ]
 
   const [emblaRef, emblaApi] = useEmblaCarousel({
@@ -1695,27 +1745,74 @@ function Contacts() {
 }
 
 function Footer() {
+  const socialLinks = [
+    {
+      href: 'https://vk.com/picasso_salon',
+      label: 'ВКонтакте PICASSO',
+      short: 'VK',
+    },
+    {
+      href: 'https://instagram.com/picasso_salon',
+      label: 'Instagram PICASSO',
+      short: 'IG',
+    },
+  ]
+
   return (
     <footer className="py-10" style={{ background: BG, borderTop: `1px solid ${BORDER}` }}>
       <div className="mx-auto max-w-6xl px-5 sm:px-8">
         <div className="flex flex-col sm:flex-row items-center justify-between gap-5">
           <div className="flex items-center gap-4">
-            <span className="font-picasso-display text-lg" style={{ color: GOLD, textShadow: '0 0 20px rgba(201,168,122,0.1)' }}>PICASSO</span>
-            <span className="text-xs" style={{ color: `${MUTED}99` }}>&copy; 2026</span>
+            <span
+              className="font-picasso-display text-lg"
+              style={{ color: GOLD, textShadow: '0 0 20px rgba(201,168,122,0.1)' }}
+            >
+              PICASSO
+            </span>
+            <span className="text-xs" style={{ color: `${MUTED}60` }}>
+              Салон эстетики
+            </span>
           </div>
+
           <div className="flex items-center gap-3">
-            <a href="https://vk.com" target="_blank" rel="noopener noreferrer" className="w-8 h-8 flex items-center justify-center transition-colors hover:opacity-70" style={{ border: `1px solid ${BORDER}`, borderRadius: 9999, color: MUTED }} aria-label="Мы ВКонтакте">
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M12.785 16.241s.288-.032.436-.194c.136-.148.132-.427.132-.427s-.02-1.304.587-1.496c.598-.188 1.368 1.259 2.183 1.815.616.42 1.084.328 1.084.328l2.175-.03s1.14-.07.6-.964c-.044-.073-.314-.661-1.618-1.869-1.366-1.265-1.183-1.06.462-3.246.998-1.328 1.397-2.14 1.273-2.487-.119-.332-.852-.244-.852-.244l-2.475.015s-.184-.025-.32.057c-.133.08-.218.266-.218.266s-.391 1.04-.913 1.923c-1.1 1.867-1.539 1.966-1.718 1.848-.418-.27-.313-1.084-.313-1.664 0-1.81.275-2.564-.535-2.76-.269-.065-.466-.107-1.153-.114-.88-.009-1.624.003-2.046.209-.281.137-.497.443-.365.46.163.022.533.1.729.365.253.344.244 1.118.244 1.118s.145 2.131-.34 2.394c-.332.18-.788-.187-1.765-1.865-.5-.86-.879-1.81-.879-1.81s-.073-.178-.203-.274c-.158-.116-.378-.153-.378-.153l-2.352.015s-.353.01-.483.164c-.115.137-.009.42-.009.42s1.856 4.338 3.958 6.523c1.928 2.005 4.117 1.876 4.117 1.876h.993z"/></svg>
-            </a>
-            <a href="https://instagram.com" target="_blank" rel="noopener noreferrer" className="w-8 h-8 flex items-center justify-center transition-colors hover:opacity-70" style={{ border: `1px solid ${BORDER}`, borderRadius: 9999, color: MUTED }} aria-label="Мы в Instagram">
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="2" y="2" width="20" height="20" rx="5"/><circle cx="12" cy="12" r="5"/><circle cx="17.5" cy="6.5" r="1.5" fill="currentColor" stroke="none"/></svg>
-            </a>
+            {socialLinks.map((item) => (
+              <a
+                key={item.label}
+                href={item.href}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="min-w-[44px] h-10 px-4 flex items-center justify-center transition-all hover:opacity-80"
+                style={{
+                  border: `1px solid ${BORDER}`,
+                  borderRadius: 9999,
+                  color: TEXT_SOFT,
+                  background: 'rgba(255,255,255,0.02)',
+                }}
+                aria-label={item.label}
+                title={item.label}
+              >
+                <span className="text-xs uppercase tracking-[0.14em]">{item.short}</span>
+              </a>
+            ))}
           </div>
         </div>
-        <div className="mt-6 pt-5 text-center" style={{ borderTop: `1px solid ${BORDER}` }}>
-          <p className="font-picasso-body text-[11px] tracking-[0.05em]" style={{ color: 'rgba(255,255,255,0.25)' }}>
-            Создано в <a href="https://github.com/anomalyco/opencode" target="_blank" rel="noopener noreferrer" className="transition-colors hover:opacity-80" style={{ color: 'rgba(255,255,255,0.35)' }}>Нейро Цехе</a>
+
+        <div
+          className="mt-6 pt-5 text-center flex flex-col sm:flex-row items-center justify-center gap-2 sm:gap-5"
+          style={{ borderTop: `1px solid ${BORDER}` }}
+        >
+          <p className="font-picasso-body text-[11px] tracking-[0.05em]" style={{ color: 'rgba(255,255,255,0.35)' }}>
+            © 2026 PICASSO. Все права защищены.
           </p>
+
+          <a
+            href="tel:+79208510105"
+            className="font-picasso-body text-[11px] tracking-[0.05em] transition-opacity hover:opacity-80"
+            style={{ color: 'rgba(255,255,255,0.45)' }}
+            aria-label="Позвонить в салон PICASSO"
+          >
+            +7 (920) 851-01-05
+          </a>
         </div>
       </div>
     </footer>
@@ -1746,67 +1843,108 @@ export default function Picasso() {
     return () => { cancelAnimationFrame(id); lenis.destroy() }
   }, [])
 
+  const SCROLL_PRESETS = {
+    mobile: {
+      base: 84,
+      sections: {
+        '#about': 120,
+        '#faq': 90,
+        '#contacts': 50,
+        '#gallery': -50,
+        '#booking': 100,
+      },
+    },
+    tablet: {
+      base: 96,
+      sections: {
+        '#about': 90,
+        '#services': 50,
+        '#faq': 50,
+        '#team': -18,
+        '#gallery': 50,
+        '#booking': 100,
+      },
+    },
+    desktop: {
+      base: 96,
+      sections: {
+        '#about': 90,
+        '#services': 50,
+        '#faq': 50,
+        '#team': -18,
+        '#gallery': 50,
+        '#booking': 100,
+      },
+    },
+  }
+
+  const DEVICE_OVERRIDES = [
+    {
+      min: 539,
+      max: 541,
+      sections: {
+        '#about': -100,
+        '#services': 120,
+      },
+    },
+    {
+      min: 852,
+      max: 854,
+      sections: {
+        '#about': 20,
+        '#services': -250,
+        '#gallery': -120,
+        '#reviews': -130,
+      },
+    },
+    {
+      min: 1023,
+      max: 1025,
+      sections: {
+        '#services': 253,
+      },
+    },
+    {
+      min: 1279,
+      max: 1281,
+      sections: {
+        '#team': 50,
+        '#booking': 60,
+      },
+    },
+  ]
+
+  function getViewportGroup(width) {
+    if (width <= 767) return 'mobile'
+    if (width <= 1199) return 'tablet'
+    return 'desktop'
+  }
+
+  function getDeviceOverride(width, href) {
+    const match = DEVICE_OVERRIDES.find(
+      (rule) => width >= rule.min && width <= rule.max && rule.sections[href] !== undefined
+    )
+    return match ? match.sections[href] : 0
+  }
+
   const scrollTo = useCallback((href) => {
     const el = document.querySelector(href)
     if (!el) return
+
+    const width = window.innerWidth
+    const group = getViewportGroup(width)
+    const preset = SCROLL_PRESETS[group]
+
     const rect = el.getBoundingClientRect()
     const scrollMargin = parseInt(getComputedStyle(el).scrollMarginTop) || 0
-    let top = rect.top + window.scrollY - scrollMargin
+
+    const baseOffset = preset.base || 0
+    const sectionOffset = preset.sections[href] || 0
+    const deviceOffset = getDeviceOverride(width, href)
+
+    const top = rect.top + window.scrollY - baseOffset - scrollMargin + sectionOffset + deviceOffset
+
     if (window.__lenis) {
-      if (href === '#about' && window.innerWidth <= 767) { // Apply additional offset for '#about' section on mobile
-        top += 120; // Existing mobile offset
-      } else if (href === '#about' && window.innerWidth === 540) { // Specific offset for 540px width
-        top -= 100; // Scroll 100 pixels shorter
-      } else if (href === '#about' && window.innerWidth === 853) { // Specific offset for Asus Zenbook Fold
-        top += 20; // Scroll 50 pixels shorter
-      } else if (href === '#about' && window.innerWidth > 767) { // Apply additional offset for '#about' section on desktop
-        top += 90; // Add 30 pixels for desktop and #about section
-      }
-      if (href === '#faq' && window.innerWidth <= 767) { // Apply additional offset for '#faq' section on mobile
-        top += 90; // Add 50 pixels for mobile and #faq section
-      } else if (href === '#services' && window.innerWidth === 540) { // Specific offset for Surface Duo
-        top += 120;
-      } else if (href === '#services' && window.innerWidth === 1024) { // Specific offset for Nest Hub
-        top += 253;
-      } else if (href === '#services' && window.innerWidth === 853) { // Specific offset for Asus Zenbook Fold
-        top -= 250; // Scroll 50 pixels shorter
-      } else if (href === '#services' && window.innerWidth > 767) { // Apply additional offset for '#services' section on desktop/tablet
-        top += 50; // Add 100 pixels for desktop/tablet and #services section
-      } else if (href === '#faq' && window.innerWidth > 767) { // Apply additional offset for '#faq' section on desktop
-        top += 50; // Scroll 100px shorter
-      }
-      if (href === '#contacts' && window.innerWidth <= 767) { // Apply additional offset for '#contacts' section on mobile
-        top += 50; // Add 50 pixels for mobile and #contacts section
-      }
-      if (href === '#team') {
-        if (window.innerWidth === 1280) { // Specific offset for Nest Hub Max
-          top += 50; // Add 100 pixels for Nest Hub Max and #team section
-        } else if (window.innerWidth > 767) { // Apply additional offset for '#team' section on desktop/tablet (general)
-         
-          top -= 18; // Scroll 218px shorter
-        }
-      }
-      if (href === '#gallery') {
-        if (window.innerWidth <= 430) { // iPhone 14 Pro Max
-          top -= 50;
-        } else if (window.innerWidth === 853) { // Asus Zenbook Fold
-          top -= 120;
-        } else {
-          top += 50; // General case
-        }
-      }
-      if (href === '#booking') {
-        if (window.innerWidth === 1280) { // Specific offset for Nest Hub Max
-          top += 60; // Scroll 50px shorter
-        } else if (window.innerWidth > 767) { // General desktop
-          top += 100;
-        } else if (window.innerWidth <= 390) { // iPhone 12 Pro
-          top += 100;
-        }
-      }
-      if (href === '#reviews' && window.innerWidth === 853) { // Specific offset for Asus Zenbook Fold
-        top -= 130; // Scroll 100 pixels shorter
-      }
       window.__lenis.scrollTo(top, { duration: 1.2 })
     } else {
       window.scrollTo({ top, behavior: 'smooth' })
@@ -1839,7 +1977,5 @@ export default function Picasso() {
       </main>
       <Footer />
     </div>
-  )
-}
   )
 }
