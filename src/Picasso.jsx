@@ -430,10 +430,23 @@ function ConciergeWidget() {
           </motion.div>
         )}
       </AnimatePresence>
-      <motion.button whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }} onClick={() => { setOpen(!open); setShowTooltip(false) }} aria-label={open ? "Закрыть чат" : "Открыть чат"}
-        className="w-14 h-14 flex items-center justify-center cursor-pointer" style={{ background: `linear-gradient(to bottom, ${GOLD_BRIGHT} 0%, ${GOLD} 50%, ${GOLD_DIM} 100%)`, color: BG, borderRadius: 9999, boxShadow: '0 4px 30px rgba(201,168,122,0.2), inset 0 1px 0 rgba(255,255,255,0.25), inset 0 -1px 0 rgba(0,0,0,0.15)' }}>
-        {open ? <X size={20} /> : <MessageCircle size={20} />}
-      </motion.button>
+      {!open && (
+        <motion.button
+          whileHover={{ scale: 1.05 }}
+          whileTap={{ scale: 0.95 }}
+          onClick={() => { setOpen(true); setShowTooltip(false) }}
+          aria-label="Открыть чат"
+          className="w-14 h-14 flex items-center justify-center cursor-pointer"
+          style={{
+            background: `linear-gradient(to bottom, ${GOLD_BRIGHT} 0%, ${GOLD} 50%, ${GOLD_DIM} 100%)`,
+            color: BG,
+            borderRadius: 9999,
+            boxShadow: '0 4px 30px rgba(201,168,122,0.2), inset 0 1px 0 rgba(255,255,255,0.25), inset 0 -1px 0 rgba(0,0,0,0.15)',
+          }}
+        >
+          <MessageCircle size={20} />
+        </motion.button>
+      )}
       <AnimatePresence>
         {showTooltip && !open && (
           <motion.div
