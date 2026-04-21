@@ -880,6 +880,8 @@ function Hero({ scrollTo }) {
                         backfaceVisibility: 'hidden',
                         transform: 'translateZ(0)',
                       }}
+                      width={750}
+                      height={1000}
                       fetchPriority="high"
                       decoding="async"
                     />
@@ -1034,6 +1036,8 @@ function About() {
                   alt="Вход в салон PICASSO"
                   className="w-full max-w-full h-full object-cover transform-gpu scale-[1.01] group-hover:scale-[1.03] transition-transform duration-500 ease-out aspect-[4/3] pointer-events-none"
                   style={{ backfaceVisibility: 'hidden', willChange: 'transform' }}
+                  width={750}
+                  height={563}
                   loading="lazy"
                   decoding="async"
                 />
@@ -2051,6 +2055,13 @@ function Footer() {
 }
 
 export default function Picasso() {
+  const [showWidget, setShowWidget] = useState(false)
+
+  useEffect(() => {
+    const id = setTimeout(() => setShowWidget(true), 3000)
+    return () => clearTimeout(id)
+  }, [])
+
   useEffect(() => {
     const lenis = new Lenis({
       duration: 1.1,
@@ -2064,11 +2075,26 @@ export default function Picasso() {
     window.lenis = lenis
 
     let rafId = 0
+    let tabVisible = true
 
     function raf(time) {
       lenis.raf(time)
       rafId = requestAnimationFrame(raf)
     }
+
+    function startLenis() {
+      if (tabVisible && !rafId) rafId = requestAnimationFrame(raf)
+    }
+
+    function stopLenis() {
+      if (rafId) { cancelAnimationFrame(rafId); rafId = 0 }
+    }
+
+    const onVisChange = () => {
+      tabVisible = !document.hidden
+      tabVisible ? startLenis() : stopLenis()
+    }
+    document.addEventListener('visibilitychange', onVisChange)
 
     rafId = requestAnimationFrame(raf)
 
@@ -2078,7 +2104,8 @@ export default function Picasso() {
     window.scrollTo(0, 0)
 
     return () => {
-      cancelAnimationFrame(rafId)
+      stopLenis()
+      document.removeEventListener('visibilitychange', onVisChange)
       lenis.off('scroll', emitScroll)
       lenis.destroy()
       if (window.lenis === lenis) {
@@ -2180,7 +2207,7 @@ const scrollTo = useCallback((target) => {
       className="relative w-full overflow-hidden flex flex-col min-h-screen font-picasso-body"
       style={{ background: BG, color: TEXT, lineHeight: 1.7 }}
     >
-      <ConciergeWidget />
+      {showWidget && <ConciergeWidget />}
       <Nav scrollTo={scrollTo} scrollToTop={scrollToTop} />
       <main>
         <Hero scrollTo={scrollTo} />
