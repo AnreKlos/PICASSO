@@ -640,7 +640,7 @@ function Nav({ scrollTo, scrollToTop }) {
         </button>
         <div className="hidden lg:flex items-center gap-7 font-picasso-body text-[13px] font-medium uppercase tracking-[0.12em]" style={{ color: MUTED }}>
           {links.map(l => <a key={l.href} href={l.href} onClick={(e) => { e.preventDefault(); scrollTo(l.href) }} className="hover:text-[var(--color-picasso-text)] transition-colors duration-200" style={{ color: MUTED }}>{l.label}</a>)}
-          <MagneticButton onClick={(e) => { e.preventDefault(); scrollTo('booking') }}
+          <MagneticButton href="#booking" onClick={(e) => { e.preventDefault(); scrollTo('booking') }}
             className="inline-flex items-center gap-2 px-5 py-2 transition-all duration-300 font-picasso-body text-[13px] font-medium uppercase tracking-[0.12em]"
             style={{ background: `linear-gradient(to bottom, ${GOLD_BRIGHT} 0%, ${GOLD} 50%, ${GOLD_DIM} 100%)`, color: BG, borderRadius: 9999, boxShadow: '0 2px 12px rgba(201,168,122,0.15), inset 0 1px 0 rgba(255,255,255,0.2), inset 0 -1px 0 rgba(0,0,0,0.12)' }}>
             Записаться
@@ -826,14 +826,14 @@ function Hero({ scrollTo }) {
 
               <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.7, ease: EASE, delay: 0.8 }}
                 className="flex flex-col sm:flex-row items-center justify-center lg:justify-start gap-4 mt-12 overflow-hidden">
-                <MagneticButton onClick={(e) => { e.preventDefault(); scrollTo('booking') }}
+                <MagneticButton href="#booking" onClick={(e) => { e.preventDefault(); scrollTo('booking') }}
                   whileHover={{ boxShadow: '0 6px 40px rgba(201,168,122,0.25), inset 0 1px 0 rgba(255,255,255,0.15)' }}
                   whileTap={{ boxShadow: '0 2px 12px rgba(201,168,122,0.15)' }}
                   className="btn-shine group inline-flex items-center justify-center gap-2 px-9 py-4 font-picasso-body text-[13px] font-medium uppercase tracking-[0.14em] transition-all duration-300 cursor-pointer"
                   style={{ background: `linear-gradient(to bottom, ${GOLD_BRIGHT} 0%, ${GOLD} 40%, ${GOLD_DIM} 100%)`, color: BG, borderRadius: 9999, boxShadow: '0 1px 0 rgba(255,255,255,0.25) inset, 0 -2px 0 rgba(0,0,0,0.2) inset, 0 4px 8px rgba(0,0,0,0.3), 0 8px 30px rgba(201,168,122,0.18)', textShadow: '0 1px 2px rgba(0,0,0,0.25)' }}>
                   Онлайн запись <ArrowRight size={15} className="transition-transform group-hover:translate-x-1" />
                 </MagneticButton>
-                <MagneticButton onClick={(e) => { e.preventDefault(); scrollTo('gallery') }}
+                <MagneticButton href="#gallery" onClick={(e) => { e.preventDefault(); scrollTo('gallery') }}
                   whileHover={{ boxShadow: '0 6px 30px rgba(0,0,0,0.4), inset 0 1px 0 rgba(255,255,255,0.06)' }}
                   whileTap={{ boxShadow: '0 2px 10px rgba(0,0,0,0.3)' }}
                   className="inline-flex items-center justify-center font-picasso-body text-[13px] font-medium uppercase tracking-[0.14em] px-9 py-4 transition-all duration-300 cursor-pointer"
@@ -852,15 +852,10 @@ function Hero({ scrollTo }) {
               animate={{ opacity: 1, scale: 1, filter: 'blur(0px) brightness(1) saturate(1)' }}
               transition={{ duration: 2.2, ease: EASE, delay: 0.6 }}
             >
-
-              {/* 1. TiltGlare — это сама физическая карточка. Она вращается и отбрасывает тень */}
               <TiltGlare
                 className="relative rounded-3xl"
                 style={{ boxShadow: '0 20px 60px rgba(0,0,0,0.5), 0 0 80px rgba(201,168,122,0.04)' }}
               >
-
-                {/* 2. Внутренний слой. Он обрезает фото, но крутится ВМЕСТЕ с TiltGlare */}
-                {/* isolation: 'isolate' — магия, которая не даёт углам ломаться в браузере при 3D */}
                 <div
                   className="relative rounded-3xl overflow-hidden w-full h-full"
                   style={{
@@ -880,26 +875,20 @@ function Hero({ scrollTo }) {
                         backfaceVisibility: 'hidden',
                         transform: 'translateZ(0)',
                       }}
-                      width={750}
-                      height={1000}
+                      width={500}
+                      height={666}
                       fetchPriority="high"
                       decoding="async"
                     />
                   </div>
-
-                  {/* Градиент затемнения */}
                   <div
                     className="absolute inset-0 pointer-events-none rounded-3xl"
                     style={{ background: 'linear-gradient(to top, rgba(14,12,11,0.7) 0%, transparent 40%), linear-gradient(to right, rgba(14,12,11,0.4) 0%, transparent 30%)' }}
                   />
-
                 </div>
               </TiltGlare>
-
-              {/* Светящиеся пятна лежат сзади (z-[-1]) и просто висят в воздухе, не участвуя во вращении */}
               {!isMobile && <div className="absolute -bottom-6 -left-6 w-32 h-32 rounded-full blur-[60px] pointer-events-none z-[-1]" style={{ background: 'rgba(201,168,122,0.06)' }} />}
               {!isMobile && <div className="absolute -top-4 -right-4 w-24 h-24 rounded-full blur-[40px] pointer-events-none z-[-1]" style={{ background: 'rgba(184,146,138,0.04)' }} />}
-
             </motion.div>
           </div>
         </div>
@@ -2004,7 +1993,7 @@ function Footer() {
             >
               PICASSO
             </span>
-            <span className="text-xs" style={{ color: `${MUTED}60` }}>
+            <span className="text-xs" style={{ color: `${MUTED}8C` }}>
               Салон эстетики
             </span>
           </div>
@@ -2036,14 +2025,14 @@ function Footer() {
           className="mt-6 pt-5 text-center flex flex-col sm:flex-row items-center justify-center gap-2 sm:gap-5"
           style={{ borderTop: `1px solid ${BORDER}` }}
         >
-          <p className="font-picasso-body text-[11px] tracking-[0.05em]" style={{ color: 'rgba(255,255,255,0.35)' }}>
+          <p className="font-picasso-body text-[11px] tracking-[0.05em]" style={{ color: 'rgba(255,255,255,0.55)' }}>
             © 2026 PICASSO. Все права защищены.
           </p>
 
           <a
             href="tel:+79208510105"
             className="font-picasso-body text-[11px] tracking-[0.05em] transition-opacity hover:opacity-80"
-            style={{ color: 'rgba(255,255,255,0.45)' }}
+            style={{ color: 'rgba(255,255,255,0.6)' }}
             aria-label="Позвонить в салон PICASSO"
           >
             +7 (920) 851-01-05
