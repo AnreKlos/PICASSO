@@ -361,6 +361,7 @@ function ConciergeWidget() {
   const [input, setInput] = useState('')
   const [loading, setLoading] = useState(false)
   const [showTooltip, setShowTooltip] = useState(false)
+  const hasBeenOpened = useRef(false)
   const scrollRef = useRef(null)
   const inputRef = useRef(null)
   const widgetRef = useRef(null)
@@ -371,12 +372,20 @@ function ConciergeWidget() {
 
   useEffect(() => {
     if (open) {
+      hasBeenOpened.current = true
+      setShowTooltip(false)
       setTimeout(() => inputRef.current?.focus(), 50)
+      document.body.style.overflow = 'hidden'
+    } else {
+      document.body.style.overflow = ''
     }
+    return () => { document.body.style.overflow = '' }
   }, [open])
 
   useEffect(() => {
-    const timer = setTimeout(() => setShowTooltip(true), 25000)
+    const timer = setTimeout(() => {
+      if (!hasBeenOpened.current) setShowTooltip(true)
+    }, 25000)
     return () => clearTimeout(timer)
   }, [])
 
@@ -443,7 +452,7 @@ function ConciergeWidget() {
   }
 
   return (
-    <div ref={widgetRef} className="fixed bottom-4 right-4 z-50">
+    <div ref={widgetRef} className={`fixed z-50 ${open ? 'inset-0 sm:inset-auto sm:bottom-4 sm:right-4' : 'bottom-4 right-4'}`}>
       <AnimatePresence>
         {open && (
           <motion.div
@@ -452,14 +461,15 @@ function ConciergeWidget() {
             exit={{ opacity: 0, y: 20, scale: 0.92 }}
             transition={{ duration: 0.35, ease: EASE }}
             data-lenis-prevent
-            className="absolute right-0 w-[320px] sm:w-[400px] max-w-[calc(100vw-24px)] overflow-hidden"
+            className="fixed inset-0 sm:absolute sm:inset-auto sm:right-0 sm:bottom-0 w-full sm:w-[400px] sm:max-w-[calc(100vw-24px)] overflow-hidden flex flex-col sm:rounded-2xl"
             style={{
               background: SURFACE,
               border: `1px solid ${BORDER}`,
-              borderRadius: 16,
               boxShadow: '0 12px 60px rgba(0,0,0,0.5)',
-              bottom: 0,
+              overscrollBehavior: 'contain',
+              touchAction: 'none',
             }}
+            onTouchMove={(e) => e.stopPropagation()}
           >
             <div
               className="flex items-center justify-between px-6 py-5"
@@ -491,7 +501,9 @@ function ConciergeWidget() {
 
             <div
               ref={scrollRef}
-              className="h-80 overflow-y-auto px-6 py-5 flex flex-col gap-3"
+              className="flex-1 sm:h-80 sm:flex-none overflow-y-auto px-6 py-5 flex flex-col gap-3"
+              style={{ touchAction: 'pan-y', overscrollBehavior: 'contain' }}
+              onTouchMove={(e) => e.stopPropagation()}
             >
               {messages.map((m, i) => (
                 <div
