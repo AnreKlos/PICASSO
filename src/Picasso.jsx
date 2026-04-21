@@ -2063,58 +2063,63 @@ export default function Picasso() {
   }, [])
 
   useEffect(() => {
-    const lenis = new Lenis({
-      duration: 1.1,
-      smoothWheel: true,
-      syncTouch: false,
-      touchMultiplier: 1.1,
-      wheelMultiplier: 1,
-      lerp: 0.1,
-    })
+    let lenis, rafId = 0, tabVisible = true, cancelled = false
+    let startLenis = () => {}, stopLenis = () => {}, cleanupVis = () => {}, cleanupScroll = () => {}
 
-    window.lenis = lenis
+    function init() {
+      if (cancelled) return
+      lenis = new Lenis({
+        duration: 1.1,
+        smoothWheel: true,
+        syncTouch: false,
+        touchMultiplier: 1.1,
+        wheelMultiplier: 1,
+        lerp: 0.1,
+      })
 
-    let rafId = 0
-    let tabVisible = true
+      window.lenis = lenis
 
-    function raf(time) {
-      lenis.raf(time)
+      function raf(time) {
+        lenis.raf(time)
+        rafId = requestAnimationFrame(raf)
+      }
+
+      startLenis = () => { if (tabVisible && !rafId) rafId = requestAnimationFrame(raf) }
+      stopLenis = () => { if (rafId) { cancelAnimationFrame(rafId); rafId = 0 } }
+
+      const onVisChange = () => {
+        tabVisible = !document.hidden
+        tabVisible ? startLenis() : stopLenis()
+      }
+      document.addEventListener('visibilitychange', onVisChange)
+      cleanupVis = () => document.removeEventListener('visibilitychange', onVisChange)
+
+      const emitScroll = () => window.dispatchEvent(new Event('scroll'))
+      lenis.on('scroll', emitScroll)
+      cleanupScroll = () => lenis.off('scroll', emitScroll)
+
       rafId = requestAnimationFrame(raf)
+      window.scrollTo(0, 0)
     }
 
-    function startLenis() {
-      if (tabVisible && !rafId) rafId = requestAnimationFrame(raf)
-    }
-
-    function stopLenis() {
-      if (rafId) { cancelAnimationFrame(rafId); rafId = 0 }
-    }
-
-    const onVisChange = () => {
-      tabVisible = !document.hidden
-      tabVisible ? startLenis() : stopLenis()
-    }
-    document.addEventListener('visibilitychange', onVisChange)
-
-    rafId = requestAnimationFrame(raf)
-
-    const emitScroll = () => window.dispatchEvent(new Event('scroll'))
-    lenis.on('scroll', emitScroll)
-
-    window.scrollTo(0, 0)
+    const idleId = typeof requestIdleCallback === 'function'
+      ? requestIdleCallback(init)
+      : setTimeout(init, 0)
 
     return () => {
+      cancelled = true
+      typeof cancelIdleCallback === 'function' ? cancelIdleCallback(idleId) : clearTimeout(idleId)
       stopLenis()
-      document.removeEventListener('visibilitychange', onVisChange)
-      lenis.off('scroll', emitScroll)
-      lenis.destroy()
-      if (window.lenis === lenis) {
-        delete window.lenis
+      cleanupVis()
+      cleanupScroll()
+      if (lenis) {
+        lenis.destroy()
+        if (window.lenis === lenis) delete window.lenis
       }
     }
   }, [])
 
-const scrollTo = useCallback((target) => {
+  const scrollTo = useCallback((target) => {
     const id = String(target).replace('#', '')
     const sectionEl = document.getElementById(id)
 
