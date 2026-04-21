@@ -28,23 +28,42 @@ function TiltHeading({ children, className = '', as: Tag = 'h2', style = {} }) {
   const frameRef = useRef(null)
 
   useEffect(() => {
-    let lastX = 0, lastY = 0
-    function animate() {
+    const isDesktop = window.matchMedia('(hover: hover) and (pointer: fine)').matches
+
+    if (!isDesktop) {
+      setRender({ x: 0, y: 0 })
+      return
+    }
+
+    let lastX = 0
+    let lastY = 0
+
+    function animateFrame() {
       swayAngleRef.current += hovering ? 0.02 : 0
+
       const swayX = hovering ? Math.sin(swayAngleRef.current) * 1.5 : 0
       const swayY = hovering ? Math.cos(swayAngleRef.current * 0.7) * 1.0 : 0
+
       currentRef.current.x += (targetRef.current.x + swayX - currentRef.current.x) * 0.08
       currentRef.current.y += (targetRef.current.y + swayY - currentRef.current.y) * 0.08
+
       const nx = Math.round(currentRef.current.x * 100) / 100
       const ny = Math.round(currentRef.current.y * 100) / 100
+
       if (nx !== lastX || ny !== lastY) {
-        lastX = nx; lastY = ny
+        lastX = nx
+        lastY = ny
         setRender({ x: nx, y: ny })
       }
-      frameRef.current = requestAnimationFrame(animate)
+
+      frameRef.current = requestAnimationFrame(animateFrame)
     }
-    frameRef.current = requestAnimationFrame(animate)
-    return () => { if (frameRef.current) cancelAnimationFrame(frameRef.current) }
+
+    frameRef.current = requestAnimationFrame(animateFrame)
+
+    return () => {
+      if (frameRef.current) cancelAnimationFrame(frameRef.current)
+    }
   }, [hovering])
 
   const handleMouseMove = useCallback((e) => {
@@ -852,7 +871,6 @@ function About() {
           className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[70vw] max-w-[380px] h-[70vw] max-h-[380px] rounded-full blur-[200px]"
           style={{ background: 'rgba(201,168,122,0.02)' }}
         />
-        <DustParticles />
       </div>
 
       <div className="mx-auto max-w-6xl px-5 sm:px-8 relative z-10">
@@ -883,9 +901,11 @@ function About() {
                 className="mt-7 text-[16px] font-light leading-relaxed max-w-lg"
                 style={{ color: TEXT_SOFT }}
               >
-                PICASSO — это не просто салон. Это место, где стиль встречается с заботой,
-                а каждая деталь продумана ради вашего комфорта. Свежесваренный кофе,
-                шелковые халаты, тишина и мастера, которым доверяют.
+                PICASSO — студия, куда приходят за понятным результатом.
+                Мы честно обсуждаем пожелания, подбираем решения под качество волос и кожи,
+                работаем только на проверенных составах и держим высокий стандарт чистоты.
+                В одном визите можно обновить стрижку и цвет, привести в порядок
+                ногти и брови и уйти с ощущением, что о вас действительно позаботились.
               </p>
             </FadeIn>
 
@@ -1689,7 +1709,7 @@ function Booking() {
   return (
     <section
       id="booking"
-      className="scroll-mt-20 py-28 sm:py-36 relative overflow-hidden"
+      className="scroll-mt-28 sm:scroll-mt-20 py-28 sm:py-36 relative overflow-hidden"
       style={{ background: BG }}
     >
       <div className="absolute inset-0 overflow-hidden pointer-events-none w-full">
@@ -1698,8 +1718,6 @@ function Booking() {
           style={{ background: 'rgba(201,168,122,0.018)' }}
         />
       </div>
-
-      <DustParticles />
 
       <div className="mx-auto max-w-xl px-5 sm:px-8 text-center relative z-10">
         <FadeIn>
@@ -1722,7 +1740,10 @@ function Booking() {
         </FadeIn>
 
         <FadeIn delay={0.2}>
-          <p className="mt-5 text-base font-light leading-relaxed" style={{ color: TEXT_SOFT }}>
+          <p
+            className="mt-5 text-base font-light leading-relaxed"
+            style={{ color: TEXT_SOFT }}
+          >
             Оставьте заявку — подберём удобное время и мастера
           </p>
         </FadeIn>
@@ -1766,7 +1787,8 @@ function Booking() {
                 <motion.button
                   type="submit"
                   whileHover={{
-                    boxShadow: '0 6px 30px rgba(201,168,122,0.2), inset 0 1px 0 rgba(255,255,255,0.15)',
+                    boxShadow:
+                      '0 6px 30px rgba(201,168,122,0.2), inset 0 1px 0 rgba(255,255,255,0.15)',
                   }}
                   whileTap={{
                     boxShadow: '0 2px 12px rgba(201,168,122,0.1)',
@@ -1795,10 +1817,16 @@ function Booking() {
                   borderBottom: `1px solid ${BORDER_H}`,
                 }}
               >
-                <p className="font-picasso-display text-2xl italic" style={{ color: TEXT }}>
+                <p
+                  className="font-picasso-display text-2xl italic"
+                  style={{ color: TEXT }}
+                >
                   Спасибо!
                 </p>
-                <p className="mt-3 text-base font-light" style={{ color: TEXT_SOFT }}>
+                <p
+                  className="mt-3 text-base font-light"
+                  style={{ color: TEXT_SOFT }}
+                >
                   Мы свяжемся с вами в ближайшее время
                 </p>
               </motion.div>
@@ -1929,11 +1957,16 @@ function Footer() {
 }
 
 export default function Picasso() {
-  const [isLoaded, setIsLoaded] = useState(false)
+  const scrollTo = useCallback((href) => {
+    const el = document.querySelector(href)
+    if (el) {
+      const y = el.getBoundingClientRect().top + window.scrollY
+      window.__lenis?.scrollTo(y, { duration: 1.2 })
+    }
+  }, [])
 
-  useEffect(() => {
-    const timer = setTimeout(() => setIsLoaded(true), 80)
-    return () => clearTimeout(timer)
+  const scrollToTop = useCallback(() => {
+    window.__lenis?.scrollTo(0, { duration: 1.2 })
   }, [])
 
   useEffect(() => {
@@ -1943,6 +1976,7 @@ export default function Picasso() {
       touchMultiplier: 2,
     })
     window.__lenis = lenis
+
     let ticking = false
     lenis.on('scroll', () => {
       if (!ticking) {
@@ -1953,127 +1987,18 @@ export default function Picasso() {
         })
       }
     })
-    function raf(time) { lenis.raf(time); requestAnimationFrame(raf) }
-    const id = requestAnimationFrame(raf)
-    window.scrollTo(0, 0)
-    return () => { cancelAnimationFrame(id); lenis.destroy() }
-  }, [])
 
-  const SCROLL_PRESETS = {
-    mobile: {
-      base: 84,
-      sections: {
-        '#about': 120,
-        '#faq': 90,
-        '#contacts': 50,
-        '#gallery': -50,
-        '#booking': 100,
-      },
-    },
-    tablet: {
-      base: 96,
-      sections: {
-        '#about': 90,
-        '#services': 50,
-        '#faq': 50,
-        '#team': -18,
-        '#gallery': 50,
-        '#booking': 100,
-      },
-    },
-    desktop: {
-      base: 96,
-      sections: {
-        '#about': 90,
-        '#services': 50,
-        '#faq': 50,
-        '#team': -18,
-        '#gallery': 50,
-        '#booking': 100,
-      },
-    },
-  }
-
-  const DEVICE_OVERRIDES = [
-    {
-      min: 539,
-      max: 541,
-      sections: {
-        '#about': -100,
-        '#services': 120,
-      },
-    },
-    {
-      min: 852,
-      max: 854,
-      sections: {
-        '#about': 20,
-        '#services': -250,
-        '#gallery': -120,
-        '#reviews': -130,
-      },
-    },
-    {
-      min: 1023,
-      max: 1025,
-      sections: {
-        '#services': 253,
-      },
-    },
-    {
-      min: 1279,
-      max: 1281,
-      sections: {
-        '#team': 50,
-        '#booking': 60,
-      },
-    },
-  ]
-
-  function getViewportGroup(width) {
-    if (width <= 767) return 'mobile'
-    if (width <= 1199) return 'tablet'
-    return 'desktop'
-  }
-
-  function getDeviceOverride(width, href) {
-    const match = DEVICE_OVERRIDES.find(
-      (rule) => width >= rule.min && width <= rule.max && rule.sections[href] !== undefined
-    )
-    return match ? match.sections[href] : 0
-  }
-
-  const scrollTo = useCallback((href) => {
-    const el = document.querySelector(href)
-    if (!el) return
-
-    const width = window.innerWidth
-    const group = getViewportGroup(width)
-    const preset = SCROLL_PRESETS[group]
-
-    const rect = el.getBoundingClientRect()
-    const scrollMargin = parseInt(getComputedStyle(el).scrollMarginTop) || 0
-
-    const baseOffset = preset.base || 0
-    const sectionOffset = preset.sections[href] || 0
-    const deviceOffset = getDeviceOverride(width, href)
-
-    const mobileBump = window.innerWidth < 768 ? -100 : 0
-
-    const top = rect.top + window.scrollY - baseOffset - scrollMargin + sectionOffset + deviceOffset - mobileBump
-
-    if (window.__lenis) {
-      window.__lenis.scrollTo(top, { duration: 1.2 })
-    } else {
-      window.scrollTo({ top, behavior: 'smooth' })
+    function raf(time) {
+      lenis.raf(time)
+      requestAnimationFrame(raf)
     }
-  }, [])
+    const id = requestAnimationFrame(raf)
 
-  const scrollToTop = useCallback(() => {
-    if (window.__lenis) {
-      window.__lenis.scrollTo(0, { duration: 1.1 })
-    } else {
-      window.scrollTo({ top: 0, behavior: 'smooth' })
+    window.scrollTo(0, 0)
+
+    return () => {
+      cancelAnimationFrame(id)
+      lenis.destroy()
     }
   }, [])
 
@@ -2083,21 +2008,17 @@ export default function Picasso() {
       <Nav scrollTo={scrollTo} scrollToTop={scrollToTop} />
       <main>
         <Hero scrollTo={scrollTo} />
-        {isLoaded && (
-          <>
-            <About />
-            <Services />
-            <Prices />
-            <Gallery />
-            <Team />
-            <Reviews />
-            <FAQ />
-            <Booking />
-            <Contacts />
-          </>
-        )}
+        <About />
+        <Services />
+        <Prices />
+        <Gallery />
+        <Team />
+        <Reviews />
+        <FAQ />
+        <Booking />
+        <Contacts />
       </main>
-      {isLoaded && <Footer />}
+      <Footer />
     </div>
   )
 }
