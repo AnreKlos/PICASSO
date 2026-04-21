@@ -37,6 +37,11 @@ function TiltHeading({ children, className = '', as: Tag = 'h2', style = {} }) {
 
     let lastX = 0
     let lastY = 0
+    let running = false
+
+    function startLoop() {
+      if (!running) { running = true; frameRef.current = requestAnimationFrame(animateFrame) }
+    }
 
     function animateFrame() {
       swayAngleRef.current += hovering ? 0.02 : 0
@@ -56,13 +61,15 @@ function TiltHeading({ children, className = '', as: Tag = 'h2', style = {} }) {
         setRender({ x: nx, y: ny })
       }
 
-      frameRef.current = requestAnimationFrame(animateFrame)
+      const settled = !hovering && Math.abs(nx) < 0.01 && Math.abs(ny) < 0.01
+      if (settled) { running = false; frameRef.current = null } else { frameRef.current = requestAnimationFrame(animateFrame) }
     }
 
-    frameRef.current = requestAnimationFrame(animateFrame)
+    startLoop()
 
     return () => {
       if (frameRef.current) cancelAnimationFrame(frameRef.current)
+      running = false
     }
   }, [hovering])
 
@@ -273,13 +280,45 @@ function DustParticles({ className = '', density = 1, opacityBoost = 1 }) {
       frameRef.current = requestAnimationFrame(render)
     }
 
-    setup()
-    render()
+    let visible = true
+    let inViewport = true
+
+    function start() {
+      if (!frameRef.current && visible && inViewport) {
+        frameRef.current = requestAnimationFrame(render)
+      }
+    }
+
+    function stop() {
+      if (frameRef.current) {
+        cancelAnimationFrame(frameRef.current)
+        frameRef.current = null
+      }
+    }
+
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        inViewport = entry.isIntersecting
+        inViewport ? start() : stop()
+      },
+      { threshold: 0 }
+    )
+    observer.observe(canvas)
+
+    const onVisChange = () => {
+      visible = !document.hidden
+      visible ? start() : stop()
+    }
+    document.addEventListener('visibilitychange', onVisChange)
+
+    start()
 
     window.addEventListener('resize', setup, { passive: true })
 
     return () => {
-      if (frameRef.current) cancelAnimationFrame(frameRef.current)
+      stop()
+      observer.disconnect()
+      document.removeEventListener('visibilitychange', onVisChange)
       window.removeEventListener('resize', setup)
     }
   }, [density, opacityBoost])
@@ -647,6 +686,28 @@ function TiltGlare({ children, className = '', style = {} }) {
     const target = { x: 0, y: 0, glareX: 50, glareY: 50, glareO: 0 }
     const current = { x: 0, y: 0, glareX: 50, glareY: 50, glareO: 0 }
 
+    const glare = el.querySelector('.tilt-glare')
+    let frame = null
+    let active = false
+
+    function startLoop() {
+      if (!active) { active = true; frame = requestAnimationFrame(tick) }
+    }
+
+    function tick() {
+      current.x += (target.x - current.x) * 0.025
+      current.y += (target.y - current.y) * 0.025
+      current.glareX += (target.glareX - current.glareX) * 0.04
+      current.glareY += (target.glareY - current.glareY) * 0.04
+      current.glareO += (target.glareO - current.glareO) * 0.02
+      el.style.transform = `perspective(800px) rotateX(${current.x}deg) rotateY(${current.y}deg)`
+      if (glare) {
+        glare.style.background = `radial-gradient(circle at ${current.glareX}% ${current.glareY}%, rgba(255,255,255,${current.glareO}), transparent 60%)`
+      }
+      const settled = Math.abs(target.x - current.x) < 0.01 && Math.abs(target.y - current.y) < 0.01 && Math.abs(target.glareO - current.glareO) < 0.001
+      if (settled) { active = false; frame = null } else { frame = requestAnimationFrame(tick) }
+    }
+
     function onMove(e) {
       const rect = el.getBoundingClientRect()
       const px = (e.clientX - rect.left) / rect.width
@@ -656,32 +717,18 @@ function TiltGlare({ children, className = '', style = {} }) {
       target.glareX = px * 100
       target.glareY = py * 100
       target.glareO = 0.15
+      startLoop()
     }
 
     function onLeave() {
       target.x = 0; target.y = 0; target.glareO = 0
+      startLoop()
     }
-
-    let frame
-    function animate() {
-      current.x += (target.x - current.x) * 0.025
-      current.y += (target.y - current.y) * 0.025
-      current.glareX += (target.glareX - current.glareX) * 0.04
-      current.glareY += (target.glareY - current.glareY) * 0.04
-      current.glareO += (target.glareO - current.glareO) * 0.02
-      el.style.transform = `perspective(800px) rotateX(${current.x}deg) rotateY(${current.y}deg)`
-      const glare = el.querySelector('.tilt-glare')
-      if (glare) {
-        glare.style.background = `radial-gradient(circle at ${current.glareX}% ${current.glareY}%, rgba(255,255,255,${current.glareO}), transparent 60%)`
-      }
-      frame = requestAnimationFrame(animate)
-    }
-    frame = requestAnimationFrame(animate)
 
     el.addEventListener('mousemove', onMove)
     el.addEventListener('mouseleave', onLeave)
     return () => {
-      cancelAnimationFrame(frame)
+      if (frame) cancelAnimationFrame(frame)
       el.removeEventListener('mousemove', onMove)
       el.removeEventListener('mouseleave', onLeave)
     }
@@ -833,6 +880,8 @@ function Hero({ scrollTo }) {
                         backfaceVisibility: 'hidden',
                         transform: 'translateZ(0)',
                       }}
+                      fetchPriority="high"
+                      decoding="async"
                     />
                   </div>
 
@@ -986,6 +1035,7 @@ function About() {
                   className="w-full max-w-full h-full object-cover transform-gpu scale-[1.01] group-hover:scale-[1.03] transition-transform duration-500 ease-out aspect-[4/3] pointer-events-none"
                   style={{ backfaceVisibility: 'hidden', willChange: 'transform' }}
                   loading="lazy"
+                  decoding="async"
                 />
                 <div
                   className="absolute inset-0 pointer-events-none"
@@ -1028,6 +1078,7 @@ function About() {
                     className="w-full max-w-full h-full object-cover transform-gpu scale-[1.01] group-hover:scale-[1.03] transition-transform duration-500 ease-out aspect-square pointer-events-none"
                     style={{ backfaceVisibility: 'hidden', willChange: 'transform' }}
                     loading="lazy"
+                    decoding="async"
                   />
                   <div
                     className="absolute inset-0 pointer-events-none transition-opacity duration-500 opacity-40 group-hover:opacity-20"
@@ -1058,6 +1109,7 @@ function About() {
                     className="w-full max-w-full h-full object-cover transform-gpu scale-[1.01] group-hover:scale-[1.03] transition-transform duration-500 ease-out aspect-square pointer-events-none"
                     style={{ backfaceVisibility: 'hidden', willChange: 'transform' }}
                     loading="lazy"
+                    decoding="async"
                   />
                   <div
                     className="absolute inset-0 pointer-events-none transition-opacity duration-500 opacity-40 group-hover:opacity-20"
@@ -1087,7 +1139,6 @@ function ServiceCard({ Icon, title, desc, image, featured }) {
   const [showLightbox, setShowLightbox] = useState(false)
   const cardRef = useRef(null)
 
-  const { scrollYProgress } = useScroll({ target: cardRef, offset: ['start end', 'end start'] })
   const [isMobile, setIsMobile] = useState(false)
   useEffect(() => {
     const mql = window.matchMedia('(max-width: 767px)')
@@ -1096,7 +1147,6 @@ function ServiceCard({ Icon, title, desc, image, featured }) {
     mql.addEventListener('change', handler)
     return () => mql.removeEventListener('change', handler)
   }, [])
-  const imgY = 0
 
   if (featured) {
     return (
@@ -1113,15 +1163,14 @@ function ServiceCard({ Icon, title, desc, image, featured }) {
               boxShadow: 'inset 0 0 0 1.5px #0E0C0B' // эта тень перекроет всё светлое по краям
             }}
           >
-            <motion.div
+            <div
+              className="absolute"
               style={{
-                y: imgY,
                 willChange: 'transform',
                 inset: '-6px',
                 transform: 'translateZ(0)',
                 backfaceVisibility: 'hidden',
               }}
-              className="absolute"
             >
               <img
                 src={image} alt={title}
@@ -1132,13 +1181,34 @@ function ServiceCard({ Icon, title, desc, image, featured }) {
                   transform: 'translateZ(0)',
                 }}
                 loading="lazy"
+                decoding="async"
               />
-            </motion.div>
-            <div className="absolute inset-0 pointer-events-none transition-opacity duration-500 opacity-30 group-hover:opacity-10" style={{ background: 'rgba(14,12,11,0.35)' }} />
-            <div className="absolute inset-0" style={{ background: isMobile ? 'linear-gradient(to top, rgba(14,12,11,0.96) 0%, rgba(14,12,11,0.88) 38%, rgba(14,12,11,0.52) 58%, rgba(14,12,11,0.12) 100%)' : 'linear-gradient(to top, rgba(14,12,11,0.95) 0%, rgba(14,12,11,0.7) 50%, transparent 80%)' }} />
-            <div className="absolute bottom-0 left-0 right-0 p-6 sm:p-8">
+            </div>
+            <div
+              className="absolute inset-0 pointer-events-none transition-opacity duration-500 opacity-30 group-hover:opacity-10"
+              style={{ background: 'rgba(14,12,11,0.35)' }}
+            />
+            <div
+              className="absolute inset-0"
+              style={{
+                background:
+                  isMobile
+                    ? 'linear-gradient(to top, rgba(14,12,11,0.96) 0%, rgba(14,12,11,0.88) 38%, rgba(14,12,11,0.52) 58%, rgba(14,12,11,0.12) 100%)'
+                    : 'linear-gradient(to top, rgba(14,12,11,0.95) 0%, rgba(14,12,11,0.7) 50%, transparent 80%)',
+              }}
+            />
+            <div
+              className="absolute bottom-0 left-0 right-0 p-6 sm:p-8"
+            >
               <div className="flex items-center gap-3 mb-3">
-                <div className="w-10 h-10 flex items-center justify-center" style={{ border: `1px solid ${BORDER_H}`, borderRadius: 9999, background: 'rgba(201,168,122,0.06)' }}>
+                <div
+                  className="w-10 h-10 flex items-center justify-center"
+                  style={{
+                    border: `1px solid ${BORDER_H}`,
+                    borderRadius: 9999,
+                    background: 'rgba(201,168,122,0.06)',
+                  }}
+                >
                   <Icon size={18} style={{ color: GOLD }} strokeWidth={1.5} />
                 </div>
                 <p className="font-picasso-body text-[11px] uppercase tracking-[0.2em]" style={{ color: GOLD }}>Главное направление</p>
@@ -1375,17 +1445,38 @@ function Gallery() {
     }
   }, [emblaApi, onSelect])
 
+  const galleryRef = useRef(null)
+
   useEffect(() => {
     if (!emblaApi) return
-    const id = setInterval(() => emblaApi.scrollNext(), 4000)
-    return () => clearInterval(id)
+    let id = null
+    let inViewport = true
+    let visible = true
+
+    function startAutoplay() {
+      stopAutoplay()
+      if (inViewport && visible) id = setInterval(() => emblaApi.scrollNext(), 4000)
+    }
+    function stopAutoplay() { if (id) { clearInterval(id); id = null } }
+
+    const observer = new IntersectionObserver(
+      ([entry]) => { inViewport = entry.isIntersecting; inViewport && visible ? startAutoplay() : stopAutoplay() },
+      { threshold: 0 }
+    )
+    if (galleryRef.current) observer.observe(galleryRef.current)
+
+    const onVis = () => { visible = !document.hidden; visible && inViewport ? startAutoplay() : stopAutoplay() }
+    document.addEventListener('visibilitychange', onVis)
+
+    startAutoplay()
+    return () => { stopAutoplay(); observer.disconnect(); document.removeEventListener('visibilitychange', onVis) }
   }, [emblaApi])
 
   function scrollPrev() { emblaApi?.scrollPrev() }
   function scrollNext() { emblaApi?.scrollNext() }
 
   return (
-    <section id="gallery" className="scroll-mt-20 sm:scroll-mt-24 py-28 sm:py-36" style={{ background: BG }}>
+    <section ref={galleryRef} id="gallery" className="scroll-mt-20 sm:scroll-mt-24 py-28 sm:py-36" style={{ background: BG }}>
       <div
         className="mx-auto max-w-6xl px-5 sm:px-8"
         data-gallery-anchor
@@ -1424,7 +1515,7 @@ function Gallery() {
                       if (i === selectedIndex) setLightbox({ src: w.src, alt: w.alt })
                       else emblaApi?.scrollTo(i)
                     }}>
-                    <img src={w.src} alt={w.alt} className="w-full max-w-full h-full object-cover" loading="lazy" draggable={false} />
+                    <img src={w.src} alt={w.alt} className="w-full max-w-full h-full object-cover" loading="lazy" decoding="async" draggable={false} />
                     <div className="absolute inset-0" style={{
                       background: i === selectedIndex
                         ? 'linear-gradient(to top, rgba(14,12,11,0.5) 0%, transparent 35%)'
@@ -1574,7 +1665,7 @@ function Team() {
                 onClick={() => m.details.length > 0 ? setSelectedMaster(m) : undefined}>
                 <div className="relative w-full aspect-[3/4] max-h-[55vh] sm:max-h-none overflow-hidden cursor-pointer">
                   {m.image ? (
-                    <img src={m.image} alt={m.name} className="w-full h-full object-cover transform-gpu scale-[1.01] group-hover:scale-[1.03] transition-transform duration-500 ease-out pointer-events-none" style={{ backfaceVisibility: 'hidden', willChange: 'transform' }} loading="lazy" />
+                    <img src={m.image} alt={m.name} className="w-full h-full object-cover transform-gpu scale-[1.01] group-hover:scale-[1.03] transition-transform duration-500 ease-out pointer-events-none" style={{ backfaceVisibility: 'hidden', willChange: 'transform' }} loading="lazy" decoding="async" />
                   ) : (
                     <div className="w-full h-full flex items-center justify-center" style={{ background: `linear-gradient(145deg, ${SURFACE_L} 0%, ${SURFACE} 100%)` }}>
                       <Sparkles size={36} style={{ color: `${GOLD}15` }} strokeWidth={1} />
