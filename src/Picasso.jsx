@@ -1386,7 +1386,10 @@ function Gallery() {
 
   return (
     <section id="gallery" className="scroll-mt-20 sm:scroll-mt-24 py-28 sm:py-36" style={{ background: BG }}>
-      <div className="mx-auto max-w-6xl px-5 sm:px-8">
+      <div
+        className="mx-auto max-w-6xl px-5 sm:px-8"
+        data-gallery-anchor
+      >
         <FadeIn>
           <p className="font-picasso-body text-[12px] uppercase tracking-[0.4em] mb-5 select-none text-center" style={{ color: GOLD }}>Портфолио</p>
         </FadeIn>
@@ -2018,6 +2021,40 @@ const scrollTo = useCallback((target) => {
         window.lenis.scrollTo(top, { duration: 1.15 })
       } else {
         window.scrollTo({ top, behavior: 'smooth' })
+      }
+
+      return
+    }
+
+    // Спец-кейс: gallery — ведём к началу визуального блока галереи и перепроверяем позицию
+    if (id === 'gallery') {
+      const anchorTarget =
+        sectionEl.querySelector('[data-gallery-anchor]') ||
+        sectionEl
+
+      const HEADER_OFFSET = 88
+
+      const initialTop =
+        anchorTarget.getBoundingClientRect().top +
+        window.scrollY -
+        HEADER_OFFSET
+
+      if (window.lenis) {
+        window.lenis.scrollTo(initialTop, { duration: 1.15 })
+
+        // На случай, если по пути что-то дорендерится и сдвинет галерею
+        setTimeout(() => {
+          const correctedTop =
+            anchorTarget.getBoundingClientRect().top +
+            window.scrollY -
+            HEADER_OFFSET
+
+          if (Math.abs(window.scrollY - correctedTop) > 40) {
+            window.lenis.scrollTo(correctedTop, { duration: 0.45 })
+          }
+        }, 1200)
+      } else {
+        window.scrollTo({ top: initialTop, behavior: 'smooth' })
       }
 
       return
