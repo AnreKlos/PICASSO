@@ -1929,6 +1929,13 @@ function Footer() {
 }
 
 export default function Picasso() {
+  const [isLoaded, setIsLoaded] = useState(false)
+
+  useEffect(() => {
+    const timer = setTimeout(() => setIsLoaded(true), 80)
+    return () => clearTimeout(timer)
+  }, [])
+
   useEffect(() => {
     const lenis = new Lenis({
       duration: 1.2,
@@ -2051,7 +2058,6 @@ export default function Picasso() {
     const sectionOffset = preset.sections[href] || 0
     const deviceOffset = getDeviceOverride(width, href)
 
-    // Добавляем жесткий отступ в 150px вверх, если экран меньше 768px (мобилка)
     const mobileBump = window.innerWidth < 768 ? -100 : 0
 
     const top = rect.top + window.scrollY - baseOffset - scrollMargin + sectionOffset + deviceOffset - mobileBump
@@ -2077,17 +2083,21 @@ export default function Picasso() {
       <Nav scrollTo={scrollTo} scrollToTop={scrollToTop} />
       <main>
         <Hero scrollTo={scrollTo} />
-        <About />
-        <Services />
-        <Prices />
-        <Gallery />
-        <Team />
-        <Reviews />
-        <FAQ />
-        <Booking />
-        <Contacts />
+        {isLoaded && (
+          <>
+            <About />
+            <Services />
+            <Prices />
+            <Gallery />
+            <Team />
+            <Reviews />
+            <FAQ />
+            <Booking />
+            <Contacts />
+          </>
+        )}
       </main>
-      <Footer />
+      {isLoaded && <Footer />}
     </div>
   )
 }
