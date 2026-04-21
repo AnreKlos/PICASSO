@@ -118,9 +118,16 @@ function FadeIn({ children, className = '', delay = 0, direction = 'up', distanc
   const inView = useInView(ref, { once: true, margin: '-50px' })
   const d = { up: { y: distance }, down: { y: -distance }, left: { x: distance }, right: { x: -distance } }[direction] || { y: distance }
   return (
-    <motion.div ref={ref} initial={{ opacity: 0, ...d }} animate={inView ? { opacity: 1, y: 0, x: 0 } : {}} transition={{ duration: 1, ease: EASE, delay }} className={className}>
-      {children}
-    </motion.div>
+    << motion.div
+  ref = { ref }
+  initial = {{ opacity: 0, ...d }
+}
+animate = { inView? { opacity: 1, y: 0, x: 0 } : { }}
+transition = {{ duration: 1, ease: EASE, delay }}
+className = { className }
+style = {{ willChange: 'transform, opacity' }}
+>
+    </motion.div >
   )
 }
 
@@ -748,8 +755,8 @@ function Hero({ scrollTo }) {
                   <div className="smoke-layer smoke-layer-3" />
                 </div>
                 <motion.div
-                  initial={{ opacity: 0, filter: 'blur(20px) brightness(2.5)' }}
-                  animate={{ opacity: 1, filter: 'blur(0px) brightness(1)' }}
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
                   transition={{ duration: 2, ease: EASE, delay: 0.2 }}
                 >
                   <TiltHeading as="h1" className="font-picasso-display font-medium tracking-[-0.01em] leading-[1.1]" style={{ color: TEXT }}>
@@ -801,8 +808,8 @@ function Hero({ scrollTo }) {
             <motion.div
               style={{ y: imgY, willChange: 'transform' }}
               className="relative z-10"
-              initial={{ opacity: 0, scale: 1.08, filter: 'blur(20px) brightness(2) saturate(0)' }}
-              animate={{ opacity: 1, scale: 1, filter: 'blur(0px) brightness(1) saturate(1)' }}
+              initial={{ opacity: 0, scale: 1.05 }}
+              animate={{ opacity: 1, scale: 1 }}
               transition={{ duration: 2.2, ease: EASE, delay: 0.6 }}
             >
 
