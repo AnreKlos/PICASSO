@@ -1709,7 +1709,7 @@ function Booking() {
   return (
     <section
       id="booking"
-      className="scroll-mt-28 sm:scroll-mt-20 py-28 sm:py-36 relative overflow-hidden"
+      className="scroll-mt-0 py-28 sm:py-36 relative overflow-hidden"
       style={{ background: BG }}
     >
       <div className="absolute inset-0 overflow-hidden pointer-events-none w-full">
@@ -1959,14 +1959,26 @@ function Footer() {
 export default function Picasso() {
   const scrollTo = useCallback((href) => {
     const el = document.querySelector(href)
-    if (el) {
-      const y = el.getBoundingClientRect().top + window.scrollY
-      window.__lenis?.scrollTo(y, { duration: 1.2 })
+    if (!el) return
+
+    const rect = el.getBoundingClientRect()
+    const scrollMargin = parseInt(getComputedStyle(el).scrollMarginTop || '0', 10) || 0
+    const top = rect.top + window.scrollY - scrollMargin
+    const finalTop = Math.max(0, top)
+
+    if (window.__lenis) {
+      window.__lenis.scrollTo(finalTop, { duration: 1.2 })
+    } else {
+      window.scrollTo({ top: finalTop, behavior: 'smooth' })
     }
   }, [])
 
   const scrollToTop = useCallback(() => {
-    window.__lenis?.scrollTo(0, { duration: 1.2 })
+    if (window.__lenis) {
+      window.__lenis.scrollTo(0, { duration: 1.2 })
+    } else {
+      window.scrollTo({ top: 0, behavior: 'smooth' })
+    }
   }, [])
 
   useEffect(() => {
@@ -1975,6 +1987,7 @@ export default function Picasso() {
       easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
       touchMultiplier: 2,
     })
+
     window.__lenis = lenis
 
     let ticking = false
@@ -1992,18 +2005,22 @@ export default function Picasso() {
       lenis.raf(time)
       requestAnimationFrame(raf)
     }
-    const id = requestAnimationFrame(raf)
 
+    const id = requestAnimationFrame(raf)
     window.scrollTo(0, 0)
 
     return () => {
       cancelAnimationFrame(id)
       lenis.destroy()
+      delete window.__lenis
     }
   }, [])
 
   return (
-    <div className="relative w-full overflow-hidden flex flex-col min-h-screen font-picasso-body" style={{ background: BG, color: TEXT, lineHeight: 1.7 }}>
+    <div
+      className="relative w-full overflow-hidden flex flex-col min-h-screen font-picasso-body"
+      style={{ background: BG, color: TEXT, lineHeight: 1.7 }}
+    >
       <ConciergeWidget />
       <Nav scrollTo={scrollTo} scrollToTop={scrollToTop} />
       <main>
