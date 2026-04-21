@@ -1699,7 +1699,8 @@ function Booking() {
     borderRadius: 12,
     color: TEXT,
     background: 'rgba(26, 23, 20, 0.88)',
-    boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.04), 0 8px 30px rgba(0,0,0,0.18)',
+    boxShadow:
+      'inset 0 1px 0 rgba(255,255,255,0.04), 0 8px 30px rgba(0,0,0,0.18)',
     WebkitAppearance: 'none',
     appearance: 'none',
     outline: 'none',
@@ -1709,7 +1710,7 @@ function Booking() {
   return (
     <section
       id="booking"
-      className="scroll-mt-0 py-28 sm:py-36 relative overflow-hidden"
+      className="scroll-mt-24 sm:scroll-mt-28 py-28 sm:py-36 relative overflow-hidden"
       style={{ background: BG }}
     >
       <div className="absolute inset-0 overflow-hidden pointer-events-none w-full">
@@ -1961,21 +1962,28 @@ export default function Picasso() {
     const el = document.querySelector(href)
     if (!el) return
 
-    const rect = el.getBoundingClientRect()
-    const scrollMargin = parseInt(getComputedStyle(el).scrollMarginTop || '0', 10) || 0
-    const top = rect.top + window.scrollY - scrollMargin
-    const finalTop = Math.max(0, top)
+    const scrollMargin =
+      parseInt(getComputedStyle(el).scrollMarginTop || '0', 10) || 0
 
     if (window.__lenis) {
-      window.__lenis.scrollTo(finalTop, { duration: 1.2 })
+      requestAnimationFrame(() => {
+        window.__lenis.scrollTo(el, {
+          offset: -scrollMargin,
+          duration: 1.2,
+          lock: true,
+        })
+      })
     } else {
-      window.scrollTo({ top: finalTop, behavior: 'smooth' })
+      el.scrollIntoView({ behavior: 'smooth', block: 'start' })
     }
   }, [])
 
   const scrollToTop = useCallback(() => {
     if (window.__lenis) {
-      window.__lenis.scrollTo(0, { duration: 1.2 })
+      window.__lenis.scrollTo(0, {
+        duration: 1.2,
+        lock: true,
+      })
     } else {
       window.scrollTo({ top: 0, behavior: 'smooth' })
     }
@@ -2001,16 +2009,40 @@ export default function Picasso() {
       }
     })
 
+    let rafId = 0
+
     function raf(time) {
       lenis.raf(time)
-      requestAnimationFrame(raf)
+      rafId = requestAnimationFrame(raf)
     }
 
-    const id = requestAnimationFrame(raf)
+    rafId = requestAnimationFrame(raf)
+
+    const refreshLenis = () => {
+      requestAnimationFrame(() => {
+        lenis.resize()
+      })
+    }
+
+    window.addEventListener('load', refreshLenis)
+
+    const images = Array.from(document.querySelectorAll('img'))
+    images.forEach((img) => {
+      if (!img.complete) {
+        img.addEventListener('load', refreshLenis)
+      }
+    })
+
     window.scrollTo(0, 0)
 
     return () => {
-      cancelAnimationFrame(id)
+      cancelAnimationFrame(rafId)
+      window.removeEventListener('load', refreshLenis)
+
+      images.forEach((img) => {
+        img.removeEventListener('load', refreshLenis)
+      })
+
       lenis.destroy()
       delete window.__lenis
     }
