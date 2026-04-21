@@ -1340,7 +1340,7 @@ function Lightbox({ src, alt, onClose }) {
 }
 
 function Gallery() {
-  const [lightbox, setLightbox] = useState(null)
+  const [lightbox, setLightbox] = useState(null) 
   const [selectedIndex, setSelectedIndex] = useState(0)
 
   const works = [
@@ -1385,7 +1385,7 @@ function Gallery() {
   function scrollNext() { emblaApi?.scrollNext() }
 
   return (
-    <section id="gallery" className="scroll-mt-20 py-28 sm:py-36" style={{ background: BG, scrollMarginTop: '-50px' }}>
+    <section id="gallery" className="scroll-mt-20 sm:scroll-mt-24 py-28 sm:py-36" style={{ background: BG }}>
       <div className="mx-auto max-w-6xl px-5 sm:px-8">
         <FadeIn>
           <p className="font-picasso-body text-[12px] uppercase tracking-[0.4em] mb-5 select-none text-center" style={{ color: GOLD }}>Портфолио</p>
@@ -1709,8 +1709,8 @@ function Booking() {
   return (
     <section
       id="booking"
-      className="scroll-mt-16 sm:scroll-mt-20 py-28 sm:py-36 relative overflow-hidden"
-      style={{ background: BG }}
+      className="scroll-mt-24 sm:scroll-mt-28 py-28 sm:py-36 relative overflow-hidden"
+      style={{ background: BG }} 
     >
       <div className="absolute inset-0 overflow-hidden pointer-events-none w-full">
         <div
@@ -1993,7 +1993,7 @@ export default function Picasso() {
     }
   }, [])
 
-  const scrollTo = useCallback((target) => {
+const scrollTo = useCallback((target) => {
     const id = String(target).replace('#', '')
     const sectionEl = document.getElementById(id)
 
@@ -2002,29 +2002,20 @@ export default function Picasso() {
       return
     }
 
-    // Для booking ведём не к заголовку секции, а к форме / первому полю ввода
+    // Высота шапки (примерно 80–90px на всех устройствах)
+    const HEADER_OFFSET = 88
+
+    // 1) Спец-кейс: booking → ведём к форме / первому полю
     if (id === 'booking') {
       const formTarget =
         sectionEl.querySelector('form') ||
         sectionEl.querySelector('input') ||
         sectionEl
 
-      const top =
-        formTarget.getBoundingClientRect().top +
-        window.scrollY -
-        88
+      const top = formTarget.getBoundingClientRect().top + window.scrollY - HEADER_OFFSET
 
       if (window.lenis) {
         window.lenis.scrollTo(top, { duration: 1.15 })
-        requestAnimationFrame(() => {
-          const correctedTop =
-            formTarget.getBoundingClientRect().top +
-            window.scrollY -
-            88
-          if (Math.abs(window.scrollY - correctedTop) > 40) {
-            window.lenis.scrollTo(correctedTop, { duration: 0.45 })
-          }
-        })
       } else {
         window.scrollTo({ top, behavior: 'smooth' })
       }
@@ -2032,13 +2023,14 @@ export default function Picasso() {
       return
     }
 
+    // 2) Все остальные секции — классический anchor + scroll-margin-top
     const scrollMargin =
-      parseInt(window.getComputedStyle(sectionEl).scrollMarginTop || '0', 10) || 0
+      parseInt(
+        window.getComputedStyle(sectionEl).scrollMarginTop || '0',
+        10,
+      ) || 0
 
-    const top =
-      sectionEl.getBoundingClientRect().top +
-      window.scrollY -
-      scrollMargin
+    const top = sectionEl.getBoundingClientRect().top + window.scrollY - scrollMargin
 
     if (window.lenis) {
       window.lenis.scrollTo(top, { duration: 1.05 })
