@@ -118,15 +118,15 @@ function FadeIn({ children, className = '', delay = 0, direction = 'up', distanc
   const inView = useInView(ref, { once: true, margin: '-50px' })
   const d = { up: { y: distance }, down: { y: -distance }, left: { x: distance }, right: { x: -distance } }[direction] || { y: distance }
   return (
-    << motion.div
-  ref = { ref }
-  initial = {{ opacity: 0, ...d }
-}
-animate = { inView? { opacity: 1, y: 0, x: 0 } : { }}
-transition = {{ duration: 1, ease: EASE, delay }}
-className = { className }
-style = {{ willChange: 'transform, opacity' }}
->
+    < motion.div
+      ref={ref}
+      initial={{ opacity: 0, ...d }
+      }
+      animate={inView ? { opacity: 1, y: 0, x: 0 } : {}}
+      transition={{ duration: 1, ease: EASE, delay }}
+      className={className}
+      style={{ willChange: 'transform, opacity' }}
+    >
     </motion.div >
   )
 }
