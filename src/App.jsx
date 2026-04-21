@@ -1,7 +1,9 @@
-import { lazy, Suspense, Component } from 'react'
+// App.jsx
+import { Component } from 'react'
 import { Routes, Route } from 'react-router-dom'
 
-const Picasso = lazy(() => import('./Picasso.jsx'))
+// 1. Меняем ленивый импорт на обычный:
+import Picasso from './Picasso.jsx'
 
 class ErrorBoundary extends Component {
   constructor(props) { super(props); this.state = { hasError: false, error: null } }
@@ -20,30 +22,15 @@ class ErrorBoundary extends Component {
   }
 }
 
-function PageLoader() {
-  return (
-    <div
-      className="fixed inset-0 z-[999] flex items-center justify-center overflow-hidden w-screen h-[100dvh]"
-      style={{ background: '#0E0C0B' }}
-    >
-      <div
-        className="text-sm uppercase tracking-[0.3em] animate-pulse select-none"
-        style={{ color: '#9A938B', fontFamily: 'Inter, system-ui, sans-serif' }}
-      >
-        Загрузка...
-      </div>
-    </div>
-  )
-}
+// 2. Убираем функцию PageLoader совсем
 
 export default function App() {
   return (
     <ErrorBoundary>
-      <Suspense fallback={null}>
-        <Routes>
-          <Route path="/*" element={<Picasso />} />
-        </Routes>
-      </Suspense>
+      {/* 3. Убираем Suspense */}
+      <Routes>
+        <Route path="/*" element={<Picasso />} />
+      </Routes>
     </ErrorBoundary>
   )
 }
