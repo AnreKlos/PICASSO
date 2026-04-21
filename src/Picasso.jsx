@@ -1744,7 +1744,7 @@ function Booking() {
             className="mt-5 text-base font-light leading-relaxed"
             style={{ color: TEXT_SOFT }}
           >
-            Оставьте заявку — подберём удобное время и мастера
+            Оставьте заявку - подберём удобное время и мастера
           </p>
         </FadeIn>
 
@@ -1988,6 +1988,7 @@ export default function Picasso() {
       touchMultiplier: 2,
     })
 
+  
     window.__lenis = lenis
 
     let ticking = false
