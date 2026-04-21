@@ -2051,7 +2051,10 @@ export default function Picasso() {
     const sectionOffset = preset.sections[href] || 0
     const deviceOffset = getDeviceOverride(width, href)
 
-    const top = rect.top + window.scrollY - baseOffset - scrollMargin + sectionOffset + deviceOffset
+    // Добавляем жесткий отступ в 150px вверх, если экран меньше 768px (мобилка)
+    const mobileBump = window.innerWidth < 768 ? -100 : 0
+
+    const top = rect.top + window.scrollY - baseOffset - scrollMargin + sectionOffset + deviceOffset - mobileBump
 
     if (window.__lenis) {
       window.__lenis.scrollTo(top, { duration: 1.2 })
