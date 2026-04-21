@@ -39,7 +39,7 @@ function PageLoader() {
 export default function App() {
   return (
     <ErrorBoundary>
-      <Suspense fallback={<PageLoader />}>
+      <Suspense fallback={null}>
         <Routes>
           <Route path="/*" element={<Picasso />} />
         </Routes>
