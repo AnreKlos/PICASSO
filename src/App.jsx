@@ -2,7 +2,6 @@
 import { Component } from 'react'
 import { Routes, Route } from 'react-router-dom'
 
-// 1. Меняем ленивый импорт на обычный:
 import Picasso from './Picasso.jsx'
 
 class ErrorBoundary extends Component {
@@ -22,12 +21,9 @@ class ErrorBoundary extends Component {
   }
 }
 
-// 2. Убираем функцию PageLoader совсем
-
 export default function App() {
   return (
     <ErrorBoundary>
-      {/* 3. Убираем Suspense */}
       <Routes>
         <Route path="/*" element={<Picasso />} />
       </Routes>

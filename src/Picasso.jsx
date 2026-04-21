@@ -1082,6 +1082,8 @@ function About() {
                     alt="Кабинет салона"
                     className="w-full max-w-full h-full object-cover transform-gpu scale-[1.01] group-hover:scale-[1.03] transition-transform duration-500 ease-out aspect-square pointer-events-none"
                     style={{ backfaceVisibility: 'hidden', willChange: 'transform' }}
+                    width={500}
+                    height={500}
                     loading="lazy"
                     decoding="async"
                   />
@@ -1113,6 +1115,8 @@ function About() {
                     alt="Интерьер салона"
                     className="w-full max-w-full h-full object-cover transform-gpu scale-[1.01] group-hover:scale-[1.03] transition-transform duration-500 ease-out aspect-square pointer-events-none"
                     style={{ backfaceVisibility: 'hidden', willChange: 'transform' }}
+                    width={500}
+                    height={500}
                     loading="lazy"
                     decoding="async"
                   />
@@ -1249,7 +1253,7 @@ function ServiceCard({ Icon, title, desc, image, featured }) {
 
 function Services() {
   return (
-    <section id="services" className="scroll-mt-0 py-28 sm:py-36" style={{ background: BG, scrollMarginTop: '-260px' }}>
+    <section id="services" className="scroll-mt-20 py-28 sm:py-36" style={{ background: BG }}>
       <div className="mx-auto max-w-6xl px-5 sm:px-8">
         <FadeIn>
           <p className="font-picasso-body text-[12px] uppercase tracking-[0.4em] mb-5 select-none text-center" style={{ color: GOLD }}>Направления</p>
@@ -1392,8 +1396,9 @@ function Prices() {
 function Lightbox({ src, alt, onClose }) {
   useEffect(() => {
     const handleKey = (e) => { if (e.key === 'Escape') onClose() }
+    document.body.style.overflow = 'hidden'
     window.addEventListener('keydown', handleKey)
-    return () => window.removeEventListener('keydown', handleKey)
+    return () => { document.body.style.overflow = ''; window.removeEventListener('keydown', handleKey) }
   }, [onClose])
 
   return (
@@ -1473,8 +1478,17 @@ function Gallery() {
     const onVis = () => { visible = !document.hidden; visible && inViewport ? startAutoplay() : stopAutoplay() }
     document.addEventListener('visibilitychange', onVis)
 
+    emblaApi.on('pointerDown', stopAutoplay)
+    emblaApi.on('settle', startAutoplay)
+
     startAutoplay()
-    return () => { stopAutoplay(); observer.disconnect(); document.removeEventListener('visibilitychange', onVis) }
+    return () => {
+      stopAutoplay()
+      observer.disconnect()
+      document.removeEventListener('visibilitychange', onVis)
+      emblaApi.off('pointerDown', stopAutoplay)
+      emblaApi.off('settle', startAutoplay)
+    }
   }, [emblaApi])
 
   function scrollPrev() { emblaApi?.scrollPrev() }
@@ -1520,7 +1534,7 @@ function Gallery() {
                       if (i === selectedIndex) setLightbox({ src: w.src, alt: w.alt })
                       else emblaApi?.scrollTo(i)
                     }}>
-                    <img src={w.src} alt={w.alt} className="w-full max-w-full h-full object-cover" loading="lazy" decoding="async" draggable={false} />
+                    <img src={w.src} alt={w.alt} className="w-full max-w-full h-full object-cover" width={420} height={560} loading="lazy" decoding="async" draggable={false} />
                     <div className="absolute inset-0" style={{
                       background: i === selectedIndex
                         ? 'linear-gradient(to top, rgba(14,12,11,0.5) 0%, transparent 35%)'
@@ -1653,7 +1667,7 @@ function Team() {
   ]
 
   return (
-    <section id="team" className="scroll-mt-20 py-28 sm:py-36" style={{ background: CHOCOLATE, scrollMarginTop: '-20px' }}>
+    <section id="team" className="scroll-mt-20 py-28 sm:py-36" style={{ background: CHOCOLATE }}>
       <div className="mx-auto max-w-6xl px-5 sm:px-8">
         <FadeIn>
           <p className="font-picasso-body text-[12px] uppercase tracking-[0.4em] mb-5 select-none text-center" style={{ color: GOLD }}>Команда</p>
@@ -1670,7 +1684,7 @@ function Team() {
                 onClick={() => m.details.length > 0 ? setSelectedMaster(m) : undefined}>
                 <div className="relative w-full aspect-[3/4] max-h-[55vh] sm:max-h-none overflow-hidden cursor-pointer">
                   {m.image ? (
-                    <img src={m.image} alt={m.name} className="w-full h-full object-cover transform-gpu scale-[1.01] group-hover:scale-[1.03] transition-transform duration-500 ease-out pointer-events-none" style={{ backfaceVisibility: 'hidden', willChange: 'transform' }} loading="lazy" decoding="async" />
+                    <img src={m.image} alt={m.name} className="w-full h-full object-cover transform-gpu scale-[1.01] group-hover:scale-[1.03] transition-transform duration-500 ease-out pointer-events-none" style={{ backfaceVisibility: 'hidden', willChange: 'transform' }} width={400} height={533} loading="lazy" decoding="async" />
                   ) : (
                     <div className="w-full h-full flex items-center justify-center" style={{ background: `linear-gradient(145deg, ${SURFACE_L} 0%, ${SURFACE} 100%)` }}>
                       <Sparkles size={36} style={{ color: `${GOLD}15` }} strokeWidth={1} />
@@ -1678,30 +1692,15 @@ function Team() {
                   )}
                   <div className="absolute inset-0 pointer-events-none transition-opacity duration-500 opacity-25 group-hover:opacity-5" style={{ background: 'rgba(14,12,11,0.35)' }} />
                   <div className="absolute inset-0" style={{ background: 'linear-gradient(to top, rgba(14,12,11,0.95) 0%, rgba(14,12,11,0.5) 35%, transparent 55%)' }} />
-                  <div className="absolute bottom-0 left-0 right-0 p-5 sm:p-6">
+                  <div className="absolute bottom-0 left-0 right-0 p-5 sm:p-6 flex flex-col justify-end sm:min-h-[160px]">
                     <p className="font-picasso-body text-[11px] uppercase tracking-[0.2em] mb-2" style={{ color: GOLD }}>{m.role}</p>
                     <h3 className="font-picasso-display text-lg sm:text-xl font-medium" style={{ color: TEXT }}>{m.name}</h3>
                     <p className="mt-1 text-[12px] sm:text-[13px] font-light" style={{ color: TEXT_SOFT }}>{m.exp}</p>
                     <p className="mt-2 text-[12px] sm:text-[13px] font-light" style={{ color: MUTED }}>{m.specialty}</p>
-                    {m.details.length > 0 && (
-                      <span className="mt-3 inline-block font-picasso-body text-[11px] sm:text-[12px] uppercase tracking-[0.14em] cursor-pointer transition-opacity hover:opacity-70"
-                        style={{ color: GOLD }}>Подробнее →</span>
-                    )}
+                    <span className="mt-3 inline-block font-picasso-body text-[11px] sm:text-[12px] uppercase tracking-[0.14em] cursor-pointer transition-opacity hover:opacity-70"
+                      style={{ color: GOLD }}>{m.details.length > 0 ? 'Подробнее →' : '\u00A0'}</span>
                   </div>
                 </div>
-                {m.details.length > 0 && (
-                  <div className="md:hidden p-4">
-                    <div className="flex flex-col gap-2">
-                      {m.details.slice(0, 3).map((d, j) => (
-                        <div key={j} className="flex items-start gap-2">
-                          <span className="mt-[6px] shrink-0 w-1.5 h-1.5 rounded-full" style={{ background: GOLD }} />
-                          <p className="text-[12px] font-light leading-snug break-words min-w-0" style={{ color: TEXT_SOFT }}>{d}</p>
-                        </div>
-                      ))}
-                      <span onClick={(e) => { e.stopPropagation(); setSelectedMaster(m) }} className="mt-1 font-picasso-body text-[11px] uppercase tracking-[0.14em] cursor-pointer" style={{ color: GOLD }}>Ещё →</span>
-                    </div>
-                  </div>
-                )}
               </div>
             </FadeIn>
           ))}
@@ -1723,7 +1722,7 @@ function Reviews() {
   ]
 
   return (
-    <section id="reviews" className="scroll-mt-20 py-28 sm:py-36" style={{ background: BG, scrollMarginTop: '-10px' }}>
+    <section id="reviews" className="scroll-mt-20 py-28 sm:py-36" style={{ background: BG }}>
       <div className="mx-auto max-w-5xl px-5 sm:px-8">
         <FadeIn>
           <p className="font-picasso-body text-[12px] uppercase tracking-[0.4em] mb-5 select-none text-center" style={{ color: GOLD }}>Отзывы</p>
@@ -1791,6 +1790,19 @@ function Booking() {
   const [name, setName] = useState('')
   const [phone, setPhone] = useState('')
   const [sent, setSent] = useState(false)
+  const [submitting, setSubmitting] = useState(false)
+  const [error, setError] = useState('')
+
+  function formatPhone(value) {
+    const digits = value.replace(/\D/g, '')
+    const d = digits.startsWith('8') ? '7' + digits.slice(1) : digits.startsWith('7') ? digits : '7' + digits
+    let result = '+7'
+    if (d.length > 1) result += ' (' + d.slice(1, 4)
+    if (d.length > 4) result += ') ' + d.slice(4, 7)
+    if (d.length > 7) result += '-' + d.slice(7, 9)
+    if (d.length > 9) result += '-' + d.slice(9, 11)
+    return result
+  }
 
   const inputStyle = {
     width: '100%',
@@ -1809,7 +1821,7 @@ function Booking() {
     <section
       id="booking"
       className="scroll-mt-24 sm:scroll-mt-28 py-28 sm:py-36 relative overflow-hidden"
-      style={{ background: BG }} 
+      style={{ background: BG }}
     >
       <div className="absolute inset-0 overflow-hidden pointer-events-none w-full">
         <div
@@ -1853,11 +1865,25 @@ function Booking() {
               <motion.form
                 key="form"
                 className="mt-12 flex flex-col gap-5"
-                onSubmit={(e) => {
+                onSubmit={async (e) => {
                   e.preventDefault()
-                  setSent(true)
-                  setName('')
-                  setPhone('')
+                  setError('')
+                  setSubmitting(true)
+                  try {
+                    const res = await fetch('/api/booking', {
+                      method: 'POST',
+                      headers: { 'Content-Type': 'application/json' },
+                      body: JSON.stringify({ name: name.trim(), phone: phone.trim() }),
+                    })
+                    if (!res.ok) throw new Error()
+                    setSent(true)
+                    setName('')
+                    setPhone('')
+                  } catch {
+                    setError('Не удалось отправить. Позвоните нам: +7 (920) 851-01-05')
+                  } finally {
+                    setSubmitting(false)
+                  }
                 }}
               >
                 <input
@@ -1874,7 +1900,7 @@ function Booking() {
                 <input
                   type="tel"
                   value={phone}
-                  onChange={(e) => setPhone(e.target.value)}
+                  onChange={(e) => setPhone(formatPhone(e.target.value))}
                   placeholder="+7 (___) ___-__-__"
                   autoComplete="tel"
                   inputMode="tel"
@@ -1899,10 +1925,14 @@ function Booking() {
                     borderRadius: 9999,
                     boxShadow:
                       '0 4px 20px rgba(201,168,122,0.12), inset 0 1px 0 rgba(255,255,255,0.2), inset 0 -1px 0 rgba(0,0,0,0.15)',
+                    opacity: submitting ? 0.6 : 1,
                   }}
+                  disabled={submitting}
                 >
-                  Записаться
+                  {submitting ? 'Отправка…' : 'Записаться'}
                 </motion.button>
+
+                {error && <p className="text-[13px] font-light mt-2" style={{ color: '#e57373' }}>{error}</p>}
               </motion.form>
             ) : (
               <motion.div
@@ -2156,8 +2186,6 @@ export default function Picasso() {
         sectionEl.querySelector('[data-gallery-anchor]') ||
         sectionEl
 
-      const HEADER_OFFSET = 88
-
       const initialTop =
         anchorTarget.getBoundingClientRect().top +
         window.scrollY -
@@ -2184,14 +2212,8 @@ export default function Picasso() {
       return
     }
 
-    // 2) Все остальные секции — классический anchor + scroll-margin-top
-    const scrollMargin =
-      parseInt(
-        window.getComputedStyle(sectionEl).scrollMarginTop || '0',
-        10,
-      ) || 0
-
-    const top = sectionEl.getBoundingClientRect().top + window.scrollY - scrollMargin
+    // 2) Все остальные секции — классический anchor + HEADER_OFFSET
+    const top = sectionEl.getBoundingClientRect().top + window.scrollY - HEADER_OFFSET
 
     if (window.lenis) {
       window.lenis.scrollTo(top, { duration: 1.05 })

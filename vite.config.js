@@ -19,6 +19,7 @@ export default defineConfig(({ mode }) => {
       },
     },
     server: {
+      hmr: { overlay: false },
       historyApiFallback: true,
       proxy: {
         '/api/chat': {
