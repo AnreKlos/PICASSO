@@ -601,7 +601,7 @@ function Nav({ scrollTo, scrollToTop }) {
         </button>
         <div className="hidden lg:flex items-center gap-7 font-picasso-body text-[13px] font-medium uppercase tracking-[0.12em]" style={{ color: MUTED }}>
           {links.map(l => <a key={l.href} href={l.href} onClick={(e) => { e.preventDefault(); scrollTo(l.href) }} className="hover:text-[var(--color-picasso-text)] transition-colors duration-200" style={{ color: MUTED }}>{l.label}</a>)}
-          <MagneticButton onClick={(e) => { e.preventDefault(); scrollTo('#booking') }}
+          <MagneticButton onClick={(e) => { e.preventDefault(); scrollTo('booking') }}
             className="inline-flex items-center gap-2 px-5 py-2 transition-all duration-300 font-picasso-body text-[13px] font-medium uppercase tracking-[0.12em]"
             style={{ background: `linear-gradient(to bottom, ${GOLD_BRIGHT} 0%, ${GOLD} 50%, ${GOLD_DIM} 100%)`, color: BG, borderRadius: 9999, boxShadow: '0 2px 12px rgba(201,168,122,0.15), inset 0 1px 0 rgba(255,255,255,0.2), inset 0 -1px 0 rgba(0,0,0,0.12)' }}>
             Записаться
@@ -621,7 +621,7 @@ function Nav({ scrollTo, scrollToTop }) {
                 type="button"
                 onClick={() => {
                   setMobileOpen(false)
-                  scrollTo('#booking')
+                  scrollTo('booking')
                 }}
                 className="mt-2 inline-flex items-center justify-center gap-2 px-5 py-3 cursor-pointer"
                 style={{ background: GOLD, color: BG, borderRadius: 9999 }}
@@ -779,14 +779,14 @@ function Hero({ scrollTo }) {
 
               <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.7, ease: EASE, delay: 0.8 }}
                 className="flex flex-col sm:flex-row items-center justify-center lg:justify-start gap-4 mt-12 overflow-hidden">
-                <MagneticButton onClick={(e) => { e.preventDefault(); scrollTo('#booking') }}
+                <MagneticButton onClick={(e) => { e.preventDefault(); scrollTo('booking') }}
                   whileHover={{ boxShadow: '0 6px 40px rgba(201,168,122,0.25), inset 0 1px 0 rgba(255,255,255,0.15)' }}
                   whileTap={{ boxShadow: '0 2px 12px rgba(201,168,122,0.15)' }}
                   className="btn-shine group inline-flex items-center justify-center gap-2 px-9 py-4 font-picasso-body text-[13px] font-medium uppercase tracking-[0.14em] transition-all duration-300 cursor-pointer"
                   style={{ background: `linear-gradient(to bottom, ${GOLD_BRIGHT} 0%, ${GOLD} 40%, ${GOLD_DIM} 100%)`, color: BG, borderRadius: 9999, boxShadow: '0 1px 0 rgba(255,255,255,0.25) inset, 0 -2px 0 rgba(0,0,0,0.2) inset, 0 4px 8px rgba(0,0,0,0.3), 0 8px 30px rgba(201,168,122,0.18)', textShadow: '0 1px 2px rgba(0,0,0,0.25)' }}>
                   Онлайн запись <ArrowRight size={15} className="transition-transform group-hover:translate-x-1" />
                 </MagneticButton>
-                <MagneticButton onClick={(e) => { e.preventDefault(); scrollTo('#gallery') }}
+                <MagneticButton onClick={(e) => { e.preventDefault(); scrollTo('gallery') }}
                   whileHover={{ boxShadow: '0 6px 30px rgba(0,0,0,0.4), inset 0 1px 0 rgba(255,255,255,0.06)' }}
                   whileTap={{ boxShadow: '0 2px 10px rgba(0,0,0,0.3)' }}
                   className="inline-flex items-center justify-center font-picasso-body text-[13px] font-medium uppercase tracking-[0.14em] px-9 py-4 transition-all duration-300 cursor-pointer"
@@ -1709,7 +1709,7 @@ function Booking() {
   return (
     <section
       id="booking"
-      className="scroll-mt-0 py-28 sm:py-36 relative overflow-hidden"
+      className="scroll-mt-16 sm:scroll-mt-20 py-28 sm:py-36 relative overflow-hidden"
       style={{ background: BG }}
     >
       <div className="absolute inset-0 overflow-hidden pointer-events-none w-full">
@@ -1957,63 +1957,101 @@ function Footer() {
 }
 
 export default function Picasso() {
-  const scrollTo = useCallback((href) => {
-    const el = document.querySelector(href)
-    if (!el) return
+  useEffect(() => {
+    const lenis = new Lenis({
+      duration: 1.1,
+      smoothWheel: true,
+      syncTouch: false,
+      touchMultiplier: 1.1,
+      wheelMultiplier: 1,
+      lerp: 0.1,
+    })
 
-    const rect = el.getBoundingClientRect()
-    const scrollMargin = parseInt(getComputedStyle(el).scrollMarginTop || '0', 10) || 0
-    const top = rect.top + window.scrollY - scrollMargin
-    const finalTop = Math.max(0, top)
+    window.lenis = lenis
 
-    if (window.__lenis) {
-      window.__lenis.scrollTo(finalTop, { duration: 1.2 })
+    let rafId = 0
+
+    function raf(time) {
+      lenis.raf(time)
+      rafId = requestAnimationFrame(raf)
+    }
+
+    rafId = requestAnimationFrame(raf)
+
+    const emitScroll = () => window.dispatchEvent(new Event('scroll'))
+    lenis.on('scroll', emitScroll)
+
+    window.scrollTo(0, 0)
+
+    return () => {
+      cancelAnimationFrame(rafId)
+      lenis.off('scroll', emitScroll)
+      lenis.destroy()
+      if (window.lenis === lenis) {
+        delete window.lenis
+      }
+    }
+  }, [])
+
+  const scrollTo = useCallback((target) => {
+    const id = String(target).replace('#', '')
+    const sectionEl = document.getElementById(id)
+
+    if (!sectionEl) {
+      console.warn('scroll target not found:', id)
+      return
+    }
+
+    // Для booking ведём не к заголовку секции, а к форме / первому полю ввода
+    if (id === 'booking') {
+      const formTarget =
+        sectionEl.querySelector('form') ||
+        sectionEl.querySelector('input') ||
+        sectionEl
+
+      const top =
+        formTarget.getBoundingClientRect().top +
+        window.scrollY -
+        88
+
+      if (window.lenis) {
+        window.lenis.scrollTo(top, { duration: 1.15 })
+        requestAnimationFrame(() => {
+          const correctedTop =
+            formTarget.getBoundingClientRect().top +
+            window.scrollY -
+            88
+          if (Math.abs(window.scrollY - correctedTop) > 40) {
+            window.lenis.scrollTo(correctedTop, { duration: 0.45 })
+          }
+        })
+      } else {
+        window.scrollTo({ top, behavior: 'smooth' })
+      }
+
+      return
+    }
+
+    const scrollMargin =
+      parseInt(window.getComputedStyle(sectionEl).scrollMarginTop || '0', 10) || 0
+
+    const top =
+      sectionEl.getBoundingClientRect().top +
+      window.scrollY -
+      scrollMargin
+
+    if (window.lenis) {
+      window.lenis.scrollTo(top, { duration: 1.05 })
     } else {
-      window.scrollTo({ top: finalTop, behavior: 'smooth' })
+      window.scrollTo({ top, behavior: 'smooth' })
     }
   }, [])
 
   const scrollToTop = useCallback(() => {
-    if (window.__lenis) {
-      window.__lenis.scrollTo(0, { duration: 1.2 })
+    if (window.lenis) {
+      window.lenis.scrollTo(0, { duration: 1.0 })
     } else {
       window.scrollTo({ top: 0, behavior: 'smooth' })
-    }
-  }, [])
-
-  useEffect(() => {
-    const lenis = new Lenis({
-      duration: 1.2,
-      easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
-      touchMultiplier: 2,
-    })
-
-  
-    window.__lenis = lenis
-
-    let ticking = false
-    lenis.on('scroll', () => {
-      if (!ticking) {
-        ticking = true
-        requestAnimationFrame(() => {
-          window.dispatchEvent(new Event('scroll'))
-          ticking = false
-        })
-      }
-    })
-
-    function raf(time) {
-      lenis.raf(time)
-      requestAnimationFrame(raf)
-    }
-
-    const id = requestAnimationFrame(raf)
-    window.scrollTo(0, 0)
-
-    return () => {
-      cancelAnimationFrame(id)
-      lenis.destroy()
-      delete window.__lenis
     }
   }, [])
 
