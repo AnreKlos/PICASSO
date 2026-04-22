@@ -1,4 +1,5 @@
 import { useState, useRef, useEffect, useCallback } from 'react'
+import { salesSalonPrompt } from './prompts/salesSalonPrompt'
 import { Shield, Clock, Coffee, ChevronDown, MessageCircle, X, Send, ArrowRight, Sparkles, Diamond, Scissors, HandMetal, Eye, Flower2, FlaskConical, Star, MapPin, Phone, Clock3, Menu } from 'lucide-react'
 import { motion, useScroll, useTransform, useInView, AnimatePresence, useMotionValue, animate } from 'framer-motion'
 import Lenis from 'lenis'
@@ -423,8 +424,7 @@ function ConciergeWidget() {
           messages: [
             {
               role: 'system',
-              content:
-                'Ты — цифровой консьерж премиум салона красоты «PICASSO». Салон полного цикла: парикмахерские услуги, ногтевой сервис, брови, шугаринг, уход за лицом. Отвечай сдержанно, элегантно, как luxury-консультант. Кратко (2-4 предложения), без эмодзи, на «вы». Цены: стрижка от 2000₽, окрашивание от 4500₽, маникюр от 1800₽, архитектура бровей от 1200₽, шугаринг от 800₽, УЗ-чистка от 1500₽, пилинг от 1800₽. СТРОГОЕ ПРАВИЛО: Отвечай только финальным текстом ответа. Никогда не показывай шаги своих рассуждений, анализ, планирование или рассуждения (Analyze, Identify, Consider, Plan и т.д.). Сразу давай готовый ответ.',
+              content: salesSalonPrompt,
             },
             ...updated.map((m) => ({
               role: m.from === 'bot' ? 'assistant' : 'user',
