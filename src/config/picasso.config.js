@@ -44,6 +44,27 @@ export const picassoConfig = {
   },
 
   copyrightYear: 2026,
+
+  sections: {
+    hero: { enabled: true },
+    advantages: { enabled: true },
+    promotion: { enabled: true },
+    services: { enabled: true },
+    gallery: { enabled: true },
+    team: { enabled: true },
+    reviews: { enabled: true },
+    about: { enabled: true },
+    faq: { enabled: true },
+    bookingContacts: { enabled: true },
+  },
+
+  features: {
+    chatWidget: {
+      enabled: true,
+      tooltipDelayMs: 8000,
+      mountDelayMs: 3000,
+    },
+  },
 }
 
 export default picassoConfig;
