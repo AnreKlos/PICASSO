@@ -1021,7 +1021,7 @@ function About() {
                 style={{
                   borderRadius: 12,
                   filter:
-                    'brightness(0.94) contrast(1.15) saturate(0.87) sepia(0.10) hue-rotate(-8deg)',
+                    'brightness(0.97) contrast(1.15) saturate(0.87) sepia(0.10) hue-rotate(-8deg)',
                   WebkitMaskImage: 'linear-gradient(to bottom, black 70%, transparent 100%)',
                   maskImage: 'linear-gradient(to bottom, black 70%, transparent 100%)',
                 }}
@@ -1051,11 +1051,11 @@ function About() {
                 />
                 <div
                   className="absolute inset-0 pointer-events-none"
-                  style={{ boxShadow: 'inset 0 0 100px 40px rgba(14,12,11,0.35)' }}
+                  style={{ boxShadow: 'inset 0 0 100px 40px rgba(14,12,11,0.175)' }}
                 />
                 <div
-                  className="absolute inset-0 pointer-events-none transition-opacity duration-500 opacity-40 group-hover:opacity-20"
-                  style={{ background: 'rgba(14,12,11,0.4)' }}
+                  className="absolute inset-0 pointer-events-none transition-opacity duration-500 opacity-20 group-hover:opacity-10"
+                  style={{ background: 'rgba(14,12,11,0.2)' }}
                 />
               </div>
             </FadeIn>
@@ -1066,7 +1066,7 @@ function About() {
                   className="group relative overflow-hidden bg-[#050505] cursor-pointer"
                   style={{
                     borderRadius: 12,
-                    filter: 'brightness(0.75) contrast(1.15) saturate(0.85)',
+                    filter: 'brightness(0.875) contrast(1.15) saturate(0.85)',
                     WebkitMaskImage: 'linear-gradient(to bottom, black 60%, transparent 100%)',
                     maskImage: 'linear-gradient(to bottom, black 60%, transparent 100%)',
                   }}
@@ -1088,8 +1088,8 @@ function About() {
                     decoding="async"
                   />
                   <div
-                    className="absolute inset-0 pointer-events-none transition-opacity duration-500 opacity-40 group-hover:opacity-20"
-                    style={{ background: 'rgba(14,12,11,0.4)' }}
+                    className="absolute inset-0 pointer-events-none transition-opacity duration-500 opacity-20 group-hover:opacity-10"
+                    style={{ background: 'rgba(14,12,11,0.2)' }}
                   />
                 </div>
               </FadeIn>
@@ -1099,7 +1099,7 @@ function About() {
                   className="group relative overflow-hidden bg-[#050505] cursor-pointer"
                   style={{
                     borderRadius: 12,
-                    filter: 'brightness(0.75) contrast(1.15) saturate(0.85)',
+                    filter: 'brightness(0.875) contrast(1.15) saturate(0.85)',
                     WebkitMaskImage: 'linear-gradient(to bottom, black 60%, transparent 100%)',
                     maskImage: 'linear-gradient(to bottom, black 60%, transparent 100%)',
                   }}
@@ -1121,8 +1121,8 @@ function About() {
                     decoding="async"
                   />
                   <div
-                    className="absolute inset-0 pointer-events-none transition-opacity duration-500 opacity-40 group-hover:opacity-20"
-                    style={{ background: 'rgba(14,12,11,0.4)' }}
+                    className="absolute inset-0 pointer-events-none transition-opacity duration-500 opacity-20 group-hover:opacity-10"
+                    style={{ background: 'rgba(14,12,11,0.2)' }}
                   />
                 </div>
               </FadeIn>
