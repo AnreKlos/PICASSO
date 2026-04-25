@@ -2,6 +2,116 @@ import { getDb } from '../lib/db.js'
 import notifyError, { escapeHtml } from '../lib/notifyError.js'
 
 const TG_API = 'https://api.telegram.org/bot'
+const MOSCOW_FORMATTER = new Intl.DateTimeFormat('ru-RU', {
+  timeZone: 'Europe/Moscow',
+  day: 'numeric',
+  month: 'short',
+  hour: '2-digit',
+  minute: '2-digit',
+})
+
+function toDate(value) {
+  if (!value) return null
+  const date = new Date(value)
+  return Number.isNaN(date.getTime()) ? null : date
+}
+
+function formatHumanTime(date) {
+  if (!date) return 'без времени'
+  return MOSCOW_FORMATTER.format(date)
+}
+
+function formatBreakLine(prevDate, nextDate, html) {
+  if (!prevDate || !nextDate) return null
+
+  const diffMs = nextDate.getTime() - prevDate.getTime()
+  if (diffMs <= 30 * 60 * 1000) return null
+
+  const minuteMs = 60 * 1000
+  const hourMs = 60 * minuteMs
+  const dayMs = 24 * hourMs
+
+  if (diffMs >= dayMs) {
+    return html ? '<i>— перерыв 1 день —</i>' : '— перерыв 1 день —'
+  }
+
+  if (diffMs >= hourMs) {
+    const hours = Math.floor(diffMs / hourMs)
+    const minutes = Math.floor((diffMs % hourMs) / minuteMs)
+    return html
+      ? `<i>— перерыв ${hours} ч ${minutes} мин —</i>`
+      : `— перерыв ${hours} ч ${minutes} мин —`
+  }
+
+  const minutes = Math.floor(diffMs / minuteMs)
+  return html ? `<i>— перерыв ${minutes} мин —</i>` : `— перерыв ${minutes} мин —`
+}
+
+function normalizeMessageContent(content, html) {
+  const raw = String(content || '').trim()
+  if (raw.startsWith('[tool_call:show_lead_button]')) {
+    return html
+      ? '<i>👉 показал кнопку «Оставить заявку»</i>'
+      : '👉 показал кнопку «Оставить заявку»'
+  }
+
+  if (!raw) return html ? '<i>— пустое сообщение —</i>' : '— пустое сообщение —'
+  return html ? escapeHtml(raw) : raw
+}
+
+function getRoleMeta(role) {
+  if (role === 'user') return { html: '<b>👤 Гость</b>', plain: '👤 Гость' }
+  if (role === 'assistant') return { html: '<b>🤖 Коля</b>', plain: '🤖 Коля' }
+  return { html: '<b>⚙️ Система</b>', plain: '⚙️ Система' }
+}
+
+function formatDialogueHtml(messages) {
+  const chunks = []
+  let prevDate = null
+
+  for (const msg of messages) {
+    const currentDate = toDate(msg?.timestamp)
+    const pauseLine = formatBreakLine(prevDate, currentDate, true)
+    if (pauseLine) {
+      chunks.push(pauseLine)
+    }
+
+    const role = getRoleMeta(msg?.role)
+    const header = `${role.html} · <i>${formatHumanTime(currentDate)}</i>`
+    const body = normalizeMessageContent(msg?.content, true)
+    chunks.push(`${header}\n${body}`)
+
+    if (currentDate) {
+      prevDate = currentDate
+    }
+  }
+
+  return chunks.join('\n\n')
+}
+
+function formatDialoguePlain(messages) {
+  const chunks = []
+  let prevDate = null
+
+  for (const msg of messages) {
+    const currentDate = toDate(msg?.timestamp)
+    const pauseLine = formatBreakLine(prevDate, currentDate, false)
+    if (pauseLine) {
+      chunks.push(pauseLine)
+    }
+
+    const role = getRoleMeta(msg?.role)
+    const header = `${role.plain} · ${formatHumanTime(currentDate)}`
+    const body = normalizeMessageContent(msg?.content, false)
+    chunks.push(`${header}\n${body}`)
+
+    if (currentDate) {
+      prevDate = currentDate
+    }
+  }
+
+  return chunks.join('\n\n')
+}
 
 export default async function handler(req, res) {
   // Telegram always expects 200, even on our errors
@@ -74,13 +184,8 @@ export default async function handler(req, res) {
     }
 
     const messages = Array.isArray(row.messages_json) ? row.messages_json : []
-    const lines = messages.map((m) => {
-      const prefix = m.role === 'user' ? 'Гость:' : m.role === 'assistant' ? 'Коля:' : 'Система:'
-      const time = m.timestamp ? ` [${m.timestamp}]` : ''
-      return `${prefix}${time}\n${m.content || ''}`
-    })
-
-    const text = lines.join('\n\n')
+    const htmlText = formatDialogueHtml(messages)
+    const plainText = formatDialoguePlain(messages)
 
     const botToken = process.env.TELEGRAM_BOT_TOKEN
     if (!botToken) {
@@ -88,10 +193,10 @@ export default async function handler(req, res) {
       return res.status(200).json({ ok: true })
     }
 
-    if (text.length > 3500) {
-      await sendDocument(botToken, chatId, text, dialogueId, callbackQueryId)
+    if (htmlText.length > 3500) {
+      await sendDocument(botToken, chatId, plainText, dialogueId, callbackQueryId)
     } else {
-      await sendMessage(botToken, chatId, text, callbackQueryId)
+      await sendMessage(botToken, chatId, htmlText, callbackQueryId)
     }
 
     return res.status(200).json({ ok: true })
@@ -117,15 +222,13 @@ async function answerCallbackQuery(callbackQueryId, text) {
 }
 
 async function sendMessage(botToken, chatId, text, callbackQueryId) {
-  const htmlText = escapeHtml(text).replace(/\n/g, '\n')
-
   await Promise.all([
     fetch(`${TG_API}${botToken}/sendMessage`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
         chat_id: chatId,
-        text: `<pre>${htmlText}</pre>`,
+        text,
         parse_mode: 'HTML',
       }),
     }),
