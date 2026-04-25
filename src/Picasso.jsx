@@ -32,7 +32,7 @@ export default function Picasso() {
 
   useEffect(() => {
     let lenis, rafId = 0, tabVisible = true, cancelled = false
-    let startLenis = () => {}, stopLenis = () => {}, cleanupVis = () => {}, cleanupScroll = () => {}
+    let startLenis = () => {}, stopLenis = () => {}, cleanupVis = () => {}
 
     function init() {
       if (cancelled) return
@@ -62,10 +62,6 @@ export default function Picasso() {
       document.addEventListener('visibilitychange', onVisChange)
       cleanupVis = () => document.removeEventListener('visibilitychange', onVisChange)
 
-      const emitScroll = () => window.dispatchEvent(new Event('scroll'))
-      lenis.on('scroll', emitScroll)
-      cleanupScroll = () => lenis.off('scroll', emitScroll)
-
       rafId = requestAnimationFrame(raf)
       window.scrollTo(0, 0)
     }
@@ -79,7 +75,6 @@ export default function Picasso() {
       typeof cancelIdleCallback === 'function' ? cancelIdleCallback(idleId) : clearTimeout(idleId)
       stopLenis()
       cleanupVis()
-      cleanupScroll()
       if (lenis) {
         lenis.destroy()
         if (window.lenis === lenis) delete window.lenis
