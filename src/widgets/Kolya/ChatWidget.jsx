@@ -7,6 +7,17 @@ import { getOrCreateSessionId } from '../../lib/session.js'
 
 const { SURFACE, SURFACE_L, TEXT, MUTED, GOLD, GOLD_DIM, GOLD_BRIGHT, BG, BORDER, BORDER_H, EASE } = picassoConfig.tokens
 
+function parseToolArguments(raw) {
+  if (!raw) return {}
+  if (typeof raw === 'object') return raw
+  if (typeof raw !== 'string') return {}
+  try {
+    return JSON.parse(raw)
+  } catch {
+    return {}
+  }
+}
+
 function ChatWidget() {
   const [open, setOpen] = useState(false)
   const [messages, setMessages] = useState([
@@ -61,6 +72,14 @@ function ChatWidget() {
     }
   }, [open])
 
+  function handleLeadButtonClick(leadService) {
+    setOpen(false)
+    setShowTooltip(false)
+    window.dispatchEvent(new CustomEvent('open-booking-form', {
+      detail: { service: leadService },
+    }))
+  }
+
   async function handleSend() {
     const text = input.trim()
     if (!text || loading) return
@@ -95,9 +114,22 @@ function ChatWidget() {
         throw new Error(err?.error || `Ошибка ${res.status}`)
       }
       const data = await res.json()
-      const reply =
-        data.choices?.[0]?.message?.content || data.error?.message || 'Попробуйте ещё раз.'
-      setMessages([...updated, { from: 'bot', text: reply }])
+      const modelMessage = data.choices?.[0]?.message || null
+      const toolCall = modelMessage?.tool_calls?.[0]
+      const hasLeadTool = toolCall?.function?.name === 'show_lead_button'
+      const toolArgs = hasLeadTool ? parseToolArguments(toolCall?.function?.arguments) : {}
+      const leadService = typeof toolArgs?.service_name === 'string' ? toolArgs.service_name.trim() : ''
+      const rawContent = typeof modelMessage?.content === 'string' ? modelMessage.content : ''
+      const reply = rawContent.trim() || (!hasLeadTool ? (data.error?.message || 'Попробуйте ещё раз.') : '')
+
+      setMessages([
+        ...updated,
+        {
+          from: 'bot',
+          text: reply,
+          ...(hasLeadTool ? { showLeadButton: true, leadService: leadService || undefined } : {}),
+        },
+      ])
     } catch {
       setMessages([...updated, { from: 'bot', text: 'Связь прервалась. Попробуйте снова.' }])
     } finally {
@@ -172,6 +204,23 @@ function ChatWidget() {
                   }}
                 >
                   {m.text}
+                  {m.showLeadButton && (
+                    <button
+                      type="button"
+                      onClick={() => handleLeadButtonClick(m.leadService)}
+                      className="mt-3 w-full py-3 px-4 text-[12px] uppercase tracking-[0.12em] font-medium transition-all cursor-pointer"
+                      style={{
+                        background: `linear-gradient(to bottom, ${GOLD_BRIGHT} 0%, ${GOLD} 40%, ${GOLD_DIM} 100%)`,
+                        color: BG,
+                        borderRadius: 9999,
+                        boxShadow:
+                          '0 4px 20px rgba(201,168,122,0.12), inset 0 1px 0 rgba(255,255,255,0.2), inset 0 -1px 0 rgba(0,0,0,0.15)',
+                        border: 'none',
+                      }}
+                    >
+                      Оставить заявку
+                    </button>
+                  )}
                 </div>
               ))}
               {loading && (

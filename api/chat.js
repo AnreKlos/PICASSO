@@ -2,6 +2,28 @@ import notifyError from '../lib/notifyError.js'
 import { getClientBySlug } from '../lib/clientResolver.js'
 import { getOrCreateDialogue, appendMessage } from '../lib/dialogue.js'
 
+const CHAT_TOOLS = [
+  {
+    type: 'function',
+    function: {
+      name: 'show_lead_button',
+      description:
+        'Показать кнопку "Оставить заявку" в чате. Использовать когда клиент проявил готовность записаться или явно интересуется условиями. Не использовать на каждое сообщение.',
+      parameters: {
+        type: 'object',
+        properties: {
+          service_name: {
+            type: 'string',
+            description:
+              'Конкретная услуга, если упомянута клиентом (например "балаяж на длинные", "маникюр")',
+          },
+        },
+        required: [],
+      },
+    },
+  },
+]
+
 export default async function handler(req, res) {
   if (req.method !== 'POST') {
     return res.status(405).json({ error: 'Method not allowed' })
@@ -50,7 +72,14 @@ export default async function handler(req, res) {
         'HTTP-Referer': req.headers.origin || 'https://picasso-salon.vercel.app',
         'X-Title': 'PICASSO Concierge',
       },
-      body: JSON.stringify({ model, messages, max_tokens, temperature }),
+      body: JSON.stringify({
+        model,
+        messages,
+        max_tokens,
+        temperature,
+        tools: CHAT_TOOLS,
+        tool_choice: 'auto',
+      }),
     })
 
     const data = await response.json()
@@ -59,14 +88,25 @@ export default async function handler(req, res) {
       return res.status(response.status).json({ error: data.error?.message || 'OpenRouter error' })
     }
 
-    const assistantReply =
-      data.choices?.[0]?.message?.content || data.error?.message || null
+    const assistantMessage = data.choices?.[0]?.message || null
+    const toolCalls = Array.isArray(assistantMessage?.tool_calls) ? assistantMessage.tool_calls : []
+    const assistantReply = assistantMessage?.content || data.error?.message || null
 
-    if (dialogueId && assistantReply) {
+    if (dialogueId && (assistantReply || toolCalls.length > 0)) {
       try {
+        let assistantContent = assistantReply || ''
+
+        if (toolCalls.length > 0) {
+          const showLeadButtonCall = toolCalls.find((call) => call?.function?.name === 'show_lead_button')
+          const callName = showLeadButtonCall?.function?.name || toolCalls[0]?.function?.name || 'unknown'
+          const rawArguments = showLeadButtonCall?.function?.arguments || toolCalls[0]?.function?.arguments || '{}'
+          const toolMark = `[tool_call:${callName}] ${rawArguments}`
+          assistantContent = assistantContent ? `${assistantContent}\n${toolMark}` : toolMark
+        }
+
         await appendMessage(dialogueId, {
           role: 'assistant',
-          content: assistantReply,
+          content: assistantContent,
           model,
         })
       } catch (dbError) {

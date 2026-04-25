@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { MapPin, Phone, Clock3 } from 'lucide-react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { picassoConfig } from '../../config/picasso.config'
@@ -10,11 +10,29 @@ import { getOrCreateSessionId } from '../../lib/session.js'
 const { GOLD, GOLD_DIM, GOLD_BRIGHT, TEXT, TEXT_SOFT, MUTED, BG, BORDER_H } = picassoConfig.tokens
 
 function BookingContacts() {
+  const formRef = useRef(null)
   const [name, setName] = useState('')
   const [phone, setPhone] = useState('')
+  const [prefillService, setPrefillService] = useState('')
   const [sent, setSent] = useState(false)
   const [submitting, setSubmitting] = useState(false)
   const [error, setError] = useState('')
+
+  useEffect(() => {
+    function handleOpenBookingForm(event) {
+      const service = typeof event?.detail?.service === 'string' ? event.detail.service.trim() : ''
+      setPrefillService(service)
+      setSent(false)
+
+      const target = formRef.current || document.getElementById('booking')
+      if (target && typeof target.scrollIntoView === 'function') {
+        target.scrollIntoView({ behavior: 'smooth', block: 'start' })
+      }
+    }
+
+    window.addEventListener('open-booking-form', handleOpenBookingForm)
+    return () => window.removeEventListener('open-booking-form', handleOpenBookingForm)
+  }, [])
 
   function formatPhone(value) {
     const digits = value.replace(/\D/g, '')
@@ -87,6 +105,7 @@ function BookingContacts() {
             {!sent ? (
               <motion.form
                 key="form"
+                ref={formRef}
                 className="mt-12 flex flex-col gap-5"
                 onSubmit={async (e) => {
                   e.preventDefault()
@@ -97,7 +116,12 @@ function BookingContacts() {
                     const res = await fetch('/api/booking', {
                       method: 'POST',
                       headers: { 'Content-Type': 'application/json' },
-                      body: JSON.stringify({ name: name.trim(), phone: phone.trim(), session_id: sessionId }),
+                      body: JSON.stringify({
+                        name: name.trim(),
+                        phone: phone.trim(),
+                        session_id: sessionId,
+                        service: prefillService || undefined,
+                      }),
                     })
                     if (!res.ok) throw new Error()
                     setSent(true)
