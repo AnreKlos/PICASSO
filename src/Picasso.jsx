@@ -5,15 +5,15 @@ import SectionBoundary from './components/SectionBoundary'
 import ChatWidget from './widgets/Kolya/ChatWidget'
 import Nav from './sections/Nav/Nav'
 import Hero from './sections/Hero/Hero'
+import Advantages from './sections/Advantages/Advantages'
+import Promotion from './sections/Promotion/Promotion'
 import About from './sections/About/About'
 import Services from './sections/Services/Services'
-import Prices from './sections/Prices/Prices'
 import Gallery from './sections/Gallery/Gallery'
 import Team from './sections/Team/Team'
 import Reviews from './sections/Reviews/Reviews'
 import FAQ from './sections/FAQ/FAQ'
-import Booking from './sections/Booking/Booking'
-import Contacts from './sections/Contacts/Contacts'
+import BookingContacts from './sections/BookingContacts/BookingContacts'
 import Footer from './sections/Footer/Footer'
 
 const { BG, TEXT } = picassoConfig.tokens
@@ -97,7 +97,7 @@ export default function Picasso() {
     }
 
     // Высота шапки (примерно 80–90px на всех устройствах)
-    const HEADER_OFFSET = 88
+    const HEADER_OFFSET = 70
 
     // 1) Спец-кейс: booking → ведём к форме / первому полю
     if (id === 'booking') {
@@ -181,21 +181,21 @@ export default function Picasso() {
           </SectionBoundary>
         )}
 
-        {sections.about?.enabled && (
-          <SectionBoundary name="about">
-            <About />
+        {sections.advantages?.enabled && (
+          <SectionBoundary name="advantages">
+            <Advantages />
+          </SectionBoundary>
+        )}
+
+        {sections.promotion?.enabled && (
+          <SectionBoundary name="promotion">
+            <Promotion />
           </SectionBoundary>
         )}
 
         {sections.services?.enabled && (
           <SectionBoundary name="services">
             <Services />
-          </SectionBoundary>
-        )}
-
-        {sections.services?.enabled && (
-          <SectionBoundary name="prices">
-            <Prices />
           </SectionBoundary>
         )}
 
@@ -217,6 +217,12 @@ export default function Picasso() {
           </SectionBoundary>
         )}
 
+        {sections.about?.enabled && (
+          <SectionBoundary name="about">
+            <About />
+          </SectionBoundary>
+        )}
+
         {sections.faq?.enabled && (
           <SectionBoundary name="faq">
             <FAQ />
@@ -224,14 +230,8 @@ export default function Picasso() {
         )}
 
         {sections.bookingContacts?.enabled && (
-          <SectionBoundary name="booking">
-            <Booking />
-          </SectionBoundary>
-        )}
-
-        {sections.bookingContacts?.enabled && (
-          <SectionBoundary name="contacts">
-            <Contacts />
+          <SectionBoundary name="bookingContacts">
+            <BookingContacts />
           </SectionBoundary>
         )}
       </main>

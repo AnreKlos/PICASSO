@@ -1,5 +1,4 @@
 import { useState } from 'react'
-import { Shield, Clock, Coffee, Diamond } from 'lucide-react'
 import { AnimatePresence } from 'framer-motion'
 import { picassoConfig } from '../../config/picasso.config'
 import FadeIn from '../../components/FadeIn'
@@ -7,7 +6,7 @@ import TiltHeading from '../../components/TiltHeading'
 import GoldSpan from '../../components/GoldSpan'
 import Lightbox from '../../components/Lightbox'
 
-const { GOLD, TEXT, TEXT_SOFT, CHOCOLATE, BORDER_H } = picassoConfig.tokens
+const { GOLD, TEXT, TEXT_SOFT, CHOCOLATE } = picassoConfig.tokens
 
 function About() {
   const [lightbox, setLightbox] = useState(null)
@@ -26,8 +25,8 @@ function About() {
       </div>
 
       <div className="mx-auto max-w-6xl px-5 sm:px-8 relative z-10">
-        <div className="flex flex-col lg:flex-row items-center gap-16">
-          <div className="flex-1 min-w-0">
+        <div className="flex flex-col lg:flex-row items-stretch gap-16">
+          <div className="flex-1 min-w-0 flex flex-col justify-center">
             <FadeIn>
               <p
                 className="font-picasso-body text-[12px] uppercase tracking-[0.4em] mb-5 select-none"
@@ -60,59 +59,9 @@ function About() {
                 ногти и брови и уйти с ощущением, что о вас действительно позаботились.
               </p>
             </FadeIn>
-
-            <FadeIn delay={0.3}>
-              <div className="mt-12 grid grid-cols-2 gap-4 sm:gap-5">
-                {[
-                  { Icon: Shield, title: 'Абсолютная стерильность' },
-                  { Icon: Clock, title: 'Гарантированное качество' },
-                  { Icon: Coffee, title: 'Премиальные сервисы' },
-                  { Icon: Diamond, title: 'Проф. материалы' },
-                ].map((item) => (
-                  <div
-                    key={item.title}
-                    className="group relative overflow-hidden min-h-[150px] px-4 py-6 sm:px-5 sm:py-6 flex flex-col items-center justify-center text-center"
-                    style={{
-                      border: '1px solid rgba(255,255,255,0.08)',
-                      borderRadius: 18,
-                      background:
-                        'linear-gradient(180deg, rgba(255,255,255,0.035) 0%, rgba(255,255,255,0.018) 100%)',
-                      boxShadow:
-                        'inset 0 1px 0 rgba(255,255,255,0.04), 0 10px 30px rgba(0,0,0,0.12)',
-                    }}
-                  >
-                    <div
-                      className="absolute inset-0 pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity duration-500"
-                      style={{
-                        background:
-                          'radial-gradient(circle at top left, rgba(201,168,122,0.08), transparent 45%)',
-                      }}
-                    />
-
-                    <div
-                      className="relative w-12 h-12 flex items-center justify-center mb-4 shrink-0"
-                      style={{
-                        border: `1px solid ${BORDER_H}`,
-                        borderRadius: 9999,
-                        background: 'rgba(201,168,122,0.06)',
-                      }}
-                    >
-                      <item.Icon size={18} style={{ color: GOLD }} strokeWidth={1.5} />
-                    </div>
-
-                    <h3
-                      className="relative font-picasso-display text-[15px] sm:text-[17px] leading-snug text-center max-w-[14ch]"
-                      style={{ color: TEXT }}
-                    >
-                      {item.title}
-                    </h3>
-                  </div>
-                ))}
-              </div>
-            </FadeIn>
           </div>
 
-          <div className="flex-1 flex flex-col gap-4">
+          <div className="flex-1 flex flex-col gap-4 justify-center">
             <FadeIn>
               <div
                 className="group relative overflow-hidden bg-[#050505] cursor-pointer"
