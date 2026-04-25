@@ -39,8 +39,15 @@ export const picassoConfig = {
   },
 
   legal: {
-    showInFooter: false,
-    placeholder: 'Реквизиты по запросу',
+    showInFooter: true,
+    placeholder: 'Реквизиты предоставим при заключении договора',
+  },
+
+  content: {
+    promotion: {
+      title: 'Особое предложение',
+      text: 'Для новых клиентов — приятный бонус при первой записи. Узнайте подробности у нашего консьержа или по телефону.',
+    },
   },
 
   copyrightYear: 2026,

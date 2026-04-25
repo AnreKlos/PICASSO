@@ -5,6 +5,7 @@ import { picassoConfig } from '../../config/picasso.config'
 import FadeIn from '../../components/FadeIn'
 import TiltHeading from '../../components/TiltHeading'
 import GoldSpan from '../../components/GoldSpan'
+import { getOrCreateSessionId } from '../../lib/session.js'
 
 const { GOLD, GOLD_DIM, GOLD_BRIGHT, TEXT, TEXT_SOFT, MUTED, BG, BORDER_H } = picassoConfig.tokens
 
@@ -77,7 +78,7 @@ function BookingContacts() {
             className="mt-5 text-base font-light leading-relaxed"
             style={{ color: TEXT_SOFT }}
           >
-            Оставьте заявку - подберём удобное время и мастера
+            Оставьте заявку — подберём удобное время и мастера
           </p>
         </FadeIn>
 
@@ -92,10 +93,11 @@ function BookingContacts() {
                   setError('')
                   setSubmitting(true)
                   try {
+                    const sessionId = getOrCreateSessionId()
                     const res = await fetch('/api/booking', {
                       method: 'POST',
                       headers: { 'Content-Type': 'application/json' },
-                      body: JSON.stringify({ name: name.trim(), phone: phone.trim() }),
+                      body: JSON.stringify({ name: name.trim(), phone: phone.trim(), session_id: sessionId }),
                     })
                     if (!res.ok) throw new Error()
                     setSent(true)

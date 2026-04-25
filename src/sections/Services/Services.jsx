@@ -63,12 +63,12 @@ function Services() {
           </TiltHeading>
         </FadeIn>
         <FadeIn delay={0.2}>
-          <p className="mt-6 text-center text-base font-light leading-relaxed max-w-md" style={{ color: TEXT_SOFT }}>
+          <p className="mt-6 text-center text-base font-light leading-relaxed max-w-md mx-auto" style={{ color: TEXT_SOFT }}>
             Пять миров эстетики под одной крышей
           </p>
         </FadeIn>
 
-        <div className="mt-16 flex flex-col gap-5">
+        <div data-services-anchor className="mt-16 flex flex-col gap-5">
           <ServiceCard Icon={Scissors} title="Hair — Парикмахерские услуги"
             desc="Стрижки, окрашивание, кератин, укладки — главное направление PICASSO. Мастера-стилисты создают образ, который подчёркивает вашу индивидуальность."
             image="/images/services/kabinet_parikmaherskaya.webp" featured />
@@ -85,13 +85,13 @@ function Services() {
           </div>
         </div>
 
-        <div className="mt-20 max-w-2xl mx-auto">
+        <div id="prices" className="mt-20 max-w-2xl mx-auto scroll-mt-20">
           <FadeIn>
             <p className="font-picasso-body text-[12px] uppercase tracking-[0.4em] mb-5 select-none text-center" style={{ color: GOLD }}>Прайс</p>
           </FadeIn>
           <FadeIn delay={0.1}>
             <TiltHeading className="font-picasso-display text-3xl sm:text-4xl lg:text-5xl font-medium text-center leading-[1.15]" style={{ color: TEXT }}>
-              Цены по направлениям
+              Цены по <GoldSpan>направлениям</GoldSpan>
             </TiltHeading>
           </FadeIn>
           <div className="mt-16 flex flex-col gap-4">

@@ -1,8 +1,19 @@
 import { picassoConfig } from '../../config/picasso.config'
 
-const { GOLD, TEXT_SOFT, MUTED, BG, BORDER } = picassoConfig.tokens
+const { GOLD, TEXT_SOFT, BG, BORDER } = picassoConfig.tokens
 
 function Footer() {
+  const vkItem = picassoConfig.social.find((item) => item.href.includes('vk.com'))
+  const whatsappDigits = picassoConfig.contacts.whatsapp.replace(/\D/g, '')
+  const socials = [
+    ...(vkItem ? [vkItem] : []),
+    {
+      href: `https://wa.me/${whatsappDigits}`,
+      label: `WhatsApp ${picassoConfig.meta.name}`,
+      short: 'WA',
+    },
+  ]
+
   return (
     <footer className="py-10" style={{ background: BG, borderTop: `1px solid ${BORDER}` }}>
       <div className="mx-auto max-w-6xl px-5 sm:px-8">
@@ -15,13 +26,13 @@ function Footer() {
               {picassoConfig.meta.name}
             </span>
 
-            <span className="text-xs" style={{ color: `${MUTED}8C` }}>
+            <span className="text-xs" style={{ color: 'rgba(255,255,255,0.55)' }}>
               Салон эстетики
             </span>
           </div>
 
           <div className="flex items-center gap-3">
-            {picassoConfig.social.map((item) => (
+            {socials.map((item) => (
               <a
                 key={item.label}
                 href={item.href}
@@ -60,6 +71,12 @@ function Footer() {
             {picassoConfig.contacts.phone}
           </a>
         </div>
+
+        {picassoConfig.legal.showInFooter && (
+          <p className="font-picasso-body text-[10px] tracking-[0.05em] mt-3 text-center" style={{ color: 'rgba(255,255,255,0.45)' }}>
+            {picassoConfig.legal.placeholder}
+          </p>
+        )}
       </div>
     </footer>
   )

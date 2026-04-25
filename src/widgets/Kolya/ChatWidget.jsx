@@ -3,6 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion'
 import { X, Send, MessageCircle } from 'lucide-react'
 import { salesSalonPrompt } from '../../prompts/salesSalonPrompt'
 import { picassoConfig } from '../../config/picasso.config'
+import { getOrCreateSessionId } from '../../lib/session.js'
 
 const { SURFACE, SURFACE_L, TEXT, MUTED, GOLD, GOLD_DIM, GOLD_BRIGHT, BG, BORDER, BORDER_H, EASE } = picassoConfig.tokens
 
@@ -38,7 +39,7 @@ function ChatWidget() {
   useEffect(() => {
     const timer = setTimeout(() => {
       if (!hasBeenOpened.current) setShowTooltip(true)
-    }, 25000)
+    }, picassoConfig.features.chatWidget.tooltipDelayMs)
     return () => clearTimeout(timer)
   }, [])
 
@@ -63,6 +64,7 @@ function ChatWidget() {
   async function handleSend() {
     const text = input.trim()
     if (!text || loading) return
+    const sessionId = getOrCreateSessionId()
     const updated = [...messages, { from: 'user', text }]
     setMessages(updated)
     setInput('')
@@ -83,6 +85,7 @@ function ChatWidget() {
               content: m.text,
             })),
           ],
+          session_id: sessionId,
           max_tokens: 300,
           temperature: 0.7,
         }),

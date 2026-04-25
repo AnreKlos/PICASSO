@@ -1,4 +1,4 @@
-﻿import { useState, useEffect, useCallback } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import Lenis from 'lenis'
 import { picassoConfig } from './config/picasso.config'
 import SectionBoundary from './components/SectionBoundary'
@@ -149,6 +149,23 @@ export default function Picasso() {
       return
     }
 
+    // Спец-кейс: services — ведём к началу карточек услуг
+    if (id === 'services') {
+      const anchorTarget =
+        sectionEl.querySelector('[data-services-anchor]') ||
+        sectionEl
+
+      const top = anchorTarget.getBoundingClientRect().top +
+        window.scrollY - HEADER_OFFSET
+
+      if (window.lenis) {
+        window.lenis.scrollTo(top, { duration: 1.05 })
+      } else {
+        window.scrollTo({ top, behavior: 'smooth' })
+      }
+      return
+    }
+
     // 2) Все остальные секции — классический anchor + HEADER_OFFSET
     const top = sectionEl.getBoundingClientRect().top + window.scrollY - HEADER_OFFSET
 
@@ -181,15 +198,15 @@ export default function Picasso() {
           </SectionBoundary>
         )}
 
-        {sections.advantages?.enabled && (
-          <SectionBoundary name="advantages">
-            <Advantages />
-          </SectionBoundary>
-        )}
-
         {sections.promotion?.enabled && (
           <SectionBoundary name="promotion">
             <Promotion />
+          </SectionBoundary>
+        )}
+
+        {sections.advantages?.enabled && (
+          <SectionBoundary name="advantages">
+            <Advantages />
           </SectionBoundary>
         )}
 

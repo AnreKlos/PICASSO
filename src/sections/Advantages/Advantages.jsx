@@ -6,6 +6,29 @@ import GoldSpan from '../../components/GoldSpan'
 
 const { GOLD, TEXT, BG, BORDER_H } = picassoConfig.tokens
 
+const items = [
+  {
+    Icon: Shield,
+    title: 'Абсолютная стерильность',
+    desc: 'Стерилизация инструмента в сухожаре. Одноразовые материалы для каждого клиента.',
+  },
+  {
+    Icon: Clock,
+    title: 'Точно в срок',
+    desc: 'Ценим ваше время. Запись минута в минуту, без томительных ожиданий.',
+  },
+  {
+    Icon: Coffee,
+    title: 'Премиальные сервисы',
+    desc: 'Кофе, авторские напитки, плед и музыка по настроению — ваш визит как маленький отпуск.',
+  },
+  {
+    Icon: Diamond,
+    title: 'Профессиональные материалы',
+    desc: 'Только проверенные бренды салонной серии. Никаких компромиссов с качеством.',
+  },
+]
+
 function Advantages() {
   return (
     <section id="advantages" className="scroll-mt-20 py-20 sm:py-24" style={{ background: BG }}>
@@ -21,15 +44,10 @@ function Advantages() {
         </FadeIn>
 
         <div className="mt-12 grid grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-5">
-          {[
-            { Icon: Shield, title: 'Абсолютная стерильность' },
-            { Icon: Clock, title: 'Гарантированное качество' },
-            { Icon: Coffee, title: 'Премиальные сервисы' },
-            { Icon: Diamond, title: 'Проф. материалы' },
-          ].map((item) => (
+          {items.map((item) => (
             <FadeIn key={item.title}>
               <div
-                className="group relative overflow-hidden min-h-[150px] px-4 py-6 sm:px-5 sm:py-6 flex flex-col items-center justify-center text-center"
+                className="group relative overflow-hidden min-h-[200px] sm:min-h-[220px] px-4 py-6 sm:px-5 sm:py-6 flex flex-col items-center justify-center text-center"
                 style={{
                   border: '1px solid rgba(255,255,255,0.08)',
                   borderRadius: 18,
@@ -64,6 +82,13 @@ function Advantages() {
                 >
                   {item.title}
                 </h3>
+
+                <p
+                  className="relative mt-2 text-[12.5px] sm:text-[13px] font-light leading-relaxed text-center max-w-[22ch]"
+                  style={{ color: 'rgba(181,175,167,0.85)' }}
+                >
+                  {item.desc}
+                </p>
               </div>
             </FadeIn>
           ))}

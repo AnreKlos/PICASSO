@@ -16,8 +16,8 @@ function Nav({ scrollTo, scrollToTop }) {
   }, [])
 
   const links = [
-    { href: '#advantages', label: 'Почему мы' },
     { href: '#services', label: 'Услуги' },
+    { href: '#prices', label: 'Цены' },
     { href: '#gallery', label: 'Галерея' },
     { href: '#team', label: 'Мастера' },
     { href: '#reviews', label: 'Отзывы' },
