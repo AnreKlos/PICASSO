@@ -1,7 +1,7 @@
 import { useContext, useEffect, useState } from 'react'
 import { AnimatePresence, motion } from 'framer-motion'
 import useEmblaCarousel from 'embla-carousel-react'
-import { Play, X } from 'lucide-react'
+import { PlayCircle, X } from 'lucide-react'
 import { picassoConfig } from '../../configs/picasso.config'
 import { ConfigContext } from '../../contexts/ConfigContext'
 import FadeIn from '../../components/FadeIn'
@@ -16,13 +16,28 @@ function Reels() {
 
   const { GOLD, TEXT, TEXT_SOFT, BG, SURFACE, BORDER_H, EASE } = config.tokens
   const [emblaRef] = useEmblaCarousel({ align: 'start', dragFree: true })
-  const [activeItem, setActiveItem] = useState(null)
+  const [activeIndex, setActiveIndex] = useState(null)
+  const activeItem = activeIndex === null ? null : items[activeIndex] || null
+  const hasPrev = activeIndex !== null && activeIndex > 0
+  const hasNext = activeIndex !== null && activeIndex < items.length - 1
+
+  function goPrev() {
+    if (!hasPrev) return
+    setActiveIndex((current) => (current === null ? current : current - 1))
+  }
+
+  function goNext() {
+    if (!hasNext) return
+    setActiveIndex((current) => (current === null ? current : current + 1))
+  }
 
   useEffect(() => {
     if (!activeItem) return undefined
 
     function onKeyDown(event) {
-      if (event.key === 'Escape') setActiveItem(null)
+      if (event.key === 'Escape') setActiveIndex(null)
+      if (event.key === 'ArrowLeft') goPrev()
+      if (event.key === 'ArrowRight') goNext()
     }
 
     document.body.style.overflow = 'hidden'
@@ -66,24 +81,41 @@ function Reels() {
                 <button
                   type="button"
                   className="w-full text-left group"
-                  onClick={() => setActiveItem(item)}
+                  onClick={() => setActiveIndex(index)}
                 >
                   <div
                     className="relative aspect-[9/16] overflow-hidden transition-all duration-300"
                     style={{
                       borderRadius: 18,
                       border: `1px solid ${BORDER_H}`,
-                      background: `radial-gradient(circle at 50% 30%, rgba(201,168,122,0.12) 0%, rgba(201,168,122,0.03) 40%, ${SURFACE} 100%)`,
+                      background: item.thumbnail
+                        ? `${SURFACE} url(${item.thumbnail}) center / cover no-repeat`
+                        : `radial-gradient(circle at 50% 30%, rgba(201,168,122,0.12) 0%, rgba(201,168,122,0.03) 40%, ${SURFACE} 100%)`,
                       boxShadow: '0 10px 30px rgba(0,0,0,0.25)',
                     }}
                   >
-                    <div className="absolute inset-0" style={{ background: 'linear-gradient(180deg, rgba(14,12,11,0.2) 0%, rgba(14,12,11,0.75) 100%)' }} />
+                    <div
+                      className="absolute inset-0"
+                      style={{
+                        background: item.thumbnail
+                          ? 'linear-gradient(180deg, rgba(14,12,11,0.08) 0%, rgba(14,12,11,0.68) 100%)'
+                          : 'radial-gradient(ellipse at center, rgba(14,12,11,0.25) 0%, rgba(14,12,11,0.55) 60%, rgba(14,12,11,0.82) 100%)',
+                      }}
+                    />
+                    {!item.thumbnail && (
+                      <div
+                        className="absolute inset-0"
+                        style={{
+                          background: 'radial-gradient(circle at 50% 40%, rgba(201,168,122,0.12) 0%, transparent 48%)',
+                        }}
+                      />
+                    )}
                     <div className="absolute inset-0 flex items-center justify-center">
                       <span
-                        className="w-14 h-14 rounded-full flex items-center justify-center transition-transform duration-300 group-hover:scale-105"
-                        style={{ border: `1px solid ${BORDER_H}`, background: 'rgba(0,0,0,0.35)' }}
+                        className="w-16 h-16 rounded-full flex items-center justify-center transition-transform duration-300 group-hover:scale-105"
+                        style={{ border: `1px solid ${BORDER_H}`, background: 'rgba(0,0,0,0.4)' }}
                       >
-                        <Play size={20} style={{ color: GOLD, marginLeft: 2 }} />
+                        <PlayCircle size={30} style={{ color: GOLD }} strokeWidth={1.7} />
                       </span>
                     </div>
 
@@ -116,9 +148,37 @@ function Reels() {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            onClick={() => setActiveItem(null)}
+            onClick={() => setActiveIndex(null)}
           >
             <div className="absolute inset-0" style={{ background: 'rgba(0,0,0,0.7)', backdropFilter: 'blur(6px)' }} />
+
+            <button
+              type="button"
+              onClick={(event) => {
+                event.stopPropagation()
+                goPrev()
+              }}
+              disabled={!hasPrev}
+              className={`flex absolute left-1 sm:left-4 md:left-8 z-[121] w-9 h-9 sm:w-11 sm:h-11 rounded-full items-center justify-center text-xl sm:text-2xl transition-opacity ${hasPrev ? 'opacity-100 cursor-pointer' : 'opacity-0 pointer-events-none'}`}
+              style={{ background: 'rgba(0,0,0,0.7)', border: `1px solid ${BORDER_H}`, color: TEXT }}
+              aria-label="Предыдущее видео"
+            >
+              ‹
+            </button>
+
+            <button
+              type="button"
+              onClick={(event) => {
+                event.stopPropagation()
+                goNext()
+              }}
+              disabled={!hasNext}
+              className={`flex absolute right-1 sm:right-4 md:right-8 z-[121] w-9 h-9 sm:w-11 sm:h-11 rounded-full items-center justify-center text-xl sm:text-2xl transition-opacity ${hasNext ? 'opacity-100 cursor-pointer' : 'opacity-0 pointer-events-none'}`}
+              style={{ background: 'rgba(0,0,0,0.7)', border: `1px solid ${BORDER_H}`, color: TEXT }}
+              aria-label="Следующее видео"
+            >
+              ›
+            </button>
 
             <motion.div
               className="relative w-full"
@@ -126,6 +186,13 @@ function Reels() {
               animate={{ opacity: 1, scale: 1, y: 0 }}
               exit={{ opacity: 0, scale: 0.95, y: 8 }}
               transition={{ duration: 0.24, ease: EASE }}
+              drag="x"
+              dragConstraints={{ left: 0, right: 0 }}
+              dragElastic={0.08}
+              onDragEnd={(_, info) => {
+                if (info.offset.x < -60) goNext()
+                if (info.offset.x > 60) goPrev()
+              }}
               onClick={(event) => event.stopPropagation()}
               style={{ maxWidth: 420 }}
             >
@@ -133,7 +200,7 @@ function Reels() {
                 type="button"
                 className="absolute -top-3 -right-3 z-10 w-9 h-9 rounded-full flex items-center justify-center"
                 style={{ background: 'rgba(0,0,0,0.75)', border: `1px solid ${BORDER_H}`, color: TEXT }}
-                onClick={() => setActiveItem(null)}
+                onClick={() => setActiveIndex(null)}
                 aria-label="Закрыть"
               >
                 <X size={18} />
@@ -143,7 +210,7 @@ function Reels() {
                 className="overflow-hidden"
                 style={{ borderRadius: 18, border: `1px solid ${BORDER_H}`, background: '#000', maxHeight: '80vh' }}
               >
-                <div className="w-full aspect-[9/16] max-h-[80vh]">
+                <div key={activeIndex} className="w-full aspect-[9/16] max-h-[80vh]">
                   <iframe
                     src={activeItem.embedUrl}
                     title={activeItem.title || 'Видео'}

@@ -43,11 +43,11 @@ function Advantages() {
           </TiltHeading>
         </FadeIn>
 
-        <div className="mt-12 grid grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-5">
+        <div className="mt-12 grid grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-5 auto-rows-fr">
           {items.map((item) => (
             <FadeIn key={item.title}>
               <div
-                className="group relative overflow-hidden min-h-[200px] sm:min-h-[220px] px-4 py-6 sm:px-5 sm:py-6 flex flex-col items-center justify-center text-center"
+                className="group relative overflow-hidden h-full min-h-[230px] sm:min-h-[250px] px-4 py-6 sm:px-5 sm:py-6 flex flex-col items-center justify-center text-center"
                 style={{
                   border: '1px solid rgba(255,255,255,0.08)',
                   borderRadius: 18,

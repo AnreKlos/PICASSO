@@ -35,8 +35,9 @@ export default async function handler(req, res) {
   }
 
   try {
-    const { model, messages, max_tokens, temperature, session_id } = req.body
+    const { model, messages, max_tokens, temperature, session_id, slug } = req.body
     const sessionId = typeof session_id === 'string' ? session_id.trim() : ''
+    const clientSlug = typeof slug === 'string' && slug.trim() ? slug.trim().toLowerCase() : 'picasso'
 
     let dialogueId = null
     const latestUserMessage = Array.isArray(messages)
@@ -45,22 +46,25 @@ export default async function handler(req, res) {
 
     if (sessionId) {
       try {
-        const client = await getClientBySlug('picasso')
-        if (!client?.id) {
-          throw new Error('Client with slug "picasso" not found')
-        }
+        const client = await getClientBySlug(clientSlug)
+        if (client?.id) {
+          const dialogue = await getOrCreateDialogue(client.id, sessionId)
+          dialogueId = dialogue?.id || null
 
-        const dialogue = await getOrCreateDialogue(client.id, sessionId)
-        dialogueId = dialogue?.id || null
-
-        if (dialogueId && latestUserMessage?.content) {
-          await appendMessage(dialogueId, {
-            role: 'user',
-            content: latestUserMessage.content,
+          if (dialogueId && latestUserMessage?.content) {
+            await appendMessage(dialogueId, {
+              role: 'user',
+              content: latestUserMessage.content,
+            })
+          }
+        } else {
+          await notifyError('chat_client_not_found', new Error(`Client not found for slug: ${clientSlug}`), {
+            sessionId,
+            slug: clientSlug,
           })
         }
       } catch (dbError) {
-        await notifyError('chat_db_before_openrouter', dbError, { sessionId })
+        await notifyError('chat_db_before_openrouter', dbError, { sessionId, slug: clientSlug })
       }
     }
 

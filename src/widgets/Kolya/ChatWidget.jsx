@@ -21,10 +21,15 @@ function ChatWidget() {
   const configFromContext = useContext(ConfigContext)
   const config = configFromContext || picassoConfig
   const { SURFACE, SURFACE_L, TEXT, MUTED, GOLD, GOLD_DIM, GOLD_BRIGHT, BG, BORDER, BORDER_H, EASE } = config.tokens
+  const brandName = config.meta?.brand?.name || config.meta?.name || 'PICASSO'
+  const clientSlug = config.meta?.brand?.slug || config.meta?.slug || 'picasso'
+  const headerLabel = config.features?.chatWidget?.headerLabel || `${brandName} Concierge`
+  const greetingTemplate = config.features?.chatWidget?.greeting || 'Здравствуйте! Я цифровой консьерж {{brandName}}. Чем могу помочь?'
+  const greetingText = greetingTemplate.replace('{{brandName}}', brandName)
 
   const [open, setOpen] = useState(false)
   const [messages, setMessages] = useState([
-    { from: 'bot', text: 'Здравствуйте! Я цифровой консьерж PICASSO. Чем могу помочь?' },
+    { from: 'bot', text: greetingText },
   ])
   const [input, setInput] = useState('')
   const [loading, setLoading] = useState(false)
@@ -97,6 +102,7 @@ function ChatWidget() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           model: 'openai/gpt-4o-mini',
+          slug: clientSlug,
           messages: [
             {
               role: 'system',
@@ -170,7 +176,7 @@ function ChatWidget() {
                   className="font-picasso-display text-sm font-semibold"
                   style={{ color: TEXT }}
                 >
-                  PICASSO Concierge
+                  {headerLabel}
                 </p>
                 <p
                   className="text-[12px] font-picasso-body"

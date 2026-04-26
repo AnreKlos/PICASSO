@@ -19,10 +19,16 @@ function BookingContacts() {
   const primaryPhone = config.contacts?.phone || config.contacts?.phones?.[0] || '+7 (000) 000-00-00'
   const primaryPhoneRaw = config.contacts?.phoneRaw || primaryPhone.replace(/\D/g, '')
   const address = config.contacts?.address || ''
+  const coordinates = config.contacts?.coordinates || null
+  const lat = Number(coordinates?.lat)
+  const lng = Number(coordinates?.lng)
+  const hasCoordinates = Number.isFinite(lat) && Number.isFinite(lng)
   const addressNote = config.contacts?.addressNote || ''
   const hours = config.contacts?.hours || config.contacts?.workingHours || ''
   const hoursNote = config.contacts?.hoursNote || ''
-  const mapUrl = `https://yandex.ru/map-widget/v1/?text=${encodeURIComponent(address)}`
+  const mapUrl = hasCoordinates
+    ? `https://yandex.ru/map-widget/v1/?ll=${lng},${lat}&z=15&pt=${lng},${lat},pm2rdm`
+    : `https://yandex.ru/map-widget/v1/?text=${encodeURIComponent(address)}`
 
   const formRef = useRef(null)
   const [name, setName] = useState('')

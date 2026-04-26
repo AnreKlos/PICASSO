@@ -1,6 +1,11 @@
 export const picassoConfig = {
   meta: {
+    slug: 'picasso',
     name: 'PICASSO',
+    brand: {
+      name: 'PICASSO',
+      slug: 'picasso',
+    },
     fullName: 'Салон эстетики PICASSO',
     tagline: 'Premium Beauty Studio',
     city: 'Брянск',
@@ -14,7 +19,7 @@ export const picassoConfig = {
     hours: 'Ежедневно 10:00 — 19:00',
     hoursNote: 'Без выходных',
     whatsapp: '+79208510105',
-    coordinates: { lat: null, lng: null },
+    coordinates: { lat: 53.227, lng: 34.31 },
   },
 
   social: [
@@ -70,6 +75,7 @@ export const picassoConfig = {
       enabled: true,
       tooltipDelayMs: 8000,
       mountDelayMs: 3000,
+      greeting: 'Здравствуйте! Я цифровой консьерж {{brandName}}. Чем могу помочь?',
     },
   },
 }

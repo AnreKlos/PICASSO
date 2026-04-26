@@ -13,10 +13,15 @@ function Hero({ scrollTo }) {
   const config = configFromContext || picassoConfig
   const { GOLD, GOLD_DIM, GOLD_BRIGHT, TEXT, TEXT_SOFT, BG, BORDER_H, EASE } = config.tokens
   const heroConfig = config.sections?.hero || {}
+  const brandName = config.meta?.brand?.name || config.meta?.name || 'PICASSO'
+  const defaultTitleLine1 = 'Салон эстетики'
+  const alternativeTitleLine1 = config.meta?.tagline || defaultTitleLine1
+  const configuredTitleLine1 = heroConfig.titleLine1 || defaultTitleLine1
+  const heroTitleLine1 = configuredTitleLine1 === brandName ? alternativeTitleLine1 : configuredTitleLine1
+  const heroTitleLine2 = brandName
+  const showWorksButton = config.sections?.gallery?.enabled !== false
   const heroTopLabel = heroConfig.topLabel || config.meta?.tagline || 'Premium Beauty Studio'
   const heroLead = heroConfig.lead || 'Стрижка, цвет, ногти, брови — полный цикл красоты в одном пространстве'
-  const heroTitleLine1 = heroConfig.titleLine1 || 'Салон эстетики'
-  const heroTitleLine2 = heroConfig.titleLine2 || config.meta?.name || 'PICASSO'
 
   const ref = useRef(null)
   const [isMobile, setIsMobile] = useState(false)
@@ -60,7 +65,7 @@ function Hero({ scrollTo }) {
           <div className="flex-1 text-center lg:text-left">
             <motion.div style={{ y: heroY, opacity: heroOpacity, willChange: 'transform' }}>
               <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.6, ease: EASE }}>
-                <p className="font-picasso-body text-[12px] uppercase tracking-[0.4em] mb-8 select-none" style={{ color: GOLD }}>{heroTopLabel}</p>
+                <p className="font-picasso-body text-[9px] sm:text-[10px] md:text-[11px] font-light uppercase tracking-[0.2em] sm:tracking-[0.24em] whitespace-nowrap mb-5 select-none" style={{ color: 'rgba(240,235,227,0.4)' }}>{heroTopLabel}</p>
               </motion.div>
 
               <div className="relative">
@@ -108,13 +113,15 @@ function Hero({ scrollTo }) {
                   style={{ background: `linear-gradient(to bottom, ${GOLD_BRIGHT} 0%, ${GOLD} 40%, ${GOLD_DIM} 100%)`, color: BG, borderRadius: 9999, boxShadow: '0 1px 0 rgba(255,255,255,0.25) inset, 0 -2px 0 rgba(0,0,0,0.2) inset, 0 4px 8px rgba(0,0,0,0.3), 0 8px 30px rgba(201,168,122,0.18)', textShadow: '0 1px 2px rgba(0,0,0,0.25)' }}>
                   Онлайн запись <ArrowRight size={15} className="transition-transform group-hover:translate-x-1" />
                 </MagneticButton>
-                <MagneticButton href="#gallery" onClick={(e) => { e.preventDefault(); scrollTo('gallery') }}
-                  whileHover={{ boxShadow: '0 6px 30px rgba(0,0,0,0.4), inset 0 1px 0 rgba(255,255,255,0.06)' }}
-                  whileTap={{ boxShadow: '0 2px 10px rgba(0,0,0,0.3)' }}
-                  className="inline-flex items-center justify-center font-picasso-body text-[13px] font-medium uppercase tracking-[0.14em] px-9 py-4 transition-all duration-300 cursor-pointer"
-                  style={{ border: `1px solid ${BORDER_H}`, color: TEXT, borderRadius: 9999, boxShadow: '0 4px 20px rgba(0,0,0,0.25), inset 0 1px 0 rgba(255,255,255,0.04), inset 0 -1px 0 rgba(0,0,0,0.2)' }}>
-                  Наши работы
-                </MagneticButton>
+                {showWorksButton && (
+                  <MagneticButton href="#gallery" onClick={(e) => { e.preventDefault(); scrollTo('gallery') }}
+                    whileHover={{ boxShadow: '0 6px 30px rgba(0,0,0,0.4), inset 0 1px 0 rgba(255,255,255,0.06)' }}
+                    whileTap={{ boxShadow: '0 2px 10px rgba(0,0,0,0.3)' }}
+                    className="inline-flex items-center justify-center font-picasso-body text-[13px] font-medium uppercase tracking-[0.14em] px-9 py-4 transition-all duration-300 cursor-pointer"
+                    style={{ border: `1px solid ${BORDER_H}`, color: TEXT, borderRadius: 9999, boxShadow: '0 4px 20px rgba(0,0,0,0.25), inset 0 1px 0 rgba(255,255,255,0.04), inset 0 -1px 0 rgba(0,0,0,0.2)' }}>
+                    Наши работы
+                  </MagneticButton>
+                )}
               </motion.div>
             </motion.div>
           </div>

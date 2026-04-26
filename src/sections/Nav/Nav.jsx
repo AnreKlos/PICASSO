@@ -9,6 +9,7 @@ function Nav({ scrollTo, scrollToTop }) {
   const configFromContext = useContext(ConfigContext)
   const config = configFromContext || picassoConfig
   const { GOLD, GOLD_DIM, GOLD_BRIGHT, TEXT, MUTED, BG, BORDER, EASE } = config.tokens
+  const brandName = config.meta?.brand?.name || config.meta?.name || 'PICASSO'
 
   const [scrolled, setScrolled] = useState(false)
   const [mobileOpen, setMobileOpen] = useState(false)
@@ -33,17 +34,17 @@ function Nav({ scrollTo, scrollToTop }) {
     <motion.nav initial={{ y: -40, opacity: 0 }} animate={{ y: 0, opacity: 1 }} transition={{ duration: 0.6, ease: EASE }}
       className={`fixed top-0 left-0 right-0 w-full z-40 transition-all duration-500 overflow-hidden ${scrolled ? 'backdrop-blur-lg' : ''}`}
       style={{ background: scrolled ? 'rgba(14,12,11,0.92)' : 'transparent', borderBottom: `1px solid ${scrolled ? BORDER : 'transparent'}` }}>
-      <div className="mx-auto max-w-6xl px-5 sm:px-8 flex items-center justify-between h-16">
+      <div className="mx-auto max-w-6xl px-5 sm:px-8 flex items-center justify-between h-16 gap-3">
         <button
           type="button"
           onClick={scrollToTop}
-          className="font-picasso-display text-xl font-semibold tracking-[0.08em] select-none cursor-pointer"
+          className="font-picasso-display text-base sm:text-lg lg:text-xl font-semibold tracking-[0.06em] select-none cursor-pointer text-left leading-tight max-w-[140px] sm:max-w-[190px] lg:max-w-[220px]"
           style={{ color: GOLD, textShadow: '0 0 20px rgba(201,168,122,0.15)' }}
         >
-          {config.meta.name}
+          {brandName}
         </button>
-        <div className="hidden lg:flex items-center gap-7 font-picasso-body text-[13px] font-medium uppercase tracking-[0.12em]" style={{ color: MUTED }}>
-          {links.map(l => <a key={l.href} href={l.href} onClick={(e) => { e.preventDefault(); scrollTo(l.href) }} className="hover:text-[var(--color-picasso-text)] transition-colors duration-200" style={{ color: MUTED }}>{l.label}</a>)}
+        <div className="hidden lg:flex items-center gap-5 font-picasso-body text-[12px] xl:text-[13px] font-medium uppercase tracking-[0.1em]" style={{ color: MUTED }}>
+          {links.map(l => <a key={l.href} href={l.href} onClick={(e) => { e.preventDefault(); scrollTo(l.href) }} className="hover:text-[var(--color-picasso-text)] transition-colors duration-200 whitespace-nowrap" style={{ color: MUTED }}>{l.label}</a>)}
           <MagneticButton href="#booking" onClick={(e) => { e.preventDefault(); scrollTo('booking') }}
             className="inline-flex items-center gap-2 px-5 py-2 transition-all duration-300 font-picasso-body text-[13px] font-medium uppercase tracking-[0.12em]"
             style={{ background: `linear-gradient(to bottom, ${GOLD_BRIGHT} 0%, ${GOLD} 50%, ${GOLD_DIM} 100%)`, color: BG, borderRadius: 9999, boxShadow: '0 2px 12px rgba(201,168,122,0.15), inset 0 1px 0 rgba(255,255,255,0.2), inset 0 -1px 0 rgba(0,0,0,0.12)' }}>

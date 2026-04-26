@@ -1,7 +1,9 @@
 export const kalinkaConfig = {
   meta: {
+    slug: 'kalinka',
     brand: {
       name: 'Калинка-Малинка',
+      slug: 'kalinka',
       tagline: 'Моно-студия по созданию образа',
     },
     name: 'Калинка-Малинка',
@@ -16,6 +18,7 @@ export const kalinkaConfig = {
     phones: ['+7 (910) 034-43-88', '+7 (4832) 234-43-88'],
     whatsapp: '+79100344388',
     address: 'ул. Горького, 25, Брянск',
+    coordinates: { lat: 53.245, lng: 34.367 },
     additionalAddresses: ['ул. Фокина, 37А, Брянск', 'ул. Советская, 122, Брянск'],
     workingHours: 'ежедневно с 10:00 до 20:00',
     vk: 'https://vk.com/club19553830',
@@ -222,6 +225,7 @@ export const kalinkaConfig = {
       enabled: true,
       tooltipDelayMs: 8000,
       mountDelayMs: 3000,
+      greeting: 'Здравствуйте! Я цифровой консьерж {{brandName}}. Чем могу помочь?',
     },
   },
 }
