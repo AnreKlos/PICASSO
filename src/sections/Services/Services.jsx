@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { Scissors, HandMetal, Eye, Flower2, FlaskConical } from 'lucide-react'
-import { picassoConfig } from '../../config/picasso.config'
+import { picassoConfig } from '../../configs/picasso.config'
 import FadeIn from '../../components/FadeIn'
 import TiltHeading from '../../components/TiltHeading'
 import GoldSpan from '../../components/GoldSpan'

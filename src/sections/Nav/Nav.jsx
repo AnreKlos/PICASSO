@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react'
 import { X, Menu } from 'lucide-react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { picassoConfig } from '../../config/picasso.config'
+import { picassoConfig } from '../../configs/picasso.config'
 import MagneticButton from '../../components/MagneticButton'
 
 const { GOLD, GOLD_DIM, GOLD_BRIGHT, TEXT, MUTED, BG, BORDER, EASE } = picassoConfig.tokens

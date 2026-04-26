@@ -1,4 +1,4 @@
-import { picassoConfig } from '../../config/picasso.config'
+import { picassoConfig } from '../../configs/picasso.config'
 
 const { GOLD, TEXT_SOFT, BG, BORDER } = picassoConfig.tokens
 

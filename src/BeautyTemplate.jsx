@@ -1,6 +1,7 @@
 import { useState, useEffect, useCallback } from 'react'
 import Lenis from 'lenis'
-import { picassoConfig } from './config/picasso.config'
+import { picassoConfig } from './configs/picasso.config'
+import { ConfigContext } from './contexts/ConfigContext'
 import SectionBoundary from './components/SectionBoundary'
 import ChatWidget from './widgets/Kolya/ChatWidget'
 import Nav from './sections/Nav/Nav'
@@ -16,12 +17,11 @@ import FAQ from './sections/FAQ/FAQ'
 import BookingContacts from './sections/BookingContacts/BookingContacts'
 import Footer from './sections/Footer/Footer'
 
-const { BG, TEXT } = picassoConfig.tokens
-
-export default function Picasso() {
+export default function BeautyTemplate({ config = picassoConfig }) {
   const [showWidget, setShowWidget] = useState(false)
-  const { sections } = picassoConfig
-  const { enabled: chatWidgetEnabled, tooltipDelayMs, mountDelayMs } = picassoConfig.features.chatWidget
+  const { sections } = config
+  const { enabled: chatWidgetEnabled, tooltipDelayMs, mountDelayMs } = config.features.chatWidget
+  const { BG, TEXT } = config.tokens
 
   void tooltipDelayMs
 
@@ -180,74 +180,76 @@ export default function Picasso() {
   }, [])
 
   return (
-    <div
-      className="relative w-full overflow-hidden flex flex-col min-h-screen font-picasso-body"
-      style={{ background: BG, color: TEXT, lineHeight: 1.7 }}
-    >
-      {chatWidgetEnabled && showWidget && <ChatWidget />}
-      <Nav scrollTo={scrollTo} scrollToTop={scrollToTop} />
-      <main>
-        {sections.hero?.enabled && (
-          <SectionBoundary name="hero">
-            <Hero scrollTo={scrollTo} />
-          </SectionBoundary>
-        )}
+    <ConfigContext.Provider value={config}>
+      <div
+        className="relative w-full overflow-hidden flex flex-col min-h-screen font-picasso-body"
+        style={{ background: BG, color: TEXT, lineHeight: 1.7 }}
+      >
+        {chatWidgetEnabled && showWidget && <ChatWidget />}
+        <Nav scrollTo={scrollTo} scrollToTop={scrollToTop} />
+        <main>
+          {sections.hero?.enabled && (
+            <SectionBoundary name="hero">
+              <Hero scrollTo={scrollTo} />
+            </SectionBoundary>
+          )}
 
-        {sections.promotion?.enabled && (
-          <SectionBoundary name="promotion">
-            <Promotion />
-          </SectionBoundary>
-        )}
+          {sections.promotion?.enabled && (
+            <SectionBoundary name="promotion">
+              <Promotion />
+            </SectionBoundary>
+          )}
 
-        {sections.advantages?.enabled && (
-          <SectionBoundary name="advantages">
-            <Advantages />
-          </SectionBoundary>
-        )}
+          {sections.advantages?.enabled && (
+            <SectionBoundary name="advantages">
+              <Advantages />
+            </SectionBoundary>
+          )}
 
-        {sections.services?.enabled && (
-          <SectionBoundary name="services">
-            <Services />
-          </SectionBoundary>
-        )}
+          {sections.services?.enabled && (
+            <SectionBoundary name="services">
+              <Services />
+            </SectionBoundary>
+          )}
 
-        {sections.gallery?.enabled && (
-          <SectionBoundary name="gallery">
-            <Gallery />
-          </SectionBoundary>
-        )}
+          {sections.gallery?.enabled && (
+            <SectionBoundary name="gallery">
+              <Gallery />
+            </SectionBoundary>
+          )}
 
-        {sections.team?.enabled && (
-          <SectionBoundary name="team">
-            <Team />
-          </SectionBoundary>
-        )}
+          {sections.team?.enabled && (
+            <SectionBoundary name="team">
+              <Team />
+            </SectionBoundary>
+          )}
 
-        {sections.reviews?.enabled && (
-          <SectionBoundary name="reviews">
-            <Reviews />
-          </SectionBoundary>
-        )}
+          {sections.reviews?.enabled && (
+            <SectionBoundary name="reviews">
+              <Reviews />
+            </SectionBoundary>
+          )}
 
-        {sections.about?.enabled && (
-          <SectionBoundary name="about">
-            <About />
-          </SectionBoundary>
-        )}
+          {sections.about?.enabled && (
+            <SectionBoundary name="about">
+              <About />
+            </SectionBoundary>
+          )}
 
-        {sections.faq?.enabled && (
-          <SectionBoundary name="faq">
-            <FAQ />
-          </SectionBoundary>
-        )}
+          {sections.faq?.enabled && (
+            <SectionBoundary name="faq">
+              <FAQ />
+            </SectionBoundary>
+          )}
 
-        {sections.bookingContacts?.enabled && (
-          <SectionBoundary name="bookingContacts">
-            <BookingContacts />
-          </SectionBoundary>
-        )}
-      </main>
-      <Footer />
-    </div>
+          {sections.bookingContacts?.enabled && (
+            <SectionBoundary name="bookingContacts">
+              <BookingContacts />
+            </SectionBoundary>
+          )}
+        </main>
+        <Footer />
+      </div>
+    </ConfigContext.Provider>
   )
 }

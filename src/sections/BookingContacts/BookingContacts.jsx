@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from 'react'
 import { MapPin, Phone, Clock3 } from 'lucide-react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { picassoConfig } from '../../config/picasso.config'
+import { picassoConfig } from '../../configs/picasso.config'
 import FadeIn from '../../components/FadeIn'
 import TiltHeading from '../../components/TiltHeading'
 import GoldSpan from '../../components/GoldSpan'

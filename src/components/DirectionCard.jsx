@@ -1,7 +1,7 @@
 import { ChevronDown } from 'lucide-react'
 import { motion, AnimatePresence } from 'framer-motion'
 import FadeIn from './FadeIn'
-import { picassoConfig } from '../config/picasso.config'
+import { picassoConfig } from '../configs/picasso.config'
 
 const { GOLD, GOLD_DIM, GOLD_BRIGHT, TEXT, TEXT_SOFT, MUTED, BG, CHOCOLATE, SURFACE, SURFACE_L, BORDER, BORDER_H, EASE } = picassoConfig.tokens
 

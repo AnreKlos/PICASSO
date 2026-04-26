@@ -1,11 +1,10 @@
-import { useState, useRef, useEffect } from 'react'
+import { useState, useRef, useEffect, useContext } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { X, Send, MessageCircle } from 'lucide-react'
 import { salesSalonPrompt } from '../../prompts/salesSalonPrompt'
-import { picassoConfig } from '../../config/picasso.config'
+import { picassoConfig } from '../../configs/picasso.config'
 import { getOrCreateSessionId } from '../../lib/session.js'
-
-const { SURFACE, SURFACE_L, TEXT, MUTED, GOLD, GOLD_DIM, GOLD_BRIGHT, BG, BORDER, BORDER_H, EASE } = picassoConfig.tokens
+import { ConfigContext } from '../../contexts/ConfigContext'
 
 function parseToolArguments(raw) {
   if (!raw) return {}
@@ -19,6 +18,10 @@ function parseToolArguments(raw) {
 }
 
 function ChatWidget() {
+  const configFromContext = useContext(ConfigContext)
+  const config = configFromContext || picassoConfig
+  const { SURFACE, SURFACE_L, TEXT, MUTED, GOLD, GOLD_DIM, GOLD_BRIGHT, BG, BORDER, BORDER_H, EASE } = config.tokens
+
   const [open, setOpen] = useState(false)
   const [messages, setMessages] = useState([
     { from: 'bot', text: 'Здравствуйте! Я цифровой консьерж PICASSO. Чем могу помочь?' },
@@ -50,9 +53,9 @@ function ChatWidget() {
   useEffect(() => {
     const timer = setTimeout(() => {
       if (!hasBeenOpened.current) setShowTooltip(true)
-    }, picassoConfig.features.chatWidget.tooltipDelayMs)
+    }, config.features.chatWidget.tooltipDelayMs)
     return () => clearTimeout(timer)
-  }, [])
+  }, [config.features.chatWidget.tooltipDelayMs])
 
   useEffect(() => {
     function handleClickOutside(e) {

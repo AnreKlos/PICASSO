@@ -1,8 +1,72 @@
-// App.jsx
-import { Component } from 'react'
-import { Routes, Route } from 'react-router-dom'
+import { Component, useEffect, useState } from 'react'
+import { Routes, Route, useParams } from 'react-router-dom'
 
-import Picasso from './Picasso.jsx'
+import BeautyTemplate from './BeautyTemplate.jsx'
+import NotFound from './components/NotFound.jsx'
+import { picassoConfig } from './configs/picasso.config.js'
+
+const configModules = import.meta.glob('./configs/*.config.js')
+
+function resolveModuleConfig(moduleValue) {
+  if (!moduleValue || typeof moduleValue !== 'object') return null
+  if (moduleValue.default && typeof moduleValue.default === 'object') return moduleValue.default
+
+  for (const value of Object.values(moduleValue)) {
+    if (value && typeof value === 'object') {
+      return value
+    }
+  }
+
+  return null
+}
+
+function SlugPicassoRoute() {
+  const { slug } = useParams()
+  const [state, setState] = useState({ loading: true, config: null, found: false })
+
+  useEffect(() => {
+    const key = `./configs/${String(slug || '').trim().toLowerCase()}.config.js`
+    const loader = configModules[key]
+
+    if (!loader) {
+      setState({ loading: false, config: null, found: false })
+      return
+    }
+
+    let cancelled = false
+    setState({ loading: true, config: null, found: true })
+
+    loader()
+      .then((moduleValue) => {
+        if (cancelled) return
+        const resolved = resolveModuleConfig(moduleValue)
+        if (!resolved) {
+          setState({ loading: false, config: null, found: false })
+          return
+        }
+        setState({ loading: false, config: resolved, found: true })
+      })
+      .catch(() => {
+        if (!cancelled) {
+          setState({ loading: false, config: null, found: false })
+        }
+      })
+
+    return () => {
+      cancelled = true
+    }
+  }, [slug])
+
+  if (state.loading) {
+    return null
+  }
+
+  if (!state.found || !state.config) {
+    return <NotFound />
+  }
+
+  return <BeautyTemplate config={state.config} />
+}
 
 class ErrorBoundary extends Component {
   constructor(props) { super(props); this.state = { hasError: false, error: null } }
@@ -25,7 +89,9 @@ export default function App() {
   return (
     <ErrorBoundary>
       <Routes>
-        <Route path="/*" element={<Picasso />} />
+        <Route path="/" element={<BeautyTemplate config={picassoConfig} />} />
+        <Route path="/:slug" element={<SlugPicassoRoute />} />
+        <Route path="*" element={<NotFound />} />
       </Routes>
     </ErrorBoundary>
   )

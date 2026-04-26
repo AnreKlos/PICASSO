@@ -1,7 +1,7 @@
 import { useState, useRef, useEffect } from 'react'
 import { ArrowRight } from 'lucide-react'
 import { motion, useScroll, useTransform } from 'framer-motion'
-import { picassoConfig } from '../../config/picasso.config'
+import { picassoConfig } from '../../configs/picasso.config'
 import TiltHeading from '../../components/TiltHeading'
 import MagneticButton from '../../components/MagneticButton'
 import DustParticles from '../../components/DustParticles'
