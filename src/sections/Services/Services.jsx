@@ -1,55 +1,67 @@
-import { useState } from 'react'
+import { useState, useContext } from 'react'
 import { Scissors, HandMetal, Eye, Flower2, FlaskConical } from 'lucide-react'
 import { picassoConfig } from '../../configs/picasso.config'
+import { ConfigContext } from '../../contexts/ConfigContext'
 import FadeIn from '../../components/FadeIn'
 import TiltHeading from '../../components/TiltHeading'
 import GoldSpan from '../../components/GoldSpan'
 import ServiceCard from '../../components/ServiceCard'
 import DirectionCard from '../../components/DirectionCard'
 
-const { GOLD, TEXT, TEXT_SOFT, BG } = picassoConfig.tokens
+const DEFAULT_SERVICE_ITEMS = [
+  {
+    title: 'Hair — Парикмахерские услуги',
+    desc: 'Стрижки, окрашивание, кератин, укладки — главное направление PICASSO. Мастера-стилисты создают образ, который подчёркивает вашу индивидуальность.',
+    priceFrom: 'от 2 000 ₽',
+    short: 'Стрижки, окрашивания, кератин, укладки',
+    image: '/images/services/kabinet_parikmaherskaya.webp',
+    featured: true,
+  },
+  {
+    title: 'Nail сервис',
+    desc: 'Маникюр, педикюр, наращивание, дизайн. Премиальные материалы и техника выравнивания.',
+    priceFrom: 'от 1 800 ₽',
+    short: 'Маникюр, педикюр, наращивание, дизайн',
+  },
+  {
+    title: 'Брови',
+    desc: 'Архитектура, ламинирование, окрашивание. Форма, которая работает на ваш образ.',
+    priceFrom: 'от 600 ₽',
+    short: 'Архитектура, ламинирование, окрашивание',
+  },
+  {
+    title: 'Шугаринг',
+    desc: 'Депиляция сахарной пастой. Мягко, бережно, для всех зон.',
+    priceFrom: 'от 700 ₽',
+    short: 'Депиляция сахарной пастой',
+  },
+  {
+    title: 'Уход за лицом',
+    desc: 'УЗ-чистка, кислотные пилинги, маски. Здоровая кожа — основа красоты.',
+    priceFrom: 'от 1 500 ₽',
+    short: 'УЗ-чистка, пилинги, маски',
+  },
+]
+
+const ICONS = [Scissors, HandMetal, Eye, Flower2, FlaskConical]
 
 function Services() {
+  const configFromContext = useContext(ConfigContext)
+  const config = configFromContext || picassoConfig
+  const { GOLD, TEXT, TEXT_SOFT, BG } = config.tokens
   const [openIdx, setOpenIdx] = useState(0)
-  const directions = [
-    {
-      Icon: Scissors, title: 'Hair — Парикмахерские услуги', tagline: 'Стрижки, окрашивания, кератин, укладки', items: [
-        { name: 'Женская стрижка', price: 'от 2 000 ₽' },
-        { name: 'Окрашивание (однотонное)', price: 'от 4 500 ₽' },
-        { name: 'Кератиновое выпрямление', price: 'от 5 000 ₽' },
-        { name: 'Укладка / вечерняя', price: 'от 1 500 ₽' },
-      ]
-    },
-    {
-      Icon: HandMetal, title: 'Nail сервис', tagline: 'Маникюр, педикюр, наращивание, дизайн', items: [
-        { name: 'Маникюр «Всё включено»', price: 'от 1 800 ₽' },
-        { name: 'Smart-педикюр', price: 'от 2 200 ₽' },
-        { name: 'Наращивание ногтей', price: 'от 3 000 ₽' },
-        { name: 'Дизайн (Nail Art)', price: 'от 500 ₽' },
-      ]
-    },
-    {
-      Icon: Eye, title: 'Брови', tagline: 'Архитектура, ламинирование, окрашивание', items: [
-        { name: 'Архитектура бровей', price: 'от 1 200 ₽' },
-        { name: 'Ламинирование + ботокс', price: 'от 1 500 ₽' },
-        { name: 'Окрашивание (хна/краска)', price: 'от 600 ₽' },
-      ]
-    },
-    {
-      Icon: Flower2, title: 'Шугаринг', tagline: 'Депиляция сахарной пастой', items: [
-        { name: 'Ноги полностью', price: 'от 1 800 ₽' },
-        { name: 'Руки до локтя', price: 'от 700 ₽' },
-        { name: 'Бикини (классика)', price: 'от 1 200 ₽' },
-      ]
-    },
-    {
-      Icon: FlaskConical, title: 'Уход за лицом', tagline: 'УЗ-чистка, пилинги, маски', items: [
-        { name: 'УЗ-чистка лица', price: 'от 1 500 ₽' },
-        { name: 'Молочный пилинг', price: 'от 1 800 ₽' },
-        { name: 'Ретиноевый пилинг', price: 'от 3 000 ₽' },
-      ]
-    },
-  ]
+  const servicesConfig = Array.isArray(config.sections?.services?.items) && config.sections.services.items.length
+    ? config.sections.services.items
+    : DEFAULT_SERVICE_ITEMS
+
+  const directions = servicesConfig.map((service, index) => ({
+    Icon: ICONS[index % ICONS.length],
+    title: service.title,
+    tagline: service.short || service.description || service.desc || '',
+    items: [
+      { name: service.title, price: service.priceFrom || 'по запросу' },
+    ],
+  }))
 
   return (
     <section id="services" className="scroll-mt-20 py-28 sm:py-36" style={{ background: BG }}>
@@ -69,19 +81,25 @@ function Services() {
         </FadeIn>
 
         <div data-services-anchor className="mt-16 flex flex-col gap-5">
-          <ServiceCard Icon={Scissors} title="Hair — Парикмахерские услуги"
-            desc="Стрижки, окрашивание, кератин, укладки — главное направление PICASSO. Мастера-стилисты создают образ, который подчёркивает вашу индивидуальность."
-            image="/images/services/kabinet_parikmaherskaya.webp" featured />
+          {servicesConfig[0] && (
+            <ServiceCard
+              Icon={ICONS[0]}
+              title={servicesConfig[0].title}
+              desc={servicesConfig[0].description || servicesConfig[0].desc || servicesConfig[0].short || ''}
+              image={servicesConfig[0].image}
+              featured={Boolean(servicesConfig[0].featured)}
+            />
+          )}
 
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
-            <ServiceCard Icon={HandMetal} title="Nail сервис"
-              desc="Маникюр, педикюр, наращивание, дизайн. Премиальные материалы и техника выравнивания." />
-            <ServiceCard Icon={Eye} title="Брови"
-              desc="Архитектура, ламинирование, окрашивание. Форма, которая работает на ваш образ." />
-            <ServiceCard Icon={Flower2} title="Шугаринг"
-              desc="Депиляция сахарной пастой. Мягко, бережно, для всех зон." />
-            <ServiceCard Icon={FlaskConical} title="Уход за лицом"
-              desc="УЗ-чистка, кислотные пилинги, маски. Здоровая кожа — основа красоты." />
+            {servicesConfig.slice(1).map((service, index) => (
+              <ServiceCard
+                key={service.title}
+                Icon={ICONS[(index + 1) % ICONS.length]}
+                title={service.title}
+                desc={service.description || service.desc || service.short || ''}
+              />
+            ))}
           </div>
         </div>
 

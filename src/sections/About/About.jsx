@@ -1,14 +1,20 @@
-import { useState } from 'react'
+import { useState, useContext } from 'react'
 import { AnimatePresence } from 'framer-motion'
 import { picassoConfig } from '../../configs/picasso.config'
+import { ConfigContext } from '../../contexts/ConfigContext'
 import FadeIn from '../../components/FadeIn'
 import TiltHeading from '../../components/TiltHeading'
 import GoldSpan from '../../components/GoldSpan'
 import Lightbox from '../../components/Lightbox'
 
-const { GOLD, TEXT, TEXT_SOFT, CHOCOLATE } = picassoConfig.tokens
-
 function About() {
+  const configFromContext = useContext(ConfigContext)
+  const config = configFromContext || picassoConfig
+  const { GOLD, TEXT, TEXT_SOFT, CHOCOLATE } = config.tokens
+  const aboutConfig = config.sections?.about || {}
+  const aboutText = aboutConfig.text || 'PICASSO — студия, куда приходят за понятным результатом. Мы честно обсуждаем пожелания, подбираем решения под качество волос и кожи, работаем только на проверенных составах и держим высокий стандарт чистоты. В одном визите можно обновить стрижку и цвет, привести в порядок ногти и брови и уйти с ощущением, что о вас действительно позаботились.'
+  const showImages = aboutConfig.showImages !== false
+
   const [lightbox, setLightbox] = useState(null)
 
   return (
@@ -52,16 +58,13 @@ function About() {
                 className="mt-7 text-[16px] font-light leading-relaxed max-w-lg"
                 style={{ color: TEXT_SOFT }}
               >
-                PICASSO — студия, куда приходят за понятным результатом.
-                Мы честно обсуждаем пожелания, подбираем решения под качество волос и кожи,
-                работаем только на проверенных составах и держим высокий стандарт чистоты.
-                В одном визите можно обновить стрижку и цвет, привести в порядок
-                ногти и брови и уйти с ощущением, что о вас действительно позаботились.
+                {aboutText}
               </p>
             </FadeIn>
           </div>
 
-          <div className="flex-1 flex flex-col gap-4 justify-center">
+          {showImages && (
+            <div className="flex-1 flex flex-col gap-4 justify-center">
             <FadeIn>
               <div
                 className="group relative overflow-hidden bg-[#050505] cursor-pointer"
@@ -174,7 +177,8 @@ function About() {
                 </div>
               </FadeIn>
             </div>
-          </div>
+            </div>
+          )}
         </div>
       </div>
 

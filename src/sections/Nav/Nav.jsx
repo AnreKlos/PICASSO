@@ -1,12 +1,15 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useContext } from 'react'
 import { X, Menu } from 'lucide-react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { picassoConfig } from '../../configs/picasso.config'
+import { ConfigContext } from '../../contexts/ConfigContext'
 import MagneticButton from '../../components/MagneticButton'
 
-const { GOLD, GOLD_DIM, GOLD_BRIGHT, TEXT, MUTED, BG, BORDER, EASE } = picassoConfig.tokens
-
 function Nav({ scrollTo, scrollToTop }) {
+  const configFromContext = useContext(ConfigContext)
+  const config = configFromContext || picassoConfig
+  const { GOLD, GOLD_DIM, GOLD_BRIGHT, TEXT, MUTED, BG, BORDER, EASE } = config.tokens
+
   const [scrolled, setScrolled] = useState(false)
   const [mobileOpen, setMobileOpen] = useState(false)
   useEffect(() => {
@@ -37,7 +40,7 @@ function Nav({ scrollTo, scrollToTop }) {
           className="font-picasso-display text-xl font-semibold tracking-[0.08em] select-none cursor-pointer"
           style={{ color: GOLD, textShadow: '0 0 20px rgba(201,168,122,0.15)' }}
         >
-          {picassoConfig.meta.name}
+          {config.meta.name}
         </button>
         <div className="hidden lg:flex items-center gap-7 font-picasso-body text-[13px] font-medium uppercase tracking-[0.12em]" style={{ color: MUTED }}>
           {links.map(l => <a key={l.href} href={l.href} onClick={(e) => { e.preventDefault(); scrollTo(l.href) }} className="hover:text-[var(--color-picasso-text)] transition-colors duration-200" style={{ color: MUTED }}>{l.label}</a>)}

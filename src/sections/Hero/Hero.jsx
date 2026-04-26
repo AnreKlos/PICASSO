@@ -1,15 +1,23 @@
-import { useState, useRef, useEffect } from 'react'
+import { useState, useRef, useEffect, useContext } from 'react'
 import { ArrowRight } from 'lucide-react'
 import { motion, useScroll, useTransform } from 'framer-motion'
 import { picassoConfig } from '../../configs/picasso.config'
+import { ConfigContext } from '../../contexts/ConfigContext'
 import TiltHeading from '../../components/TiltHeading'
 import MagneticButton from '../../components/MagneticButton'
 import DustParticles from '../../components/DustParticles'
 import TiltGlare from '../../components/TiltGlare'
 
-const { GOLD, GOLD_DIM, GOLD_BRIGHT, TEXT, TEXT_SOFT, BG, BORDER_H, EASE } = picassoConfig.tokens
-
 function Hero({ scrollTo }) {
+  const configFromContext = useContext(ConfigContext)
+  const config = configFromContext || picassoConfig
+  const { GOLD, GOLD_DIM, GOLD_BRIGHT, TEXT, TEXT_SOFT, BG, BORDER_H, EASE } = config.tokens
+  const heroConfig = config.sections?.hero || {}
+  const heroTopLabel = heroConfig.topLabel || config.meta?.tagline || 'Premium Beauty Studio'
+  const heroLead = heroConfig.lead || 'Стрижка, цвет, ногти, брови — полный цикл красоты в одном пространстве'
+  const heroTitleLine1 = heroConfig.titleLine1 || 'Салон эстетики'
+  const heroTitleLine2 = heroConfig.titleLine2 || config.meta?.name || 'PICASSO'
+
   const ref = useRef(null)
   const [isMobile, setIsMobile] = useState(false)
   const { scrollYProgress } = useScroll({ target: ref, offset: ['start start', 'end start'] })
@@ -52,7 +60,7 @@ function Hero({ scrollTo }) {
           <div className="flex-1 text-center lg:text-left">
             <motion.div style={{ y: heroY, opacity: heroOpacity, willChange: 'transform' }}>
               <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.6, ease: EASE }}>
-                <p className="font-picasso-body text-[12px] uppercase tracking-[0.4em] mb-8 select-none" style={{ color: GOLD }}>Premium Beauty Studio</p>
+                <p className="font-picasso-body text-[12px] uppercase tracking-[0.4em] mb-8 select-none" style={{ color: GOLD }}>{heroTopLabel}</p>
               </motion.div>
 
               <div className="relative">
@@ -67,7 +75,7 @@ function Hero({ scrollTo }) {
                   transition={{ duration: 2, ease: EASE, delay: 0.2 }}
                 >
                   <TiltHeading as="h1" className="font-picasso-display font-medium tracking-[-0.01em] leading-[1.1]" style={{ color: TEXT }}>
-                    <span className="text-4xl sm:text-5xl lg:text-[3.8rem] xl:text-[4.5rem]" style={{ color: TEXT }}>Салон эстетики</span> <span className="block italic text-5xl sm:text-6xl lg:text-[5.5rem] xl:text-[6.5rem]" style={{
+                    <span className="text-4xl sm:text-5xl lg:text-[3.8rem] xl:text-[4.5rem]" style={{ color: TEXT }}>{heroTitleLine1}</span> <span className="block italic text-5xl sm:text-6xl lg:text-[5.5rem] xl:text-[6.5rem]" style={{
                       color: GOLD,
                       textShadow: `
                     0 1px 0 #A68B5A,
@@ -81,14 +89,14 @@ function Hero({ scrollTo }) {
                     0 0 160px rgba(201,168,122,0.03),
                     0 0 260px rgba(201,168,122,0.01)
                   `,
-                    }}>PICASSO</span>
+                    }}>{heroTitleLine2}</span>
                   </TiltHeading>
                 </motion.div>
               </div>
 
               <motion.p initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.9, ease: EASE, delay: 0.8 }}
                 className="mt-7 font-picasso-body text-lg sm:text-xl font-light leading-relaxed" style={{ color: TEXT_SOFT }}>
-                Стрижка, цвет, ногти, брови — полный цикл красоты в одном пространстве
+                {heroLead}
               </motion.p>
 
               <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.7, ease: EASE, delay: 0.8 }}

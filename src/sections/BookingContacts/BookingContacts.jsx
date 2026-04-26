@@ -1,15 +1,29 @@
-import { useState, useEffect, useRef } from 'react'
+import { useState, useEffect, useRef, useContext } from 'react'
 import { MapPin, Phone, Clock3 } from 'lucide-react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { picassoConfig } from '../../configs/picasso.config'
+import { ConfigContext } from '../../contexts/ConfigContext'
 import FadeIn from '../../components/FadeIn'
 import TiltHeading from '../../components/TiltHeading'
 import GoldSpan from '../../components/GoldSpan'
 import { getOrCreateSessionId } from '../../lib/session.js'
 
-const { GOLD, GOLD_DIM, GOLD_BRIGHT, TEXT, TEXT_SOFT, MUTED, BG, BORDER_H } = picassoConfig.tokens
-
 function BookingContacts() {
+  const configFromContext = useContext(ConfigContext)
+  const config = configFromContext || picassoConfig
+  const { GOLD, GOLD_DIM, GOLD_BRIGHT, TEXT, TEXT_SOFT, MUTED, BG, BORDER_H } = config.tokens
+  const bookingSection = config.sections?.bookingContacts || {}
+  const showMap = bookingSection.showMap !== false
+  const mapTitle = bookingSection.mapTitle || 'Как нас найти'
+
+  const primaryPhone = config.contacts?.phone || config.contacts?.phones?.[0] || '+7 (000) 000-00-00'
+  const primaryPhoneRaw = config.contacts?.phoneRaw || primaryPhone.replace(/\D/g, '')
+  const address = config.contacts?.address || ''
+  const addressNote = config.contacts?.addressNote || ''
+  const hours = config.contacts?.hours || config.contacts?.workingHours || ''
+  const hoursNote = config.contacts?.hoursNote || ''
+  const mapUrl = `https://yandex.ru/map-widget/v1/?text=${encodeURIComponent(address)}`
+
   const formRef = useRef(null)
   const [name, setName] = useState('')
   const [phone, setPhone] = useState('')
@@ -128,7 +142,7 @@ function BookingContacts() {
                     setName('')
                     setPhone('')
                   } catch {
-                    setError(`Не удалось отправить. Позвоните нам: ${picassoConfig.contacts.phone}`)
+                    setError(`Не удалось отправить. Позвоните нам: ${primaryPhone}`)
                   } finally {
                     setSubmitting(false)
                   }
@@ -225,8 +239,8 @@ function BookingContacts() {
                 <div className="w-12 h-12 flex items-center justify-center" style={{ border: `1px solid ${BORDER_H}`, borderRadius: 9999 }}>
                   <MapPin size={20} style={{ color: GOLD }} strokeWidth={1.5} />
                 </div>
-                <p className="text-[15px] font-light leading-relaxed" style={{ color: TEXT_SOFT }}>{picassoConfig.contacts.address}</p>
-                <p className="text-[13px] font-light" style={{ color: MUTED }}>{picassoConfig.contacts.addressNote}</p>
+                <p className="text-[15px] font-light leading-relaxed" style={{ color: TEXT_SOFT }}>{address}</p>
+                <p className="text-[13px] font-light" style={{ color: MUTED }}>{addressNote}</p>
               </div>
             </FadeIn>
             <FadeIn delay={0.15}>
@@ -234,7 +248,7 @@ function BookingContacts() {
                 <div className="w-12 h-12 flex items-center justify-center" style={{ border: `1px solid ${BORDER_H}`, borderRadius: 9999 }}>
                   <Phone size={20} style={{ color: GOLD }} strokeWidth={1.5} />
                 </div>
-                <a href={`tel:${picassoConfig.contacts.phoneRaw}`} className="text-[15px] font-light transition-colors hover:underline" style={{ color: TEXT_SOFT }}>{picassoConfig.contacts.phone}</a>
+                <a href={`tel:${primaryPhoneRaw}`} className="text-[15px] font-light transition-colors hover:underline" style={{ color: TEXT_SOFT }}>{primaryPhone}</a>
                 <p className="text-[13px] font-light" style={{ color: MUTED }}>WhatsApp / Telegram</p>
               </div>
             </FadeIn>
@@ -243,11 +257,34 @@ function BookingContacts() {
                 <div className="w-12 h-12 flex items-center justify-center" style={{ border: `1px solid ${BORDER_H}`, borderRadius: 9999 }}>
                   <Clock3 size={20} style={{ color: GOLD }} strokeWidth={1.5} />
                 </div>
-                <p className="text-[15px] font-light" style={{ color: TEXT_SOFT }}>{picassoConfig.contacts.hours}</p>
-                <p className="text-[13px] font-light" style={{ color: MUTED }}>{picassoConfig.contacts.hoursNote}</p>
+                <p className="text-[15px] font-light" style={{ color: TEXT_SOFT }}>{hours}</p>
+                <p className="text-[13px] font-light" style={{ color: MUTED }}>{hoursNote}</p>
               </div>
             </FadeIn>
           </div>
+
+          {showMap && address && (
+            <FadeIn delay={0.25}>
+              <div className="mt-14 text-left">
+                <h3 className="font-picasso-display text-xl sm:text-2xl mb-5" style={{ color: TEXT }}>
+                  {mapTitle}
+                </h3>
+                <div
+                  className="w-full overflow-hidden"
+                  style={{ borderRadius: 18, border: `1px solid ${BORDER_H}` }}
+                >
+                  <iframe
+                    src={mapUrl}
+                    title={mapTitle}
+                    width="100%"
+                    style={{ border: 0, width: '100%', height: 'clamp(280px, 46vw, 360px)' }}
+                    loading="lazy"
+                    allowFullScreen
+                  />
+                </div>
+              </div>
+            </FadeIn>
+          )}
         </div>
       </div>
     </section>

@@ -1,21 +1,27 @@
 import { useState } from 'react'
+import { useContext } from 'react'
 import { picassoConfig } from '../../configs/picasso.config'
+import { ConfigContext } from '../../contexts/ConfigContext'
 import FadeIn from '../../components/FadeIn'
 import TiltHeading from '../../components/TiltHeading'
 import GoldSpan from '../../components/GoldSpan'
 import FAQItem from '../../components/FAQItem'
 
-const { GOLD, TEXT, CHOCOLATE } = picassoConfig.tokens
-
 function FAQ() {
+  const configFromContext = useContext(ConfigContext)
+  const config = configFromContext || picassoConfig
+  const { GOLD, TEXT, CHOCOLATE } = config.tokens
   const [openIdx, setOpenIdx] = useState(null)
-  const faqs = [
+  const defaultFaqs = [
     { q: 'Работаете ли вы со сложными окрашиваниями — выход из чёрного, тотал блонд?', a: 'Да, это наша специализация. Мы используем плекс-системы и защитные добавки на каждом этапе осветления, чтобы сохранить качество волос. Мастер предварительно оценивает историю ваших окрашиваний и подбирает безопасную схему перехода.' },
     { q: 'Как долго держится результат после процедур ухода?', a: 'Ботокс и кератин — до 3 месяцев при правильном домашнем уходе, который мы подберём. Окрашивание держит тон 4–6 недель. Точные сроки зависят от структуры волос — мастер расскажет на консультации.' },
     { q: 'Могу ли я прийти с картинкой из Пинтерест, и вы сделаете точно так же?', a: 'Конечно, приносите референс! Но мы обязательно обсудим, как желаемый результат ляжет на вашу структуру и текстуру волос. Честность — наш принцип: если оттенок на ваших волосах будет отличаться, мы предложим альтернативу, которая сработает именно у вас.' },
     { q: 'Как вы стерилизуете инструменты?', a: 'Тройная обработка: дезинфекция, предстерилизационная очистка и сухожар при 180°C. Каждый инструмент хранится в запечатанном крафт-пакете — вскрываем строго при вас. Для маникюра и бровей используем только одноразовые расходники.' },
     { q: 'Можно ли записаться сразу на несколько услуг?', a: 'Да, мы подберём удобный слот для комплекса — например, стрижка + маникюр или окрашивание + брови. Укажите это при онлайн-записи или скажите нашему консьержу, и мы составим оптимальное расписание.' },
   ]
+  const faqs = Array.isArray(config.sections?.faq?.items) && config.sections.faq.items.length
+    ? config.sections.faq.items
+    : defaultFaqs
 
   return (
     <section id="faq" className="scroll-mt-16 sm:scroll-mt-20 py-28 sm:py-36" style={{ background: CHOCOLATE }}>

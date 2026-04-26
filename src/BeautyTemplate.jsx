@@ -12,14 +12,46 @@ import About from './sections/About/About'
 import Services from './sections/Services/Services'
 import Gallery from './sections/Gallery/Gallery'
 import Team from './sections/Team/Team'
+import Reels from './sections/Reels/Reels'
 import Reviews from './sections/Reviews/Reviews'
 import FAQ from './sections/FAQ/FAQ'
 import BookingContacts from './sections/BookingContacts/BookingContacts'
 import Footer from './sections/Footer/Footer'
 
+const DEFAULT_SECTIONS_ORDER = [
+  'hero',
+  'promotion',
+  'advantages',
+  'services',
+  'gallery',
+  'team',
+  'reels',
+  'reviews',
+  'about',
+  'faq',
+  'bookingContacts',
+]
+
 export default function BeautyTemplate({ config = picassoConfig }) {
   const [showWidget, setShowWidget] = useState(false)
   const { sections } = config
+  const sectionsOrder = Array.isArray(config.sectionsOrder) && config.sectionsOrder.length
+    ? config.sectionsOrder
+    : DEFAULT_SECTIONS_ORDER
+
+  const sectionRenderers = {
+    hero: () => <Hero scrollTo={scrollTo} />,
+    promotion: () => <Promotion />,
+    advantages: () => <Advantages />,
+    services: () => <Services />,
+    gallery: () => <Gallery />,
+    team: () => <Team />,
+    reels: () => <Reels />,
+    reviews: () => <Reviews />,
+    about: () => <About />,
+    faq: () => <FAQ />,
+    bookingContacts: () => <BookingContacts />,
+  }
   const { enabled: chatWidgetEnabled, tooltipDelayMs, mountDelayMs } = config.features.chatWidget
   const { BG, TEXT } = config.tokens
 
@@ -188,65 +220,17 @@ export default function BeautyTemplate({ config = picassoConfig }) {
         {chatWidgetEnabled && showWidget && <ChatWidget />}
         <Nav scrollTo={scrollTo} scrollToTop={scrollToTop} />
         <main>
-          {sections.hero?.enabled && (
-            <SectionBoundary name="hero">
-              <Hero scrollTo={scrollTo} />
-            </SectionBoundary>
-          )}
+          {sectionsOrder.map((sectionName) => {
+            if (!sections?.[sectionName]?.enabled) return null
+            const renderSection = sectionRenderers[sectionName]
+            if (!renderSection) return null
 
-          {sections.promotion?.enabled && (
-            <SectionBoundary name="promotion">
-              <Promotion />
-            </SectionBoundary>
-          )}
-
-          {sections.advantages?.enabled && (
-            <SectionBoundary name="advantages">
-              <Advantages />
-            </SectionBoundary>
-          )}
-
-          {sections.services?.enabled && (
-            <SectionBoundary name="services">
-              <Services />
-            </SectionBoundary>
-          )}
-
-          {sections.gallery?.enabled && (
-            <SectionBoundary name="gallery">
-              <Gallery />
-            </SectionBoundary>
-          )}
-
-          {sections.team?.enabled && (
-            <SectionBoundary name="team">
-              <Team />
-            </SectionBoundary>
-          )}
-
-          {sections.reviews?.enabled && (
-            <SectionBoundary name="reviews">
-              <Reviews />
-            </SectionBoundary>
-          )}
-
-          {sections.about?.enabled && (
-            <SectionBoundary name="about">
-              <About />
-            </SectionBoundary>
-          )}
-
-          {sections.faq?.enabled && (
-            <SectionBoundary name="faq">
-              <FAQ />
-            </SectionBoundary>
-          )}
-
-          {sections.bookingContacts?.enabled && (
-            <SectionBoundary name="bookingContacts">
-              <BookingContacts />
-            </SectionBoundary>
-          )}
+            return (
+              <SectionBoundary key={sectionName} name={sectionName}>
+                {renderSection()}
+              </SectionBoundary>
+            )
+          })}
         </main>
         <Footer />
       </div>

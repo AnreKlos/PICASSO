@@ -1,18 +1,24 @@
 import { Star } from 'lucide-react'
+import { useContext } from 'react'
 import { picassoConfig } from '../../configs/picasso.config'
+import { ConfigContext } from '../../contexts/ConfigContext'
 import FadeIn from '../../components/FadeIn'
 import TiltHeading from '../../components/TiltHeading'
 import GoldSpan from '../../components/GoldSpan'
 
-const { GOLD, TEXT, TEXT_SOFT, BG } = picassoConfig.tokens
-
 function Reviews() {
-  const reviews = [
+  const configFromContext = useContext(ConfigContext)
+  const config = configFromContext || picassoConfig
+  const { GOLD, TEXT, TEXT_SOFT, BG } = config.tokens
+  const defaultReviews = [
     { text: 'Удобное расположение. Приятный персонал. Была на стрижке – всё быстро и качественно. Приятная музыка и интересные разговоры. Если нужно, всегда помогут с Wi‑Fi.', author: 'Евгения К.' },
     { text: 'Лучшие салоны Фокинского района, очень порядочные мастера, как профессионалы и как люди.', author: 'Михаил С.' },
     { text: 'Уютная студия. Девочки всегда проконсультируют перед записью на процедуру. Хожу уже 5 лет, и детей на стрижку – только сюда.', author: 'Анна' },
     { text: 'Уже лет 5 хожу только к Виктории – лучший мастер. У неё много наград, и она заняла 1 место по причёскам. От окрашивания бровей до наращивания волос на каре – всё нравится.', author: 'Ольга' },
   ]
+  const reviews = Array.isArray(config.sections?.reviews?.items) && config.sections.reviews.items.length
+    ? config.sections.reviews.items
+    : defaultReviews
 
   return (
     <section id="reviews" className="scroll-mt-20 py-28 sm:py-36" style={{ background: BG }}>

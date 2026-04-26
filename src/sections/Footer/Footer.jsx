@@ -1,17 +1,20 @@
+import { useContext } from 'react'
 import { picassoConfig } from '../../configs/picasso.config'
-
-const { GOLD, TEXT_SOFT, BG, BORDER } = picassoConfig.tokens
+import { ConfigContext } from '../../contexts/ConfigContext'
 
 function Footer() {
-  const vkItem = picassoConfig.social.find((item) => item.href.includes('vk.com'))
-  const whatsappDigits = picassoConfig.contacts.whatsapp.replace(/\D/g, '')
+  const configFromContext = useContext(ConfigContext)
+  const config = configFromContext || picassoConfig
+  const { GOLD, TEXT_SOFT, BG, BORDER } = config.tokens
+  const vkItem = (config.social || []).find((item) => item.href.includes('vk.com'))
+  const whatsappDigits = (config.contacts?.whatsapp || '').replace(/\D/g, '')
   const socials = [
     ...(vkItem ? [vkItem] : []),
-    {
+    ...(whatsappDigits ? [{
       href: `https://wa.me/${whatsappDigits}`,
-      label: `WhatsApp ${picassoConfig.meta.name}`,
+      label: `WhatsApp ${config.meta.name}`,
       short: 'WA',
-    },
+    }] : []),
   ]
 
   return (
@@ -23,7 +26,7 @@ function Footer() {
               className="font-picasso-display text-lg"
               style={{ color: GOLD, textShadow: '0 0 20px rgba(201,168,122,0.1)' }}
             >
-              {picassoConfig.meta.name}
+              {config.meta.name}
             </span>
 
             <span className="text-xs" style={{ color: 'rgba(255,255,255,0.55)' }}>
@@ -59,22 +62,22 @@ function Footer() {
           style={{ borderTop: `1px solid ${BORDER}` }}
         >
           <p className="font-picasso-body text-[11px] tracking-[0.05em]" style={{ color: 'rgba(255,255,255,0.55)' }}>
-            &copy; {picassoConfig.copyrightYear} {picassoConfig.meta.name}. Все права защищены.
+            &copy; {config.copyrightYear} {config.meta.name}. Все права защищены.
           </p>
 
           <a
-            href={`tel:${picassoConfig.contacts.phoneRaw}`}
+            href={`tel:${config.contacts.phoneRaw || (config.contacts.phone || '').replace(/\D/g, '')}`}
             className="font-picasso-body text-[11px] tracking-[0.05em] transition-opacity hover:opacity-80"
             style={{ color: 'rgba(255,255,255,0.6)' }}
-            aria-label={`Позвонить в салон ${picassoConfig.meta.name}`}
+            aria-label={`Позвонить в салон ${config.meta.name}`}
           >
-            {picassoConfig.contacts.phone}
+            {config.contacts.phone || config.contacts.phones?.[0] || ''}
           </a>
         </div>
 
-        {picassoConfig.legal.showInFooter && (
+        {config.legal.showInFooter && (
           <p className="font-picasso-body text-[10px] tracking-[0.05em] mt-3 text-center" style={{ color: 'rgba(255,255,255,0.45)' }}>
-            {picassoConfig.legal.placeholder}
+            {config.legal.placeholder}
           </p>
         )}
       </div>
