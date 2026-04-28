@@ -13,6 +13,7 @@ function Reels() {
   const config = configFromContext || picassoConfig
   const sectionConfig = config.sections?.reels
   const items = Array.isArray(sectionConfig?.items) ? sectionConfig.items : []
+  const reelsTitle = typeof sectionConfig?.title === 'string' ? sectionConfig.title.trim() : ''
 
   const { GOLD, TEXT, TEXT_SOFT, BG, SURFACE, BORDER_H, EASE } = config.tokens
   const [emblaRef] = useEmblaCarousel({ align: 'start', dragFree: true })
@@ -64,7 +65,7 @@ function Reels() {
 
         <FadeIn delay={0.1}>
           <TiltHeading className="font-picasso-display text-3xl sm:text-4xl lg:text-5xl font-medium text-center leading-[1.15]" style={{ color: TEXT }}>
-            {sectionConfig.title || 'Из жизни'} <GoldSpan>студии</GoldSpan>
+            {reelsTitle ? reelsTitle : <>Из жизни <GoldSpan>студии</GoldSpan></>}
           </TiltHeading>
         </FadeIn>
 

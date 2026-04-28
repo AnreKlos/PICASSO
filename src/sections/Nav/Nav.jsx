@@ -9,7 +9,10 @@ function Nav({ scrollTo, scrollToTop }) {
   const configFromContext = useContext(ConfigContext)
   const config = configFromContext || picassoConfig
   const { GOLD, GOLD_DIM, GOLD_BRIGHT, TEXT, MUTED, BG, BORDER, EASE } = config.tokens
-  const brandName = config.meta?.brand?.name || config.meta?.name || 'PICASSO'
+  const brandName = config.meta?.brand?.shortName
+    || config.meta?.brand?.name
+    || config.meta?.name
+    || 'PICASSO'
 
   const [scrolled, setScrolled] = useState(false)
   const [mobileOpen, setMobileOpen] = useState(false)

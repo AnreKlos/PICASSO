@@ -1,3 +1,37 @@
+const kalinkaServicesItems = [
+  {
+    title: 'Парикмахерский зал',
+    short: 'Стрижки, окрашивание, ламинирование, укладки',
+    description: 'Стрижки, окрашивание, ламинирование и укладки для повседневных и праздничных образов.',
+    priceFrom: 'от 1200 ₽',
+    image: '/kalinka/hero/portrait_professional_beauty.jpg',
+  },
+  {
+    title: 'Маникюр и педикюр',
+    short: 'Классический маникюр, гель-лак, smart-педикюр, наращивание',
+    description: 'Классический маникюр, гель-лак, smart-педикюр и наращивание с аккуратной архитектурой.',
+    priceFrom: 'от 1500 ₽',
+  },
+  {
+    title: 'Брови',
+    short: 'Коррекция, окрашивание, ламинирование',
+    description: 'Коррекция, окрашивание и ламинирование для выразительного и естественного результата.',
+    priceFrom: 'от 700 ₽',
+  },
+  {
+    title: 'Ресницы',
+    short: 'Наращивание, ламинирование',
+    description: 'Наращивание и ламинирование ресниц под желаемую выразительность взгляда.',
+    priceFrom: 'от 1500 ₽',
+  },
+  {
+    title: 'Макияж',
+    short: 'Дневной, вечерний, свадебный',
+    description: 'Дневной, вечерний и свадебный макияж с учётом освещения, дресс-кода и формата события.',
+    priceFrom: 'от 2000 ₽',
+  },
+]
+
 export const kalinkaConfig = {
   meta: {
     slug: 'kalinka',
@@ -13,15 +47,19 @@ export const kalinkaConfig = {
   },
 
   contacts: {
-    phone: '+7 (910) 034-43-88',
-    phoneRaw: '+79100344388',
-    phones: ['+7 (910) 034-43-88', '+7 (4832) 234-43-88'],
+    phone: '8 (4832) 344-388',
+    phoneRaw: '+74832344388',
+    phones: ['8 (4832) 344-388'],
     whatsapp: '+79100344388',
-    address: 'ул. Горького, 25, Брянск',
-    coordinates: { lat: 53.245, lng: 34.367 },
+    address: 'ул. Советская, 122, Брянск',
+    coordinates: { lat: 53.2551, lng: 34.3408 },
     additionalAddresses: ['ул. Фокина, 37А, Брянск', 'ул. Советская, 122, Брянск'],
     workingHours: 'ежедневно с 10:00 до 20:00',
     vk: 'https://vk.com/club19553830',
+  },
+
+  booking: {
+    url: 'https://n411317.yclients.com',
   },
 
   social: [
@@ -58,8 +96,10 @@ export const kalinkaConfig = {
 
   sectionsOrder: [
     'hero',
+    'serviceCarousel',
     'promotion',
     'reels',
+    'gallery',
     'services',
     'reviews',
     'about',
@@ -72,50 +112,48 @@ export const kalinkaConfig = {
   sections: {
     hero: {
       enabled: true,
-      titleLine1: 'Калинка-Малинка',
-      titleLine2: 'Калинка-Малинка',
-      topLabel: 'Моно-студия по созданию образа',
-      lead: 'Макияж, причёски, маникюр, брови и ресницы — создаём цельный образ под ваше настроение и событие.',
+      image: '',
+      video: '/kalinka/hero/hero_bg.webm',
+      titleLine1: 'Моностудия образа',
+      titleLine2: 'Калинка‑Малинка',
+      topLabel: 'Брянск · Запись онлайн 24/7',
+      lead: 'Причёска, маникюр, макияж, брови — всё в одном визите. Без беготни по городу.',
+    },
+    serviceCarousel: {
+      enabled: true,
+      title: 'Услуги и цены',
+      items: kalinkaServicesItems.map((item) => ({
+        name: item.title,
+        price: item.priceFrom,
+        image: item.image || '/kalinka/hero/portrait_best_shot.jpg',
+        description: item.description,
+      })),
     },
     promotion: { enabled: true },
     advantages: { enabled: false },
     services: {
       enabled: true,
+      items: kalinkaServicesItems,
+    },
+    gallery: {
+      enabled: true,
+      title: 'Наши работы',
+      subtitle: 'Каждая деталь имеет значение',
       items: [
-        {
-          title: 'Парикмахерский зал',
-          short: 'Стрижки, окрашивание, ламинирование, укладки',
-          description: 'Стрижки, окрашивание, ламинирование и укладки для повседневных и праздничных образов.',
-          priceFrom: 'от 1200 ₽',
-        },
-        {
-          title: 'Маникюр и педикюр',
-          short: 'Классический маникюр, гель-лак, smart-педикюр, наращивание',
-          description: 'Классический маникюр, гель-лак, smart-педикюр и наращивание с аккуратной архитектурой.',
-          priceFrom: 'от 1500 ₽',
-        },
-        {
-          title: 'Брови',
-          short: 'Коррекция, окрашивание, ламинирование',
-          description: 'Коррекция, окрашивание и ламинирование для выразительного и естественного результата.',
-          priceFrom: 'от 700 ₽',
-        },
-        {
-          title: 'Ресницы',
-          short: 'Наращивание, ламинирование',
-          description: 'Наращивание и ламинирование ресниц под желаемую выразительность взгляда.',
-          priceFrom: 'от 1500 ₽',
-        },
-        {
-          title: 'Макияж',
-          short: 'Дневной, вечерний, свадебный',
-          description: 'Дневной, вечерний и свадебный макияж с учётом освещения, дресс-кода и формата события.',
-          priceFrom: 'от 2000 ₽',
-        },
+        '/kalinka/gallery/eyelashes_makeup_process.jpg',
+        '/kalinka/gallery/glitter_lips.jpg',
+        '/kalinka/gallery/eyeshadow_makeup.jpg',
+        '/kalinka/gallery/manicure_pink_nails.jpg',
+        '/kalinka/gallery/eyelashes_eyebrows_detail.jpg',
+        '/kalinka/gallery/makeup_face_body_art.jpg',
+        '/kalinka/gallery/makeup_portrait_beauty.jpg',
+        '/kalinka/gallery/makeup_artistry_beauty.jpg',
       ],
     },
-    gallery: { enabled: false },
-    team: { enabled: false },
+    team: {
+      enabled: false,
+      items: [],
+    },
     reels: {
       enabled: true,
       title: 'Из жизни студии',

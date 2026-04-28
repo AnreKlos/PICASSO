@@ -1,20 +1,24 @@
-import { useState, useRef, useEffect, useCallback } from 'react'
+import { useState, useRef, useEffect, useCallback, useContext } from 'react'
 import { ChevronDown } from 'lucide-react'
 import { AnimatePresence } from 'framer-motion'
 import useEmblaCarousel from 'embla-carousel-react'
 import { picassoConfig } from '../../configs/picasso.config'
+import { ConfigContext } from '../../contexts/ConfigContext'
 import FadeIn from '../../components/FadeIn'
 import TiltHeading from '../../components/TiltHeading'
 import GoldSpan from '../../components/GoldSpan'
 import Lightbox from '../../components/Lightbox'
 
-const { GOLD, TEXT, TEXT_SOFT, MUTED, BG, SURFACE, BORDER, BORDER_H } = picassoConfig.tokens
-
 function Gallery() {
+  const configFromContext = useContext(ConfigContext)
+  const config = configFromContext || picassoConfig
+  const { GOLD, TEXT, TEXT_SOFT, MUTED, BG, SURFACE, BORDER, BORDER_H } = config.tokens
+  const sectionConfig = config.sections?.gallery || {}
   const [lightbox, setLightbox] = useState(null)
   const [selectedIndex, setSelectedIndex] = useState(0)
+  const lightboxIndexRef = useRef(0)
 
-  const works = [
+  const defaultWorks = [
     { src: '/images/hair/hair_1.webp', alt: 'Окрашивание волос в салоне PICASSO' },
     { src: '/images/hair/hair_2.webp', alt: 'Женская стрижка и укладка в салоне PICASSO' },
     { src: '/images/hair/hair_3.webp', alt: 'Преображение волос после окрашивания' },
@@ -22,6 +26,25 @@ function Gallery() {
     { src: '/images/hair/hair_5.webp', alt: 'Укладка волос после салонного ухода' },
     { src: '/images/hair/hair_6.webp', alt: 'Результат работы мастеров PICASSO' },
   ]
+  const configuredItems = Array.isArray(sectionConfig.items) ? sectionConfig.items : []
+  const works = configuredItems.length
+    ? configuredItems
+      .map((item, index) => {
+        if (typeof item === 'string') {
+          return { src: item, alt: `Работа ${index + 1}` }
+        }
+
+        if (item && typeof item === 'object' && typeof item.src === 'string') {
+          return {
+            src: item.src,
+            alt: item.alt || `Работа ${index + 1}`,
+          }
+        }
+
+        return null
+      })
+      .filter(Boolean)
+    : defaultWorks
 
   const [emblaRef, emblaApi] = useEmblaCarousel({
     loop: true,
@@ -87,6 +110,21 @@ function Gallery() {
   function scrollPrev() { emblaApi?.scrollPrev() }
   function scrollNext() { emblaApi?.scrollNext() }
 
+  const openLightbox = useCallback((index) => {
+    const item = works[index]
+    if (!item) return
+    lightboxIndexRef.current = index
+    setLightbox({ src: item.src, alt: item.alt })
+  }, [works])
+
+  const closeLightbox = useCallback(() => {
+    setLightbox(null)
+  }, [])
+
+  if (sectionConfig.enabled === false || !works.length) {
+    return null
+  }
+
   return (
     <section ref={galleryRef} id="gallery" className="scroll-mt-20 sm:scroll-mt-24 py-28 sm:py-36" style={{ background: BG }}>
       <div
@@ -98,12 +136,12 @@ function Gallery() {
         </FadeIn>
         <FadeIn delay={0.1}>
           <TiltHeading className="font-picasso-display text-3xl sm:text-4xl lg:text-5xl font-medium text-center leading-[1.15]" style={{ color: TEXT }}>
-            Наши <GoldSpan>работы</GoldSpan>
+            {sectionConfig.title || <>Наши <GoldSpan>работы</GoldSpan></>}
           </TiltHeading>
         </FadeIn>
         <FadeIn delay={0.2}>
           <p className="mt-6 text-center text-base font-light leading-relaxed max-w-lg mx-auto" style={{ color: TEXT_SOFT }}>
-            Каждая работа — отражение мастерства и вашего стиля
+            {sectionConfig.subtitle || 'Каждая работа — отражение мастерства и вашего стиля'}
           </p>
         </FadeIn>
 
@@ -124,7 +162,7 @@ function Gallery() {
                       filter: i === selectedIndex ? 'brightness(1)' : 'brightness(0.55)',
                     }}
                     onClick={() => {
-                      if (i === selectedIndex) setLightbox({ src: w.src, alt: w.alt })
+                      if (i === selectedIndex) openLightbox(i)
                       else emblaApi?.scrollTo(i)
                     }}>
                     <img src={w.src} alt={w.alt} className="w-full max-w-full h-full object-cover" width={420} height={560} loading="lazy" decoding="async" draggable={false} />
@@ -167,7 +205,20 @@ function Gallery() {
       </div>
 
       <AnimatePresence>
-        {lightbox && <Lightbox src={lightbox.src} alt={lightbox.alt} onClose={() => setLightbox(null)} />}
+        {lightbox && (
+          <div
+            className="fixed inset-0 z-[60]"
+            onClick={closeLightbox}
+          >
+            <Lightbox
+              src={lightbox.src}
+              alt={lightbox.alt}
+              onClose={closeLightbox}
+              works={works}
+              initialIndex={lightboxIndexRef.current}
+            />
+          </div>
+        )}
       </AnimatePresence>
     </section>
   )

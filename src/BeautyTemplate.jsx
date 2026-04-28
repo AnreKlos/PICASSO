@@ -10,6 +10,7 @@ import Advantages from './sections/Advantages/Advantages'
 import Promotion from './sections/Promotion/Promotion'
 import About from './sections/About/About'
 import Services from './sections/Services/Services'
+import ServiceCarousel from './sections/ServiceCarousel/ServiceCarousel'
 import Gallery from './sections/Gallery/Gallery'
 import Team from './sections/Team/Team'
 import Reels from './sections/Reels/Reels'
@@ -43,6 +44,7 @@ export default function BeautyTemplate({ config = picassoConfig }) {
     hero: () => <Hero scrollTo={scrollTo} />,
     promotion: () => <Promotion />,
     advantages: () => <Advantages />,
+    serviceCarousel: () => <ServiceCarousel />,
     services: () => <Services />,
     gallery: () => <Gallery />,
     team: () => <Team />,

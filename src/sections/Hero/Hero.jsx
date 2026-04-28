@@ -16,12 +16,21 @@ function Hero({ scrollTo }) {
   const brandName = config.meta?.brand?.name || config.meta?.name || 'PICASSO'
   const defaultTitleLine1 = 'Салон эстетики'
   const alternativeTitleLine1 = config.meta?.tagline || defaultTitleLine1
-  const configuredTitleLine1 = heroConfig.titleLine1 || defaultTitleLine1
+  const configuredTitleLine1 = heroConfig.titleLine1Big || heroConfig.titleLine1 || defaultTitleLine1
   const heroTitleLine1 = configuredTitleLine1 === brandName ? alternativeTitleLine1 : configuredTitleLine1
-  const heroTitleLine2 = brandName
+  const heroTitleLine1Small = heroConfig.titleLine1Small || ''
+  const heroTitleLine1SmallSize = heroConfig.titleLine1SmallSize || 'default'
+  const heroTitleLine1Size = heroConfig.titleLine1Size || 'default'
+  const heroTitleLine2 = heroConfig.titleLine2 ?? brandName
+  const heroTitleLine2Size = heroConfig.titleLine2Size || 'default'
   const showWorksButton = config.sections?.gallery?.enabled !== false
   const heroTopLabel = heroConfig.topLabel || config.meta?.tagline || 'Premium Beauty Studio'
   const heroLead = heroConfig.lead || 'Стрижка, цвет, ногти, брови — полный цикл красоты в одном пространстве'
+  const heroImage = (heroConfig.image && heroConfig.image.trim())
+    ? heroConfig.image.trim()
+    : null
+  const heroVideo = heroConfig.video?.trim() || null
+  const heroImageAlt = heroConfig.imageAlt || `${brandName} hero`
 
   const ref = useRef(null)
   const [isMobile, setIsMobile] = useState(false)
@@ -44,6 +53,26 @@ function Hero({ scrollTo }) {
     <section ref={ref} className="relative min-h-screen flex items-center overflow-hidden" style={{ background: BG }}>
 
       <div className="absolute inset-0 overflow-hidden pointer-events-none w-full">
+        {heroVideo && (
+          <video
+            key={heroVideo}
+            autoPlay
+            loop
+            muted
+            playsInline
+            style={{
+              position: 'absolute',
+              inset: 0,
+              width: '100%',
+              height: '100%',
+              objectFit: 'cover',
+              opacity: 0.45,
+              zIndex: 0,
+            }}
+          >
+            <source src={heroVideo} type="video/webm" />
+          </video>
+        )}
         {!isMobile && (
           <>
             <motion.div style={{ y: bgY, willChange: 'transform' }} className="absolute -top-[400px] -bottom-[400px] left-0 right-0">
@@ -80,21 +109,57 @@ function Hero({ scrollTo }) {
                   transition={{ duration: 2, ease: EASE, delay: 0.2 }}
                 >
                   <TiltHeading as="h1" className="font-picasso-display font-medium tracking-[-0.01em] leading-[1.1]" style={{ color: TEXT }}>
-                    <span className="text-4xl sm:text-5xl lg:text-[3.8rem] xl:text-[4.5rem]" style={{ color: TEXT }}>{heroTitleLine1}</span> <span className="block italic text-5xl sm:text-6xl lg:text-[5.5rem] xl:text-[6.5rem]" style={{
-                      color: GOLD,
-                      textShadow: `
-                    0 1px 0 #A68B5A,
-                    0 2px 0 #8A742B,
-                    0 3px 0 #6E5D22,
-                    0 4px 0 #53491A,
-                    0 5px 0 #3D3614,
-                    0 6px 14px rgba(0,0,0,0.35),
-                    0 12px 40px rgba(201,168,122,0.18),
-                    0 0 80px rgba(201,168,122,0.08),
-                    0 0 160px rgba(201,168,122,0.03),
-                    0 0 260px rgba(201,168,122,0.01)
-                  `,
-                    }}>{heroTitleLine2}</span>
+                    <span
+                      className={`block ${
+                        heroTitleLine1Size === 'small'
+                          ? 'text-2xl sm:text-3xl lg:text-[2rem] xl:text-[2.4rem]'
+                          : heroTitleLine1Size === 'medium'
+                          ? 'text-3xl sm:text-4xl lg:text-[2.8rem] xl:text-[3.2rem]'
+                          : 'text-4xl sm:text-5xl lg:text-[3.8rem] xl:text-[4.5rem]'
+                      }`}
+                      style={{ color: TEXT }}
+                    >
+                      {heroTitleLine1}
+                    </span>
+                    {heroTitleLine1Small && (
+                      <span
+                        className={`block ${
+                          heroTitleLine1SmallSize === 'small'
+                            ? 'text-xl sm:text-2xl lg:text-3xl xl:text-[2rem]'
+                            : heroTitleLine1SmallSize === 'large'
+                            ? 'text-3xl sm:text-4xl lg:text-[3rem] xl:text-[3.4rem]'
+                            : 'text-2xl sm:text-3xl lg:text-4xl xl:text-[2.6rem]'
+                        }`}
+                        style={{ color: TEXT }}
+                      >
+                        {heroTitleLine1Small}
+                      </span>
+                    )}
+                    {heroTitleLine2 && (
+                      <span className={`block italic ${
+                        heroTitleLine2Size === 'large'
+                          ? 'text-5xl sm:text-6xl lg:text-[5.5rem] xl:text-[6.5rem]'
+                          : heroTitleLine2Size === 'medium'
+                          ? 'text-4xl sm:text-5xl lg:text-[4rem] xl:text-[4.8rem]'
+                          : heroTitleLine2Size === 'small'
+                          ? 'text-3xl sm:text-4xl lg:text-[3rem] xl:text-[3.6rem]'
+                          : 'text-5xl sm:text-6xl lg:text-[5.5rem] xl:text-[6.5rem]'
+                      }`} style={{
+                        color: GOLD,
+                        textShadow: `
+                      0 1px 0 #A68B5A,
+                      0 2px 0 #8A742B,
+                      0 3px 0 #6E5D22,
+                      0 4px 0 #53491A,
+                      0 5px 0 #3D3614,
+                      0 6px 14px rgba(0,0,0,0.35),
+                      0 12px 40px rgba(201,168,122,0.18),
+                      0 0 80px rgba(201,168,122,0.08),
+                      0 0 160px rgba(201,168,122,0.03),
+                      0 0 260px rgba(201,168,122,0.01)
+                    `,
+                      }}>{heroTitleLine2}</span>
+                    )}
                   </TiltHeading>
                 </motion.div>
               </div>
@@ -127,51 +192,53 @@ function Hero({ scrollTo }) {
           </div>
 
           <div className="flex-1 relative max-w-md lg:max-w-none max-w-full">
-            <motion.div
-              style={{ y: imgY, willChange: 'transform' }}
-              className="relative z-10"
-              initial={{ opacity: 0, scale: 1.08, filter: 'blur(20px) brightness(2) saturate(0)' }}
-              animate={{ opacity: 1, scale: 1, filter: 'blur(0px) brightness(1) saturate(1)' }}
-              transition={{ duration: 2.2, ease: EASE, delay: 0.6 }}
-            >
-              <TiltGlare
-                className="relative rounded-3xl"
-                style={{ boxShadow: '0 20px 60px rgba(0,0,0,0.5), 0 0 80px rgba(201,168,122,0.04)' }}
+            {heroImage !== null && (
+              <motion.div
+                style={{ y: imgY, willChange: 'transform' }}
+                className="relative z-10"
+                initial={{ opacity: 0, scale: 1.08, filter: 'blur(20px) brightness(2) saturate(0)' }}
+                animate={{ opacity: 1, scale: 1, filter: 'blur(0px) brightness(1) saturate(1)' }}
+                transition={{ duration: 2.2, ease: EASE, delay: 0.6 }}
               >
-                <div
-                  className="relative rounded-3xl overflow-hidden w-full h-full"
-                  style={{
-                    isolation: 'isolate',
-                    background: '#0E0C0B',
-                    transform: 'translateZ(0)',
-                    backfaceVisibility: 'hidden',
-                    boxShadow: 'inset 0 0 0 2px #0E0C0B',
-                  }}
+                <TiltGlare
+                  className="relative rounded-3xl"
+                  style={{ boxShadow: '0 20px 60px rgba(0,0,0,0.5), 0 0 80px rgba(201,168,122,0.04)' }}
                 >
-                  <div className="w-full h-full">
-                    <img
-                      src="/images/hair/hair_1.webp"
-                      alt="PICASSO hair styling"
-                      className="w-full max-w-full aspect-[3/4] object-cover block rounded-3xl transform-gpu scale-[1.03]"
-                      style={{
-                        backfaceVisibility: 'hidden',
-                        transform: 'translateZ(0)',
-                      }}
-                      width={500}
-                      height={666}
-                      fetchPriority="high"
-                      decoding="async"
+                  <div
+                    className="relative rounded-3xl overflow-hidden w-full h-full"
+                    style={{
+                      isolation: 'isolate',
+                      background: '#0E0C0B',
+                      transform: 'translateZ(0)',
+                      backfaceVisibility: 'hidden',
+                      boxShadow: 'inset 0 0 0 2px #0E0C0B',
+                    }}
+                  >
+                    <div className="w-full h-full">
+                      <img
+                        src={heroImage}
+                        alt={heroImageAlt}
+                        className="w-full max-w-full aspect-[3/4] object-cover block rounded-3xl transform-gpu scale-[1.03]"
+                        style={{
+                          backfaceVisibility: 'hidden',
+                          transform: 'translateZ(0)',
+                        }}
+                        width={500}
+                        height={666}
+                        fetchPriority="high"
+                        decoding="async"
+                      />
+                    </div>
+                    <div
+                      className="absolute inset-0 pointer-events-none rounded-3xl"
+                      style={{ background: 'linear-gradient(to top, rgba(14,12,11,0.7) 0%, transparent 40%), linear-gradient(to right, rgba(14,12,11,0.4) 0%, transparent 30%)' }}
                     />
                   </div>
-                  <div
-                    className="absolute inset-0 pointer-events-none rounded-3xl"
-                    style={{ background: 'linear-gradient(to top, rgba(14,12,11,0.7) 0%, transparent 40%), linear-gradient(to right, rgba(14,12,11,0.4) 0%, transparent 30%)' }}
-                  />
-                </div>
-              </TiltGlare>
-              {!isMobile && <div className="absolute -bottom-6 -left-6 w-32 h-32 rounded-full blur-[60px] pointer-events-none z-[-1]" style={{ background: 'rgba(201,168,122,0.06)' }} />}
-              {!isMobile && <div className="absolute -top-4 -right-4 w-24 h-24 rounded-full blur-[40px] pointer-events-none z-[-1]" style={{ background: 'rgba(184,146,138,0.04)' }} />}
-            </motion.div>
+                </TiltGlare>
+                {!isMobile && <div className="absolute -bottom-6 -left-6 w-32 h-32 rounded-full blur-[60px] pointer-events-none z-[-1]" style={{ background: 'rgba(201,168,122,0.06)' }} />}
+                {!isMobile && <div className="absolute -top-4 -right-4 w-24 h-24 rounded-full blur-[40px] pointer-events-none z-[-1]" style={{ background: 'rgba(184,146,138,0.04)' }} />}
+              </motion.div>
+            )}
           </div>
         </div>
       </div>
