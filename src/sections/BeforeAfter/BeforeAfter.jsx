@@ -1,5 +1,5 @@
 import { useContext } from 'react'
-import { picassoConfig } from '../../configs/picasso.config'
+import { defaultConfig } from '../../configs/_default.config'
 import { ConfigContext } from '../../contexts/ConfigContext'
 import FadeIn from '../../components/FadeIn'
 import TiltHeading from '../../components/TiltHeading'
@@ -7,7 +7,7 @@ import GoldSpan from '../../components/GoldSpan'
 
 function BeforeAfter() {
   const configFromContext = useContext(ConfigContext)
-  const config = configFromContext || picassoConfig
+  const config = configFromContext || defaultConfig
   const { GOLD, TEXT, TEXT_SOFT, BG } = config.tokens
   const sectionConfig = config.sections?.beforeAfter || {}
   const items = Array.isArray(sectionConfig.items) ? sectionConfig.items : []
@@ -15,7 +15,7 @@ function BeforeAfter() {
   if (sectionConfig.enabled === false || !items.length) return null
 
   return (
-    <section id="before-after" className="scroll-mt-20 py-28 sm:py-36" style={{ background: BG }}>
+    <section id="beforeAfter-section" className="scroll-mt-20 py-28 sm:py-36" style={{ background: BG }}>
       <div className="mx-auto max-w-6xl px-5 sm:px-8">
         <FadeIn>
           <p className="font-picasso-body text-[12px] uppercase tracking-[0.4em] mb-5 select-none text-center" style={{ color: GOLD }}>

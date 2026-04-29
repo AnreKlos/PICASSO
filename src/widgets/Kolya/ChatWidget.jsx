@@ -2,7 +2,7 @@ import { useState, useRef, useEffect, useContext } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { X, Send, MessageCircle } from 'lucide-react'
 import { salesSalonPrompt } from '../../prompts/salesSalonPrompt'
-import { picassoConfig } from '../../configs/picasso.config'
+import { defaultConfig } from '../../configs/_default.config'
 import { getOrCreateSessionId } from '../../lib/session.js'
 import { ConfigContext } from '../../contexts/ConfigContext'
 
@@ -19,7 +19,7 @@ function parseToolArguments(raw) {
 
 function ChatWidget() {
   const configFromContext = useContext(ConfigContext)
-  const config = configFromContext || picassoConfig
+  const config = configFromContext || defaultConfig
   const { SURFACE, SURFACE_L, TEXT, MUTED, GOLD, GOLD_DIM, GOLD_BRIGHT, BG, BORDER, BORDER_H, EASE } = config.tokens
   const brandName = config.meta?.brand?.name || config.meta?.name || 'PICASSO'
   const clientSlug = config.meta?.brand?.slug || config.meta?.slug || 'picasso'

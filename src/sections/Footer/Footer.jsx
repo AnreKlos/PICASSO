@@ -1,10 +1,10 @@
 import { useContext } from 'react'
-import { picassoConfig } from '../../configs/picasso.config'
+import { defaultConfig } from '../../configs/_default.config'
 import { ConfigContext } from '../../contexts/ConfigContext'
 
 function Footer() {
   const configFromContext = useContext(ConfigContext)
-  const config = configFromContext || picassoConfig
+  const config = configFromContext || defaultConfig
   const { GOLD, TEXT_SOFT, BG, BORDER } = config.tokens
   const vkItem = (config.social || []).find((item) => item.href.includes('vk.com'))
   const whatsappDigits = (config.contacts?.whatsapp || '').replace(/\D/g, '')

@@ -2,7 +2,7 @@ import { useContext, useEffect, useState } from 'react'
 import { AnimatePresence, motion } from 'framer-motion'
 import useEmblaCarousel from 'embla-carousel-react'
 import { PlayCircle, X } from 'lucide-react'
-import { picassoConfig } from '../../configs/picasso.config'
+import { defaultConfig } from '../../configs/_default.config'
 import { ConfigContext } from '../../contexts/ConfigContext'
 import FadeIn from '../../components/FadeIn'
 import TiltHeading from '../../components/TiltHeading'
@@ -10,7 +10,7 @@ import GoldSpan from '../../components/GoldSpan'
 
 function Reels() {
   const configFromContext = useContext(ConfigContext)
-  const config = configFromContext || picassoConfig
+  const config = configFromContext || defaultConfig
   const sectionConfig = config.sections?.reels
   const items = Array.isArray(sectionConfig?.items) ? sectionConfig.items : []
   const reelsTitle = typeof sectionConfig?.title === 'string' ? sectionConfig.title.trim() : ''
@@ -55,7 +55,7 @@ function Reels() {
   }
 
   return (
-    <section id="reels" className="scroll-mt-20 py-28 sm:py-36" style={{ background: BG }}>
+    <section id="reels-section" className="scroll-mt-20 py-28 sm:py-36" style={{ background: BG }}>
       <div className="mx-auto max-w-6xl px-5 sm:px-8">
         <FadeIn>
           <p className="font-picasso-body text-[12px] uppercase tracking-[0.4em] mb-5 select-none text-center" style={{ color: GOLD }}>

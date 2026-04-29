@@ -1,16 +1,17 @@
 import { useState, useEffect, useRef, useContext } from 'react'
 import { MapPin, Phone, Clock3 } from 'lucide-react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { picassoConfig } from '../../configs/picasso.config'
+import { defaultConfig } from '../../configs/_default.config'
 import { ConfigContext } from '../../contexts/ConfigContext'
 import FadeIn from '../../components/FadeIn'
 import TiltHeading from '../../components/TiltHeading'
 import GoldSpan from '../../components/GoldSpan'
 import { getOrCreateSessionId } from '../../lib/session.js'
+import { scrollToBooking } from '../../utils/scrollToBooking.js'
 
 function BookingContacts() {
   const configFromContext = useContext(ConfigContext)
-  const config = configFromContext || picassoConfig
+  const config = configFromContext || defaultConfig
   const { GOLD, GOLD_DIM, GOLD_BRIGHT, TEXT, TEXT_SOFT, MUTED, BG, BORDER_H } = config.tokens
   const bookingSection = config.sections?.bookingContacts || {}
   const showMap = bookingSection.showMap !== false
@@ -46,10 +47,7 @@ function BookingContacts() {
       setService(serviceValue)
       setSent(false)
 
-      const target = formRef.current || document.getElementById('booking')
-      if (target && typeof target.scrollIntoView === 'function') {
-        target.scrollIntoView({ behavior: 'smooth', block: 'start' })
-      }
+      scrollToBooking()
     }
 
     window.addEventListener('open-booking-form', handleOpenBookingForm)
@@ -82,7 +80,7 @@ function BookingContacts() {
 
   return (
     <section
-      id="booking"
+      id="bookingContacts-section"
       className="scroll-mt-24 sm:scroll-mt-28 py-28 sm:py-36 relative overflow-hidden"
       style={{ background: BG }}
     >

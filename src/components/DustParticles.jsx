@@ -1,7 +1,7 @@
 import { useRef, useEffect } from 'react'
-import { picassoConfig } from '../configs/picasso.config'
+import { defaultConfig } from '../configs/_default.config'
 
-const { GOLD, GOLD_DIM, GOLD_BRIGHT, TEXT, TEXT_SOFT, MUTED, BG, CHOCOLATE, SURFACE, SURFACE_L, BORDER, BORDER_H, EASE } = picassoConfig.tokens
+const { GOLD, GOLD_DIM, GOLD_BRIGHT, TEXT, TEXT_SOFT, MUTED, BG, CHOCOLATE, SURFACE, SURFACE_L, BORDER, BORDER_H, EASE } = defaultConfig.tokens
 
 function DustParticles({ className = '', density = 1, opacityBoost = 1 }) {
   const canvasRef = useRef(null)

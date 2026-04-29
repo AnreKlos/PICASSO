@@ -1,13 +1,15 @@
 import { useState, useEffect, useContext } from 'react'
 import { X, Menu } from 'lucide-react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { picassoConfig } from '../../configs/picasso.config'
+import { defaultConfig } from '../../configs/_default.config'
 import { ConfigContext } from '../../contexts/ConfigContext'
 import MagneticButton from '../../components/MagneticButton'
+import { scrollToBooking } from '../../utils/scrollToBooking'
+import { getNavItems } from '../../utils/getAvailableSections'
 
 function Nav({ scrollTo, scrollToTop }) {
   const configFromContext = useContext(ConfigContext)
-  const config = configFromContext || picassoConfig
+  const config = configFromContext || defaultConfig
   const { GOLD, GOLD_DIM, GOLD_BRIGHT, TEXT, MUTED, BG, BORDER, EASE } = config.tokens
   const brandName = config.meta?.brand?.shortName
     || config.meta?.brand?.name
@@ -22,16 +24,7 @@ function Nav({ scrollTo, scrollToTop }) {
     return () => window.removeEventListener('scroll', fn)
   }, [])
 
-  const links = [
-    { href: '#services', label: 'Услуги' },
-    { href: '#prices', label: 'Цены' },
-    { href: '#gallery', label: 'Галерея' },
-    { href: '#team', label: 'Мастера' },
-    { href: '#reviews', label: 'Отзывы' },
-    { href: '#about', label: 'О салоне' },
-    { href: '#faq', label: 'FAQ' },
-    { href: '#contacts', label: 'Контакты' },
-  ]
+  const navItems = getNavItems(config)
 
   return (
     <motion.nav initial={{ y: -40, opacity: 0 }} animate={{ y: 0, opacity: 1 }} transition={{ duration: 0.6, ease: EASE }}
@@ -47,8 +40,8 @@ function Nav({ scrollTo, scrollToTop }) {
           {brandName}
         </button>
         <div className="hidden lg:flex items-center gap-5 font-picasso-body text-[12px] xl:text-[13px] font-medium uppercase tracking-[0.1em]" style={{ color: MUTED }}>
-          {links.map(l => <a key={l.href} href={l.href} onClick={(e) => { e.preventDefault(); scrollTo(l.href) }} className="hover:text-[var(--color-picasso-text)] transition-colors duration-200 whitespace-nowrap" style={{ color: MUTED }}>{l.label}</a>)}
-          <MagneticButton href="#booking" onClick={(e) => { e.preventDefault(); scrollTo('booking') }}
+          {navItems.map(item => <a key={item.key} href={`#${item.anchorId}`} onClick={(e) => { e.preventDefault(); scrollTo(`#${item.anchorId}`) }} className="hover:text-[var(--color-picasso-text)] transition-colors duration-200 whitespace-nowrap" style={{ color: MUTED }}>{item.label}</a>)}
+          <MagneticButton href="#bookingContacts-section" onClick={(e) => { e.preventDefault(); scrollToBooking() }}
             className="inline-flex items-center gap-2 px-5 py-2 transition-all duration-300 font-picasso-body text-[13px] font-medium uppercase tracking-[0.12em]"
             style={{ background: `linear-gradient(to bottom, ${GOLD_BRIGHT} 0%, ${GOLD} 50%, ${GOLD_DIM} 100%)`, color: BG, borderRadius: 9999, boxShadow: '0 2px 12px rgba(201,168,122,0.15), inset 0 1px 0 rgba(255,255,255,0.2), inset 0 -1px 0 rgba(0,0,0,0.12)' }}>
             Записаться
@@ -63,12 +56,12 @@ function Nav({ scrollTo, scrollToTop }) {
           <motion.div initial={{ height: 0, opacity: 0 }} animate={{ height: 'auto', opacity: 1 }} exit={{ height: 0, opacity: 0 }} transition={{ duration: 0.3 }}
             className="lg:hidden overflow-hidden" style={{ background: 'rgba(14,12,11,0.97)', borderTop: `1px solid ${BORDER}` }}>
             <div className="flex flex-col gap-4 px-6 py-6 font-picasso-body text-[14px] uppercase tracking-[0.1em]" style={{ color: MUTED }}>
-              {links.map(l => <a key={l.href} href={l.href} onClick={(e) => { e.preventDefault(); setMobileOpen(false); scrollTo(l.href) }} className="py-1" style={{ color: MUTED }}>{l.label}</a>)}
+              {navItems.map(item => <a key={item.key} href={`#${item.anchorId}`} onClick={(e) => { e.preventDefault(); setMobileOpen(false); scrollTo(`#${item.anchorId}`) }} className="py-1" style={{ color: MUTED }}>{item.label}</a>)}
               <button
                 type="button"
                 onClick={() => {
                   setMobileOpen(false)
-                  scrollTo('booking')
+                  scrollToBooking()
                 }}
                 className="mt-2 inline-flex items-center justify-center gap-2 px-5 py-3 cursor-pointer"
                 style={{ background: GOLD, color: BG, borderRadius: 9999 }}

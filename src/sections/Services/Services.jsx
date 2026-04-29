@@ -1,6 +1,6 @@
 import { useState, useContext } from 'react'
 import { Scissors, HandMetal, Eye, Flower2, FlaskConical } from 'lucide-react'
-import { picassoConfig } from '../../configs/picasso.config'
+import { defaultConfig } from '../../configs/_default.config'
 import { ConfigContext } from '../../contexts/ConfigContext'
 import FadeIn from '../../components/FadeIn'
 import TiltHeading from '../../components/TiltHeading'
@@ -66,7 +66,7 @@ function Services() {
   }))
 
   return (
-    <section id="services" className="scroll-mt-20 py-28 sm:py-36" style={{ background: BG }}>
+    <section id="services-section" className="scroll-mt-20 py-28 sm:py-36" style={{ background: BG }}>
       <div className="mx-auto max-w-6xl px-5 sm:px-8">
         <FadeIn>
           <p className="font-picasso-body text-[12px] uppercase tracking-[0.4em] mb-5 select-none text-center" style={{ color: GOLD }}>Направления</p>

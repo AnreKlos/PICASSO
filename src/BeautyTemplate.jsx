@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback } from 'react'
 import Lenis from 'lenis'
-import { picassoConfig } from './configs/picasso.config'
+import { defaultConfig } from './configs/_default.config'
 import { ConfigContext } from './contexts/ConfigContext'
 import SectionBoundary from './components/SectionBoundary'
 import ChatWidget from './widgets/Kolya/ChatWidget'
@@ -36,7 +36,7 @@ const DEFAULT_SECTIONS_ORDER = [
   'bookingContacts',
 ]
 
-export default function BeautyTemplate({ config = picassoConfig }) {
+export default function BeautyTemplate({ config = defaultConfig }) {
   const [showWidget, setShowWidget] = useState(false)
   const { sections } = config
   const sectionsOrder = Array.isArray(config.sectionsOrder) && config.sectionsOrder.length

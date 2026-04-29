@@ -112,7 +112,7 @@ export const kalinkaConfig = {
   sections: {
     hero: {
       enabled: true,
-      image: '',
+      photo: '/kalinka/hero/portrait_professional_beauty.jpg',
       video: '/kalinka/hero/hero_bg.webm',
       titleLine1: 'Моностудия образа',
       titleLine2: 'Калинка‑Малинка',

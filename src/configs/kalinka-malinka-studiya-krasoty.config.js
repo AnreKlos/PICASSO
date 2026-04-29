@@ -10,7 +10,8 @@ export const kalinkaMalinkaStudiyaKrasotyConfig = {
     name: 'Калинка-Малинка студия красоты',
     fullName: 'Калинка-Малинка студия красоты — Легкий макияж на каждый день — стойкость до 16 часов, Брянск.',
     tagline: 'Легкий макияж на каждый день — стойкость до 16 часов, Брянск.',
-    city: 'Брянск'
+    city: 'Брянск',
+    cityPrepositional: 'Брянске'
   },
   contacts: {
     phone: '80583514662',
@@ -74,13 +75,11 @@ export const kalinkaMalinkaStudiyaKrasotyConfig = {
   sections: {
     hero: {
       enabled: true,
-      image: '/kalinka-malinka-studiya-krasoty/hero/hero_1.jpg',
-      titleLine1: 'Моностудия',
-      titleLine1Small: 'по созданию образа',
-      titleLine1SmallSize: 'default',
-      titleLine2: 'Калинка-Малинка',
-      topLabel: 'Премиум студия красоты',
-      lead: 'Маникюр, свадебный макияж и оформление бровей — в одном визите.'
+      photo: '/kalinka-malinka-studiya-krasoty/hero/hero_1.jpg',
+      titleLine1: 'Макияж и маникюр',
+      cityLine: 'в Брянске',
+      lead: 'Моностудия образа для брянских девушек: делаем макияж, маникюр и брови за один визит, с учётом твоих особенностей и стиля.',
+      ctaLabel: 'Записаться'
     },
     promotion: {
       enabled: true

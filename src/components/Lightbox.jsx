@@ -1,9 +1,9 @@
 import { useEffect, useRef } from 'react'
 import { X, ChevronDown } from 'lucide-react'
 import useEmblaCarousel from 'embla-carousel-react'
-import { picassoConfig } from '../configs/picasso.config'
+import { defaultConfig } from '../configs/_default.config'
 
-const { TEXT, SURFACE, BORDER, BORDER_H } = picassoConfig.tokens
+const { TEXT, SURFACE, BORDER, BORDER_H } = defaultConfig.tokens
 
 function Lightbox({ src, alt, onClose, works, initialIndex }) {
   const [emblaRef, emblaApi] = useEmblaCarousel({

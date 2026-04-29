@@ -1,13 +1,13 @@
 import { Sparkles } from 'lucide-react'
 import { useContext } from 'react'
-import { picassoConfig } from '../../configs/picasso.config'
+import { defaultConfig } from '../../configs/_default.config'
 import { ConfigContext } from '../../contexts/ConfigContext'
 import FadeIn from '../../components/FadeIn'
 import TiltHeading from '../../components/TiltHeading'
 
 function Promotion() {
   const configFromContext = useContext(ConfigContext)
-  const config = configFromContext || picassoConfig
+  const config = configFromContext || defaultConfig
   const { GOLD, TEXT, TEXT_SOFT, CHOCOLATE, BORDER_H } = config.tokens
   const title = config.content?.promotion?.title || 'Особое предложение'
   const text = config.content?.promotion?.text || 'Для новых клиентов — приятный бонус при первой записи. Узнайте подробности у нашего консьержа или по телефону.'
@@ -15,7 +15,7 @@ function Promotion() {
   if (!title && !text) return null
 
   return (
-    <section id="promotion" className="scroll-mt-20 py-16 sm:py-20" style={{ background: CHOCOLATE }}>
+    <section id="promotion-section" className="scroll-mt-20 py-16 sm:py-20" style={{ background: CHOCOLATE }}>
       <div className="mx-auto max-w-3xl px-5 sm:px-8">
         <FadeIn>
           <div

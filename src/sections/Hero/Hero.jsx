@@ -1,36 +1,41 @@
 import { useState, useRef, useEffect, useContext } from 'react'
 import { ArrowRight } from 'lucide-react'
 import { motion, useScroll, useTransform } from 'framer-motion'
-import { picassoConfig } from '../../configs/picasso.config'
+import { defaultConfig } from '../../configs/_default.config'
 import { ConfigContext } from '../../contexts/ConfigContext'
 import TiltHeading from '../../components/TiltHeading'
 import MagneticButton from '../../components/MagneticButton'
 import DustParticles from '../../components/DustParticles'
 import TiltGlare from '../../components/TiltGlare'
+import { scrollToBooking } from '../../utils/scrollToBooking'
 
 function Hero({ scrollTo }) {
   const configFromContext = useContext(ConfigContext)
-  const config = configFromContext || picassoConfig
-  const { GOLD, GOLD_DIM, GOLD_BRIGHT, TEXT, TEXT_SOFT, BG, BORDER_H, EASE } = config.tokens
+  const config = configFromContext || defaultConfig
+  const { GOLD, GOLD_DIM, GOLD_BRIGHT, TEXT, TEXT_SOFT, BG, SURFACE, BORDER_H, EASE } = config.tokens
   const heroConfig = config.sections?.hero || {}
-  const brandName = config.meta?.brand?.name || config.meta?.name || 'PICASSO'
-  const defaultTitleLine1 = 'Салон эстетики'
-  const alternativeTitleLine1 = config.meta?.tagline || defaultTitleLine1
-  const configuredTitleLine1 = heroConfig.titleLine1Big || heroConfig.titleLine1 || defaultTitleLine1
-  const heroTitleLine1 = configuredTitleLine1 === brandName ? alternativeTitleLine1 : configuredTitleLine1
-  const heroTitleLine1Small = heroConfig.titleLine1Small || ''
-  const heroTitleLine1SmallSize = heroConfig.titleLine1SmallSize || 'default'
-  const heroTitleLine1Size = heroConfig.titleLine1Size || 'default'
-  const heroTitleLine2 = heroConfig.titleLine2 ?? brandName
-  const heroTitleLine2Size = heroConfig.titleLine2Size || 'default'
-  const showWorksButton = config.sections?.gallery?.enabled !== false
-  const heroTopLabel = heroConfig.topLabel || config.meta?.tagline || 'Premium Beauty Studio'
-  const heroLead = heroConfig.lead || 'Стрижка, цвет, ногти, брови — полный цикл красоты в одном пространстве'
-  const heroImage = (heroConfig.image && heroConfig.image.trim())
-    ? heroConfig.image.trim()
-    : null
-  const heroVideo = heroConfig.video?.trim() || null
-  const heroImageAlt = heroConfig.imageAlt || `${brandName} hero`
+  const brandShortName = config.meta?.brand?.shortName || config.meta?.brand?.name || config.meta?.name || 'PICASSO'
+  const city = config.meta?.city || ''
+  const cityPrepositional = config.meta?.cityPrepositional || ''
+  
+  // Data from config with fallbacks
+  const heroPhoto = heroConfig.photo || heroConfig.image
+  const heroTitleLine1 = heroConfig.titleLine1 || ''
+  const heroCityLine = heroConfig.cityLine || (cityPrepositional ? `в ${cityPrepositional}` : '')
+  const heroLead = heroConfig.lead || ''
+  const heroCtaLabel = heroConfig.ctaLabel || 'Записаться'
+  
+  // topLabel logic
+  const heroTopLabel = city ? `${city} · запись онлайн 24/7` : null
+  
+  // Hours
+  const hours = config.contacts?.hours || ''
+  
+  // Image alt: "[название салона] — [основная услуга] в [городе]"
+  const heroImageAlt = cityPrepositional ? `${brandShortName} — ${heroTitleLine1} в ${cityPrepositional}` : `${brandShortName} — ${heroTitleLine1}`
+
+  // Split brand shortName by dash
+  const [brandPart1, brandPart2] = brandShortName.split('-')
 
   const ref = useRef(null)
   const [isMobile, setIsMobile] = useState(false)
@@ -50,37 +55,9 @@ function Hero({ scrollTo }) {
   }, [])
 
   return (
-    <section ref={ref} className="relative min-h-screen flex items-center overflow-hidden" style={{ background: BG }}>
+    <section ref={ref} id="hero-section" className="relative min-h-screen flex items-center overflow-hidden" style={{ background: BG }}>
 
       <div className="absolute inset-0 overflow-hidden pointer-events-none w-full">
-        {heroVideo && (
-          <>
-            <video
-              key={heroVideo}
-              autoPlay
-              loop
-              muted
-              playsInline
-              style={{
-                position: 'absolute',
-                inset: 0,
-                width: '100%',
-                height: '100%',
-                objectFit: 'cover',
-                opacity: 0.45,
-                zIndex: 0,
-              }}
-            >
-              <source src={heroVideo} type="video/webm" />
-            </video>
-            <div style={{
-              position: 'absolute',
-              inset: 0,
-              background: 'linear-gradient(to right, rgba(14,12,11,0.92) 0%, rgba(14,12,11,0.75) 40%, rgba(14,12,11,0.3) 70%, rgba(14,12,11,0.1) 100%)',
-              zIndex: 1,
-            }} />
-          </>
-        )}
         {!isMobile && (
           <>
             <motion.div style={{ y: bgY, willChange: 'transform' }} className="absolute -top-[400px] -bottom-[400px] left-0 right-0">
@@ -101,58 +78,78 @@ function Hero({ scrollTo }) {
         <div className="mx-auto max-w-6xl px-5 sm:px-8 flex flex-col lg:flex-row items-center gap-12 lg:gap-16 pt-28 pb-16">
           <div className="flex-1 text-center lg:text-left">
             <motion.div style={{ y: heroY, opacity: heroOpacity, willChange: 'transform' }}>
-              <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.6, ease: EASE }}>
-                <p className="font-picasso-body text-[9px] sm:text-[10px] md:text-[11px] font-light uppercase tracking-[0.2em] sm:tracking-[0.24em] whitespace-nowrap mb-5 select-none" style={{ color: 'rgba(240,235,227,0.4)', textShadow: '0 2px 20px rgba(0,0,0,0.8)' }}>{heroTopLabel}</p>
-              </motion.div>
+              {heroTopLabel && (
+                <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.6, ease: EASE }}>
+                  <p className="font-picasso-body text-[9px] sm:text-[10px] md:text-[11px] font-light uppercase tracking-[0.2em] sm:tracking-[0.24em] whitespace-nowrap mb-5 select-none" style={{ color: 'rgba(240,235,227,0.4)', textShadow: '0 2px 20px rgba(0,0,0,0.8)' }}>{heroTopLabel}</p>
+                </motion.div>
+              )}
 
               <div className="relative">
-                <div className="hidden md:block">
-                  <div className="smoke-layer smoke-layer-1" />
-                  <div className="smoke-layer smoke-layer-2" />
-                  <div className="smoke-layer smoke-layer-3" />
-                </div>
                 <motion.div
                   initial={{ opacity: 0, filter: 'blur(20px) brightness(2.5)' }}
                   animate={{ opacity: 1, filter: 'blur(0px) brightness(1)' }}
                   transition={{ duration: 2, ease: EASE, delay: 0.2 }}
                 >
-                  <TiltHeading as="h1" className="font-picasso-display font-medium tracking-[-0.01em] leading-[1.1]" style={{ color: TEXT }}>
-                    <span
-                      className={`block ${
-                        heroTitleLine1Size === 'small'
-                          ? 'text-2xl sm:text-3xl lg:text-[2rem] xl:text-[2.4rem]'
-                          : heroTitleLine1Size === 'medium'
-                          ? 'text-3xl sm:text-4xl lg:text-[2.8rem] xl:text-[3.2rem]'
-                          : 'text-4xl sm:text-5xl lg:text-[3.8rem] xl:text-[4.5rem]'
-                      }`}
-                      style={{ color: TEXT, textShadow: '0 2px 20px rgba(0,0,0,0.8)' }}
-                    >
-                      {heroTitleLine1}
-                    </span>
-                    {heroTitleLine1Small && (
+                  <TiltHeading
+  as="h1"
+  className="font-picasso-display font-medium tracking-[-0.01em] leading-[1.1] flex flex-col gap-2 sm:gap-3"
+  style={{ color: TEXT }}
+>
+                    {/* Line 1: Main service - titleLine1 */}
+                    {heroTitleLine1 && (
                       <span
-                        className={`block ${
-                          heroTitleLine1SmallSize === 'small'
-                            ? 'text-xl sm:text-2xl lg:text-3xl xl:text-[2rem]'
-                            : heroTitleLine1SmallSize === 'large'
-                            ? 'text-3xl sm:text-4xl lg:text-[3rem] xl:text-[3.4rem]'
-                            : 'text-2xl sm:text-3xl lg:text-4xl xl:text-[2.6rem]'
-                        }`}
+                        className="block whitespace-nowrap text-4xl sm:text-5xl lg:text-6xl"
                         style={{ color: TEXT, textShadow: '0 2px 20px rgba(0,0,0,0.8)' }}
                       >
-                        {heroTitleLine1Small}
+                        {heroTitleLine1}
                       </span>
                     )}
-                    {heroTitleLine2 && (
-                      <span className={`block italic ${
-                        heroTitleLine2Size === 'large'
-                          ? 'text-5xl sm:text-6xl lg:text-[5.5rem] xl:text-[6.5rem]'
-                          : heroTitleLine2Size === 'medium'
-                          ? 'text-4xl sm:text-5xl lg:text-[4rem] xl:text-[4.8rem]'
-                          : heroTitleLine2Size === 'small'
-                          ? 'text-3xl sm:text-4xl lg:text-[3rem] xl:text-[3.6rem]'
-                          : 'text-5xl sm:text-6xl lg:text-[5.5rem] xl:text-[6.5rem]'
-                      }`} style={{
+                    {/* Line 2: City - heroCityLine */}
+                    {heroCityLine && (
+                      <span className="block text-3xl sm:text-4xl lg:text-5xl" style={{ color: TEXT, textShadow: '0 2px 20px rgba(0,0,0,0.8)' }}>
+                        {heroCityLine}
+                      </span>
+                    )}
+                    {/* Brand lines - from shortName, split by dash */}
+                    {brandPart1 && brandPart2 ? (
+                      <>
+                        <span className="block italic text-6xl sm:text-7xl lg:text-8xl" style={{
+                          color: GOLD,
+                          textShadow: `0 2px 20px rgba(0,0,0,0.8),
+                        0 1px 0 #A68B5A,
+                        0 2px 0 #8A742B,
+                        0 3px 0 #6E5D22,
+                        0 4px 0 #53491A,
+                        0 5px 0 #3D3614,
+                        0 6px 14px rgba(0,0,0,0.35),
+                        0 12px 40px rgba(201,168,122,0.18),
+                        0 0 80px rgba(201,168,122,0.08),
+                        0 0 160px rgba(201,168,122,0.03),
+                        0 0 260px rgba(201,168,122,0.01)
+                      `,
+                        }}>
+                          {brandPart1}–
+                        </span>
+                        <span className="block italic text-6xl sm:text-7xl lg:text-8xl" style={{
+                          color: GOLD,
+                          textShadow: `0 2px 20px rgba(0,0,0,0.8),
+                        0 1px 0 #A68B5A,
+                        0 2px 0 #8A742B,
+                        0 3px 0 #6E5D22,
+                        0 4px 0 #53491A,
+                        0 5px 0 #3D3614,
+                        0 6px 14px rgba(0,0,0,0.35),
+                        0 12px 40px rgba(201,168,122,0.18),
+                        0 0 80px rgba(201,168,122,0.08),
+                        0 0 160px rgba(201,168,122,0.03),
+                        0 0 260px rgba(201,168,122,0.01)
+                      `,
+                        }}>
+                          {brandPart2}
+                        </span>
+                      </>
+                    ) : brandPart1 && (
+                      <span className="block italic text-6xl sm:text-7xl lg:text-8xl" style={{
                         color: GOLD,
                         textShadow: `0 2px 20px rgba(0,0,0,0.8),
                       0 1px 0 #A68B5A,
@@ -165,42 +162,51 @@ function Hero({ scrollTo }) {
                       0 0 80px rgba(201,168,122,0.08),
                       0 0 160px rgba(201,168,122,0.03),
                       0 0 260px rgba(201,168,122,0.01)
-                    `,
-                      }}>{heroTitleLine2}</span>
+                      `,
+                      }}>
+                        {brandPart1}
+                      </span>
                     )}
                   </TiltHeading>
                 </motion.div>
               </div>
 
-              <motion.p initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.9, ease: EASE, delay: 0.8 }}
-                className="mt-7 font-picasso-body text-lg sm:text-xl font-light leading-relaxed" style={{ color: TEXT_SOFT, textShadow: '0 2px 20px rgba(0,0,0,0.8)' }}>
-                {heroLead}
-              </motion.p>
+              {heroLead && (
+                <motion.p initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.9, ease: EASE, delay: 0.8 }}
+                  className="mt-7 font-picasso-body text-base sm:text-lg font-light leading-relaxed" style={{ color: TEXT_SOFT, textShadow: '0 2px 20px rgba(0,0,0,0.8)' }}>
+                  {heroLead}
+                </motion.p>
+              )}
 
               <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.7, ease: EASE, delay: 0.8 }}
-                className="flex flex-col sm:flex-row items-center justify-center lg:justify-start gap-4 mt-12 overflow-hidden">
-                <MagneticButton href="#booking" onClick={(e) => { e.preventDefault(); scrollTo('booking') }}
+                className="flex flex-col sm:flex-row items-center justify-center lg:justify-start gap-4 mt-10 overflow-hidden flex-wrap">
+                <MagneticButton href="#bookingContacts-section" onClick={(e) => { e.preventDefault(); scrollToBooking() }}
                   whileHover={{ boxShadow: '0 6px 40px rgba(201,168,122,0.25), inset 0 1px 0 rgba(255,255,255,0.15)' }}
                   whileTap={{ boxShadow: '0 2px 12px rgba(201,168,122,0.15)' }}
-                  className="btn-shine group inline-flex items-center justify-center gap-2 px-9 py-4 font-picasso-body text-[13px] font-medium uppercase tracking-[0.14em] transition-all duration-300 cursor-pointer"
+                  className="btn-shine group inline-flex items-center justify-center gap-2 px-9 py-4 font-picasso-body text-[13px] font-medium uppercase tracking-[0.14em] transition-all duration-300 cursor-pointer min-h-[44px]"
                   style={{ background: `linear-gradient(to bottom, ${GOLD_BRIGHT} 0%, ${GOLD} 40%, ${GOLD_DIM} 100%)`, color: BG, borderRadius: 9999, boxShadow: '0 1px 0 rgba(255,255,255,0.25) inset, 0 -2px 0 rgba(0,0,0,0.2) inset, 0 4px 8px rgba(0,0,0,0.3), 0 8px 30px rgba(201,168,122,0.18)', textShadow: '0 1px 2px rgba(0,0,0,0.25)' }}>
-                  Онлайн запись <ArrowRight size={15} className="transition-transform group-hover:translate-x-1" />
+                  {heroCtaLabel} <ArrowRight size={15} className="transition-transform group-hover:translate-x-1" />
                 </MagneticButton>
-                {showWorksButton && (
-                  <MagneticButton href="#gallery" onClick={(e) => { e.preventDefault(); scrollTo('gallery') }}
-                    whileHover={{ boxShadow: '0 6px 30px rgba(0,0,0,0.4), inset 0 1px 0 rgba(255,255,255,0.06)' }}
-                    whileTap={{ boxShadow: '0 2px 10px rgba(0,0,0,0.3)' }}
-                    className="inline-flex items-center justify-center font-picasso-body text-[13px] font-medium uppercase tracking-[0.14em] px-9 py-4 transition-all duration-300 cursor-pointer"
-                    style={{ border: `1px solid ${BORDER_H}`, color: TEXT, borderRadius: 9999, boxShadow: '0 4px 20px rgba(0,0,0,0.25), inset 0 1px 0 rgba(255,255,255,0.04), inset 0 -1px 0 rgba(0,0,0,0.2)' }}>
-                    Наши работы
-                  </MagneticButton>
-                )}
+                <MagneticButton href="#gallery-section" onClick={(e) => { e.preventDefault(); scrollTo('gallery-section') }}
+                  whileHover={{ boxShadow: '0 6px 30px rgba(0,0,0,0.4), inset 0 1px 0 rgba(255,255,255,0.06)' }}
+                  whileTap={{ boxShadow: '0 2px 10px rgba(0,0,0,0.3)' }}
+                  className="inline-flex items-center justify-center font-picasso-body text-[13px] font-medium uppercase tracking-[0.14em] px-9 py-4 transition-all duration-300 cursor-pointer min-h-[44px]"
+                  style={{ border: `1px solid ${BORDER_H}`, color: TEXT_SOFT, borderRadius: 9999, boxShadow: '0 4px 20px rgba(0,0,0,0.25), inset 0 1px 0 rgba(255,255,255,0.04), inset 0 -1px 0 rgba(0,0,0,0.2)' }}>
+                  Наши работы
+                </MagneticButton>
               </motion.div>
+
+              {hours && (
+                <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.6, ease: EASE, delay: 1.2 }}
+                  className="mt-5 font-picasso-body text-xs font-light tracking-[0.05em]" style={{ color: TEXT_SOFT, textShadow: '0 2px 20px rgba(0,0,0,0.8)' }}>
+                  ⏱ {hours}
+                </motion.div>
+              )}
             </motion.div>
           </div>
 
-          <div className="flex-1 relative max-w-md lg:max-w-none max-w-full">
-            {heroImage !== null && (
+          <div className="flex-none relative w-full lg:w-[420px] xl:w-[460px]">
+            {heroPhoto && (
               <motion.div
                 style={{ y: imgY, willChange: 'transform' }}
                 className="relative z-10"
@@ -224,7 +230,7 @@ function Hero({ scrollTo }) {
                   >
                     <div className="w-full h-full">
                       <img
-                        src={heroImage}
+                        src={heroPhoto}
                         alt={heroImageAlt}
                         className="w-full max-w-full aspect-[3/4] object-cover block rounded-3xl transform-gpu scale-[1.03]"
                         style={{

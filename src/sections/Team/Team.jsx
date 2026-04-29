@@ -1,19 +1,19 @@
 import { useState, useContext } from 'react'
 import { Sparkles } from 'lucide-react'
 import { AnimatePresence } from 'framer-motion'
-import { picassoConfig } from '../../configs/picasso.config'
+import { defaultConfig } from '../../configs/_default.config'
 import { ConfigContext } from '../../contexts/ConfigContext'
 import FadeIn from '../../components/FadeIn'
 import TiltHeading from '../../components/TiltHeading'
 import GoldSpan from '../../components/GoldSpan'
 import MasterModal from '../../components/MasterModal'
 
-const { GOLD, TEXT, TEXT_SOFT, MUTED, CHOCOLATE, SURFACE, SURFACE_L } = picassoConfig.tokens
+const { GOLD, TEXT, TEXT_SOFT, MUTED, CHOCOLATE, SURFACE, SURFACE_L } = defaultConfig.tokens
 
 function Team() {
   const [selectedMaster, setSelectedMaster] = useState(null)
   const configFromContext = useContext(ConfigContext)
-  const config = configFromContext || picassoConfig
+  const config = configFromContext || defaultConfig
   const team = Array.isArray(config?.team) ? config.team : []
   const realTeam = team.filter(item => item?.name)
   
@@ -56,7 +56,7 @@ function Team() {
   ]
 
   return (
-    <section id="team" className="scroll-mt-20 py-28 sm:py-36" style={{ background: CHOCOLATE }}>
+    <section id="team-section" className="scroll-mt-20 py-28 sm:py-36" style={{ background: CHOCOLATE }}>
       <div className="mx-auto max-w-6xl px-5 sm:px-8">
         <FadeIn>
           <p className="font-picasso-body text-[12px] uppercase tracking-[0.4em] mb-5 select-none text-center" style={{ color: GOLD }}>Команда</p>

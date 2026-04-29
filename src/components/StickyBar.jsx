@@ -1,19 +1,17 @@
 import { useContext } from 'react'
-import { picassoConfig } from '../configs/picasso.config'
+import { defaultConfig } from '../configs/_default.config'
 import { ConfigContext } from '../contexts/ConfigContext'
+import { scrollToBooking } from '../utils/scrollToBooking'
 
 export default function StickyBar({ enabled = false }) {
   if (!enabled) return null
 
   const configFromContext = useContext(ConfigContext)
-  const config = configFromContext || picassoConfig
+  const config = configFromContext || defaultConfig
   const { GOLD, GOLD_BRIGHT, TEXT, BG } = config.tokens
 
   const handleScrollToBooking = () => {
-    const target = document.getElementById('booking')
-    if (target) {
-      target.scrollIntoView({ behavior: 'smooth' })
-    }
+    scrollToBooking()
   }
 
   return (

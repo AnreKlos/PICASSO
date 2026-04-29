@@ -1,6 +1,6 @@
 import { Star } from 'lucide-react'
 import { useContext } from 'react'
-import { picassoConfig } from '../../configs/picasso.config'
+import { defaultConfig } from '../../configs/_default.config'
 import { ConfigContext } from '../../contexts/ConfigContext'
 import FadeIn from '../../components/FadeIn'
 import TiltHeading from '../../components/TiltHeading'
@@ -8,7 +8,7 @@ import GoldSpan from '../../components/GoldSpan'
 
 function Reviews() {
   const configFromContext = useContext(ConfigContext)
-  const config = configFromContext || picassoConfig
+  const config = configFromContext || defaultConfig
   const { GOLD, TEXT, TEXT_SOFT, BG } = config.tokens
   const defaultReviews = [
     { text: 'Удобное расположение. Приятный персонал. Была на стрижке – всё быстро и качественно. Приятная музыка и интересные разговоры. Если нужно, всегда помогут с Wi‑Fi.', author: 'Евгения К.' },
@@ -23,7 +23,7 @@ function Reviews() {
   if (!reviews.length) return null
 
   return (
-    <section id="reviews" className="scroll-mt-20 py-28 sm:py-36" style={{ background: BG }}>
+    <section id="reviews-section" className="scroll-mt-20 py-28 sm:py-36" style={{ background: BG }}>
       <div className="mx-auto max-w-5xl px-5 sm:px-8">
         <FadeIn>
           <p className="font-picasso-body text-[12px] uppercase tracking-[0.4em] mb-5 select-none text-center" style={{ color: GOLD }}>Отзывы</p>

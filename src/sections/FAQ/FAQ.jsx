@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { useContext } from 'react'
-import { picassoConfig } from '../../configs/picasso.config'
+import { defaultConfig } from '../../configs/_default.config'
 import { ConfigContext } from '../../contexts/ConfigContext'
 import FadeIn from '../../components/FadeIn'
 import TiltHeading from '../../components/TiltHeading'
@@ -9,7 +9,7 @@ import FAQItem from '../../components/FAQItem'
 
 function FAQ() {
   const configFromContext = useContext(ConfigContext)
-  const config = configFromContext || picassoConfig
+  const config = configFromContext || defaultConfig
   const { GOLD, TEXT, CHOCOLATE } = config.tokens
   const [openIdx, setOpenIdx] = useState(null)
   const defaultFaqs = [
@@ -26,7 +26,7 @@ function FAQ() {
   if (!faqs.length) return null
 
   return (
-    <section id="faq" className="scroll-mt-16 sm:scroll-mt-20 py-28 sm:py-36" style={{ background: CHOCOLATE }}>
+    <section id="faq-section" className="scroll-mt-16 sm:scroll-mt-20 py-28 sm:py-36" style={{ background: CHOCOLATE }}>
       <div className="mx-auto max-w-3xl px-5 sm:px-8">
         <FadeIn>
           <p className="font-picasso-body text-[12px] uppercase tracking-[0.4em] mb-5 select-none text-center" style={{ color: GOLD }}>FAQ</p>

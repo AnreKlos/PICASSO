@@ -3,7 +3,7 @@ import { Routes, Route, useParams } from 'react-router-dom'
 
 import BeautyTemplate from './BeautyTemplate.jsx'
 import NotFound from './components/NotFound.jsx'
-import { picassoConfig } from './configs/picasso.config.js'
+import { defaultConfig } from './configs/_default.config.js'
 
 const configModules = import.meta.glob('./configs/*.config.js')
 
@@ -89,7 +89,7 @@ export default function App() {
   return (
     <ErrorBoundary>
       <Routes>
-        <Route path="/" element={<BeautyTemplate config={picassoConfig} />} />
+        <Route path="/" element={<BeautyTemplate config={defaultConfig} />} />
         <Route path="/:slug" element={<SlugPicassoRoute />} />
         <Route path="*" element={<NotFound />} />
       </Routes>

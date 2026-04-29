@@ -2,9 +2,9 @@ import { useState, useRef, useEffect } from 'react'
 import { AnimatePresence } from 'framer-motion'
 import FadeIn from './FadeIn'
 import Lightbox from './Lightbox'
-import { picassoConfig } from '../configs/picasso.config'
+import { defaultConfig } from '../configs/_default.config'
 
-const { GOLD, GOLD_DIM, GOLD_BRIGHT, TEXT, TEXT_SOFT, MUTED, BG, CHOCOLATE, SURFACE, SURFACE_L, BORDER, BORDER_H, EASE } = picassoConfig.tokens
+const { GOLD, GOLD_DIM, GOLD_BRIGHT, TEXT, TEXT_SOFT, MUTED, BG, CHOCOLATE, SURFACE, SURFACE_L, BORDER, BORDER_H, EASE } = defaultConfig.tokens
 
 function ServiceCard({ Icon, title, desc, image, featured }) {
   const [showLightbox, setShowLightbox] = useState(false)

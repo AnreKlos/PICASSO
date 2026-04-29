@@ -1,6 +1,6 @@
 import { useState, useContext } from 'react'
 import { AnimatePresence } from 'framer-motion'
-import { picassoConfig } from '../../configs/picasso.config'
+import { defaultConfig } from '../../configs/_default.config'
 import { ConfigContext } from '../../contexts/ConfigContext'
 import FadeIn from '../../components/FadeIn'
 import TiltHeading from '../../components/TiltHeading'
@@ -9,7 +9,7 @@ import Lightbox from '../../components/Lightbox'
 
 function About() {
   const configFromContext = useContext(ConfigContext)
-  const config = configFromContext || picassoConfig
+  const config = configFromContext || defaultConfig
   const { GOLD, TEXT, TEXT_SOFT, CHOCOLATE } = config.tokens
   const aboutConfig = config.sections?.about || {}
   const aboutText = aboutConfig.text || 'PICASSO — студия, куда приходят за понятным результатом. Мы честно обсуждаем пожелания, подбираем решения под качество волос и кожи, работаем только на проверенных составах и держим высокий стандарт чистоты. В одном визите можно обновить стрижку и цвет, привести в порядок ногти и брови и уйти с ощущением, что о вас действительно позаботились.'
@@ -21,7 +21,7 @@ function About() {
 
   return (
     <section
-      id="about"
+      id="about-section"
       className="scroll-mt-12 sm:scroll-mt-20 py-28 sm:py-36 relative overflow-hidden"
       style={{ background: CHOCOLATE }}
     >

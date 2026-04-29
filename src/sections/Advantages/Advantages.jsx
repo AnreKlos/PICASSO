@@ -1,10 +1,10 @@
 import { Shield, Clock, Coffee, Diamond } from 'lucide-react'
-import { picassoConfig } from '../../configs/picasso.config'
+import { defaultConfig } from '../../configs/_default.config'
 import FadeIn from '../../components/FadeIn'
 import TiltHeading from '../../components/TiltHeading'
 import GoldSpan from '../../components/GoldSpan'
 
-const { GOLD, TEXT, BG, BORDER_H } = picassoConfig.tokens
+const { GOLD, TEXT, BG, BORDER_H } = defaultConfig.tokens
 
 const items = [
   {
@@ -31,7 +31,7 @@ const items = [
 
 function Advantages() {
   return (
-    <section id="advantages" className="scroll-mt-20 py-20 sm:py-24" style={{ background: BG }}>
+    <section id="advantages-section" className="scroll-mt-20 py-20 sm:py-24" style={{ background: BG }}>
       <div className="mx-auto max-w-6xl px-5 sm:px-8">
         <FadeIn>
           <p className="font-picasso-body text-[12px] uppercase tracking-[0.4em] mb-5 select-none text-center" style={{ color: GOLD }}>Почему мы</p>
