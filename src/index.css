@@ -180,3 +180,18 @@ html, body, #root {
   width: 100%;
   max-width: 100%;
 }
+
+.sticky-bar-mobile {
+  display: none;
+}
+
+@media (max-width: 767px) {
+  .sticky-bar-mobile {
+    display: block;
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    z-index: 40;
+  }
+}

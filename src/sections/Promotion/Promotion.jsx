@@ -12,6 +12,8 @@ function Promotion() {
   const title = config.content?.promotion?.title || 'Особое предложение'
   const text = config.content?.promotion?.text || 'Для новых клиентов — приятный бонус при первой записи. Узнайте подробности у нашего консьержа или по телефону.'
 
+  if (!title && !text) return null
+
   return (
     <section id="promotion" className="scroll-mt-20 py-16 sm:py-20" style={{ background: CHOCOLATE }}>
       <div className="mx-auto max-w-3xl px-5 sm:px-8">

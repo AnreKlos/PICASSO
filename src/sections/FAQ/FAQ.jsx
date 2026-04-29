@@ -23,6 +23,8 @@ function FAQ() {
     ? config.sections.faq.items
     : defaultFaqs
 
+  if (!faqs.length) return null
+
   return (
     <section id="faq" className="scroll-mt-16 sm:scroll-mt-20 py-28 sm:py-36" style={{ background: CHOCOLATE }}>
       <div className="mx-auto max-w-3xl px-5 sm:px-8">

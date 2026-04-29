@@ -15,6 +15,8 @@ function About() {
   const aboutText = aboutConfig.text || 'PICASSO — студия, куда приходят за понятным результатом. Мы честно обсуждаем пожелания, подбираем решения под качество волос и кожи, работаем только на проверенных составах и держим высокий стандарт чистоты. В одном визите можно обновить стрижку и цвет, привести в порядок ногти и брови и уйти с ощущением, что о вас действительно позаботились.'
   const showImages = aboutConfig.showImages !== false
 
+  if (!aboutText || aboutText.trim().length < 20) return null
+
   const [lightbox, setLightbox] = useState(null)
 
   return (

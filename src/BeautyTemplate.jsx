@@ -12,12 +12,14 @@ import About from './sections/About/About'
 import Services from './sections/Services/Services'
 import ServiceCarousel from './sections/ServiceCarousel/ServiceCarousel'
 import Gallery from './sections/Gallery/Gallery'
+import BeforeAfter from './sections/BeforeAfter/BeforeAfter'
 import Team from './sections/Team/Team'
 import Reels from './sections/Reels/Reels'
 import Reviews from './sections/Reviews/Reviews'
 import FAQ from './sections/FAQ/FAQ'
 import BookingContacts from './sections/BookingContacts/BookingContacts'
 import Footer from './sections/Footer/Footer'
+import StickyBar from './components/StickyBar'
 
 const DEFAULT_SECTIONS_ORDER = [
   'hero',
@@ -25,6 +27,7 @@ const DEFAULT_SECTIONS_ORDER = [
   'advantages',
   'services',
   'gallery',
+  'beforeAfter',
   'team',
   'reels',
   'reviews',
@@ -40,6 +43,20 @@ export default function BeautyTemplate({ config = picassoConfig }) {
     ? config.sectionsOrder
     : DEFAULT_SECTIONS_ORDER
 
+  const blockFlags = {
+    hero: true,
+    about: true,
+    services: true,
+    team: true,
+    gallery: true,
+    beforeAfter: true,
+    reviews: true,
+    faq: true,
+    promotions: true,
+    contacts: true,
+    ...(config?.block_flags || {})
+  }
+
   const sectionRenderers = {
     hero: () => <Hero scrollTo={scrollTo} />,
     promotion: () => <Promotion />,
@@ -47,6 +64,7 @@ export default function BeautyTemplate({ config = picassoConfig }) {
     serviceCarousel: () => <ServiceCarousel />,
     services: () => <Services />,
     gallery: () => <Gallery />,
+    beforeAfter: () => <BeforeAfter />,
     team: () => <Team />,
     reels: () => <Reels />,
     reviews: () => <Reviews />,
@@ -227,6 +245,24 @@ export default function BeautyTemplate({ config = picassoConfig }) {
             const renderSection = sectionRenderers[sectionName]
             if (!renderSection) return null
 
+            const blockFlagMap = {
+              hero: 'hero',
+              promotion: 'promotions',
+              advantages: null,
+              serviceCarousel: 'services',
+              services: 'services',
+              gallery: 'gallery',
+              beforeAfter: 'beforeAfter',
+              team: 'team',
+              reels: null,
+              reviews: 'reviews',
+              about: 'about',
+              faq: 'faq',
+              bookingContacts: 'contacts',
+            }
+            const flagKey = blockFlagMap[sectionName]
+            if (flagKey && !blockFlags[flagKey]) return null
+
             return (
               <SectionBoundary key={sectionName} name={sectionName}>
                 {renderSection()}
@@ -235,6 +271,7 @@ export default function BeautyTemplate({ config = picassoConfig }) {
           })}
         </main>
         <Footer />
+        <StickyBar enabled={blockFlags.contacts} />
       </div>
     </ConfigContext.Provider>
   )

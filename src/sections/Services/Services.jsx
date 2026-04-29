@@ -54,6 +54,8 @@ function Services() {
     ? config.sections.services.items
     : DEFAULT_SERVICE_ITEMS
 
+  if (!servicesConfig.length) return null
+
   const directions = servicesConfig.map((service, index) => ({
     Icon: ICONS[index % ICONS.length],
     title: service.title,

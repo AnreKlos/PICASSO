@@ -30,18 +30,20 @@ function BookingContacts() {
     ? `https://yandex.ru/map-widget/v1/?ll=${lng},${lat}&z=15&pt=${lng},${lat},pm2rdm`
     : `https://yandex.ru/map-widget/v1/?text=${encodeURIComponent(address)}`
 
+  if (!address && !primaryPhone && !hours) return null
+
   const formRef = useRef(null)
   const [name, setName] = useState('')
   const [phone, setPhone] = useState('')
-  const [prefillService, setPrefillService] = useState('')
+  const [service, setService] = useState('')
   const [sent, setSent] = useState(false)
   const [submitting, setSubmitting] = useState(false)
   const [error, setError] = useState('')
 
   useEffect(() => {
     function handleOpenBookingForm(event) {
-      const service = typeof event?.detail?.service === 'string' ? event.detail.service.trim() : ''
-      setPrefillService(service)
+      const serviceValue = typeof event?.detail?.service === 'string' ? event.detail.service.trim() : ''
+      setService(serviceValue)
       setSent(false)
 
       const target = formRef.current || document.getElementById('booking')
@@ -140,13 +142,14 @@ function BookingContacts() {
                         name: name.trim(),
                         phone: phone.trim(),
                         session_id: sessionId,
-                        service: prefillService || undefined,
+                        service: service.trim() || undefined,
                       }),
                     })
                     if (!res.ok) throw new Error()
                     setSent(true)
                     setName('')
                     setPhone('')
+                    setService('')
                   } catch {
                     setError(`Не удалось отправить. Позвоните нам: ${primaryPhone}`)
                   } finally {
@@ -177,6 +180,16 @@ function BookingContacts() {
                   style={inputStyle}
                 />
 
+                <input
+                  type="text"
+                  value={service}
+                  onChange={(e) => setService(e.target.value)}
+                  placeholder="Желаемая услуга (необязательно)"
+                  autoComplete="off"
+                  className="block px-5 py-4 text-base font-picasso-body transition-all placeholder:opacity-60"
+                  style={inputStyle}
+                />
+
                 <motion.button
                   type="submit"
                   whileHover={{
@@ -197,7 +210,7 @@ function BookingContacts() {
                   }}
                   disabled={submitting}
                 >
-                  {submitting ? 'Отправка…' : 'Записаться'}
+                  {submitting ? 'Отправка…' : 'Отправить заявку'}
                 </motion.button>
 
                 {error && <p className="text-[13px] font-light mt-2" style={{ color: '#e57373' }}>{error}</p>}

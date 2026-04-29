@@ -75,10 +75,19 @@ function Footer() {
           </a>
         </div>
 
-        {config.legal.showInFooter && (
-          <p className="font-picasso-body text-[10px] tracking-[0.05em] mt-3 text-center" style={{ color: 'rgba(255,255,255,0.45)' }}>
-            {config.legal.placeholder}
-          </p>
+        {config.legal?.showInFooter && (
+          <div className="mt-3 flex flex-col items-center gap-1">
+            <a
+              href={config.legal?.policyUrl || '#'}
+              className="font-picasso-body text-[10px] tracking-[0.05em] transition-opacity hover:opacity-80"
+              style={{ color: 'rgba(255,255,255,0.55)' }}
+            >
+              Политика конфиденциальности
+            </a>
+            <p className="font-picasso-body text-[10px] tracking-[0.05em]" style={{ color: 'rgba(255,255,255,0.45)' }}>
+              {config.legal?.placeholder}
+            </p>
+          </div>
         )}
       </div>
     </footer>

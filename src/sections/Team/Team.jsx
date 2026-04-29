@@ -1,7 +1,8 @@
-import { useState } from 'react'
+import { useState, useContext } from 'react'
 import { Sparkles } from 'lucide-react'
 import { AnimatePresence } from 'framer-motion'
 import { picassoConfig } from '../../configs/picasso.config'
+import { ConfigContext } from '../../contexts/ConfigContext'
 import FadeIn from '../../components/FadeIn'
 import TiltHeading from '../../components/TiltHeading'
 import GoldSpan from '../../components/GoldSpan'
@@ -11,6 +12,13 @@ const { GOLD, TEXT, TEXT_SOFT, MUTED, CHOCOLATE, SURFACE, SURFACE_L } = picassoC
 
 function Team() {
   const [selectedMaster, setSelectedMaster] = useState(null)
+  const configFromContext = useContext(ConfigContext)
+  const config = configFromContext || picassoConfig
+  const team = Array.isArray(config?.team) ? config.team : []
+  const realTeam = team.filter(item => item?.name)
+  
+  if (!realTeam.length) return null
+  
   const masters = [
     {
       name: 'Юлия Котомина', role: 'Мастер-универсал', exp: 'Опыт 15+ лет', specialty: 'Стрижки, окрашивания, свадебный стилист',

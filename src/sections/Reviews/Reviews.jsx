@@ -20,6 +20,8 @@ function Reviews() {
     ? config.sections.reviews.items
     : defaultReviews
 
+  if (!reviews.length) return null
+
   return (
     <section id="reviews" className="scroll-mt-20 py-28 sm:py-36" style={{ background: BG }}>
       <div className="mx-auto max-w-5xl px-5 sm:px-8">

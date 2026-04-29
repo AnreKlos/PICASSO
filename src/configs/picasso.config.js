@@ -46,6 +46,7 @@ export const picassoConfig = {
   legal: {
     showInFooter: true,
     placeholder: 'Реквизиты предоставим при заключении договора',
+    policyUrl: null,
   },
 
   content: {
@@ -63,6 +64,7 @@ export const picassoConfig = {
     promotion: { enabled: true },
     services: { enabled: true },
     gallery: { enabled: true },
+    beforeAfter: { enabled: false, items: [] },
     team: { enabled: true },
     reviews: { enabled: true },
     about: { enabled: true },

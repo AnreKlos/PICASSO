@@ -54,24 +54,32 @@ function Hero({ scrollTo }) {
 
       <div className="absolute inset-0 overflow-hidden pointer-events-none w-full">
         {heroVideo && (
-          <video
-            key={heroVideo}
-            autoPlay
-            loop
-            muted
-            playsInline
-            style={{
+          <>
+            <video
+              key={heroVideo}
+              autoPlay
+              loop
+              muted
+              playsInline
+              style={{
+                position: 'absolute',
+                inset: 0,
+                width: '100%',
+                height: '100%',
+                objectFit: 'cover',
+                opacity: 0.45,
+                zIndex: 0,
+              }}
+            >
+              <source src={heroVideo} type="video/webm" />
+            </video>
+            <div style={{
               position: 'absolute',
               inset: 0,
-              width: '100%',
-              height: '100%',
-              objectFit: 'cover',
-              opacity: 0.45,
-              zIndex: 0,
-            }}
-          >
-            <source src={heroVideo} type="video/webm" />
-          </video>
+              background: 'linear-gradient(to right, rgba(14,12,11,0.92) 0%, rgba(14,12,11,0.75) 40%, rgba(14,12,11,0.3) 70%, rgba(14,12,11,0.1) 100%)',
+              zIndex: 1,
+            }} />
+          </>
         )}
         {!isMobile && (
           <>
@@ -94,7 +102,7 @@ function Hero({ scrollTo }) {
           <div className="flex-1 text-center lg:text-left">
             <motion.div style={{ y: heroY, opacity: heroOpacity, willChange: 'transform' }}>
               <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.6, ease: EASE }}>
-                <p className="font-picasso-body text-[9px] sm:text-[10px] md:text-[11px] font-light uppercase tracking-[0.2em] sm:tracking-[0.24em] whitespace-nowrap mb-5 select-none" style={{ color: 'rgba(240,235,227,0.4)' }}>{heroTopLabel}</p>
+                <p className="font-picasso-body text-[9px] sm:text-[10px] md:text-[11px] font-light uppercase tracking-[0.2em] sm:tracking-[0.24em] whitespace-nowrap mb-5 select-none" style={{ color: 'rgba(240,235,227,0.4)', textShadow: '0 2px 20px rgba(0,0,0,0.8)' }}>{heroTopLabel}</p>
               </motion.div>
 
               <div className="relative">
@@ -117,7 +125,7 @@ function Hero({ scrollTo }) {
                           ? 'text-3xl sm:text-4xl lg:text-[2.8rem] xl:text-[3.2rem]'
                           : 'text-4xl sm:text-5xl lg:text-[3.8rem] xl:text-[4.5rem]'
                       }`}
-                      style={{ color: TEXT }}
+                      style={{ color: TEXT, textShadow: '0 2px 20px rgba(0,0,0,0.8)' }}
                     >
                       {heroTitleLine1}
                     </span>
@@ -130,7 +138,7 @@ function Hero({ scrollTo }) {
                             ? 'text-3xl sm:text-4xl lg:text-[3rem] xl:text-[3.4rem]'
                             : 'text-2xl sm:text-3xl lg:text-4xl xl:text-[2.6rem]'
                         }`}
-                        style={{ color: TEXT }}
+                        style={{ color: TEXT, textShadow: '0 2px 20px rgba(0,0,0,0.8)' }}
                       >
                         {heroTitleLine1Small}
                       </span>
@@ -146,7 +154,7 @@ function Hero({ scrollTo }) {
                           : 'text-5xl sm:text-6xl lg:text-[5.5rem] xl:text-[6.5rem]'
                       }`} style={{
                         color: GOLD,
-                        textShadow: `
+                        textShadow: `0 2px 20px rgba(0,0,0,0.8),
                       0 1px 0 #A68B5A,
                       0 2px 0 #8A742B,
                       0 3px 0 #6E5D22,
@@ -165,7 +173,7 @@ function Hero({ scrollTo }) {
               </div>
 
               <motion.p initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.9, ease: EASE, delay: 0.8 }}
-                className="mt-7 font-picasso-body text-lg sm:text-xl font-light leading-relaxed" style={{ color: TEXT_SOFT }}>
+                className="mt-7 font-picasso-body text-lg sm:text-xl font-light leading-relaxed" style={{ color: TEXT_SOFT, textShadow: '0 2px 20px rgba(0,0,0,0.8)' }}>
                 {heroLead}
               </motion.p>
 
