@@ -1,7 +1,7 @@
 import { useEffect, useRef } from 'react'
 import { X, ChevronDown } from 'lucide-react'
 import useEmblaCarousel from 'embla-carousel-react'
-import { defaultConfig } from '../../../configs/_default.config'
+import { defaultConfig } from '../configs/_default.config'
 
 const { TEXT, SURFACE, BORDER, BORDER_H } = defaultConfig.tokens
 

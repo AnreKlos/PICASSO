@@ -2,10 +2,10 @@ import { useState, useContext } from 'react'
 import { AnimatePresence } from 'framer-motion'
 import { defaultConfig } from '../../../../configs/_default.config'
 import { ConfigContext } from '../../../../contexts/ConfigContext'
-import FadeIn from '../../components/FadeIn'
-import TiltHeading from '../../components/TiltHeading'
-import GoldSpan from '../../components/GoldSpan'
-import Lightbox from '../../components/Lightbox'
+import FadeIn from '../../../../components/FadeIn'
+import TiltHeading from '../../../../components/TiltHeading'
+import GoldSpan from '../../../../components/GoldSpan'
+import Lightbox from '../../../../components/Lightbox'
 
 function About() {
   const configFromContext = useContext(ConfigContext)

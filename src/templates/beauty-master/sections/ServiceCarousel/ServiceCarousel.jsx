@@ -4,9 +4,9 @@ import useEmblaCarousel from 'embla-carousel-react'
 import { Phone, CalendarDays, X, ChevronLeft, ChevronRight } from 'lucide-react'
 import { defaultConfig } from '../../../../configs/_default.config'
 import { ConfigContext } from '../../../../contexts/ConfigContext'
-import FadeIn from '../../components/FadeIn'
-import TiltHeading from '../../components/TiltHeading'
-import GoldSpan from '../../components/GoldSpan'
+import FadeIn from '../../../../components/FadeIn'
+import TiltHeading from '../../../../components/TiltHeading'
+import GoldSpan from '../../../../components/GoldSpan'
 
 function getLoopDistance(index, selectedIndex, total) {
   if (total <= 1) return 0

@@ -1,7 +1,7 @@
 import { useState, useRef, useEffect } from 'react'
 import { AnimatePresence } from 'framer-motion'
-import FadeIn from './FadeIn'
-import Lightbox from './Lightbox'
+import FadeIn from '../../../components/FadeIn'
+import Lightbox from '../../../components/Lightbox'
 import { defaultConfig } from '../../../configs/_default.config'
 
 const { GOLD, GOLD_DIM, GOLD_BRIGHT, TEXT, TEXT_SOFT, MUTED, BG, CHOCOLATE, SURFACE, SURFACE_L, BORDER, BORDER_H, EASE } = defaultConfig.tokens

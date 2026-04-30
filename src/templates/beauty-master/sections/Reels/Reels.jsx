@@ -4,9 +4,9 @@ import useEmblaCarousel from 'embla-carousel-react'
 import { PlayCircle, X } from 'lucide-react'
 import { defaultConfig } from '../../../../configs/_default.config'
 import { ConfigContext } from '../../../../contexts/ConfigContext'
-import FadeIn from '../../components/FadeIn'
-import TiltHeading from '../../components/TiltHeading'
-import GoldSpan from '../../components/GoldSpan'
+import FadeIn from '../../../../components/FadeIn'
+import TiltHeading from '../../../../components/TiltHeading'
+import GoldSpan from '../../../../components/GoldSpan'
 
 function Reels() {
   const configFromContext = useContext(ConfigContext)

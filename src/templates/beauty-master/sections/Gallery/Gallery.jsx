@@ -4,10 +4,10 @@ import { AnimatePresence } from 'framer-motion'
 import useEmblaCarousel from 'embla-carousel-react'
 import { defaultConfig } from '../../../../configs/_default.config'
 import { ConfigContext } from '../../../../contexts/ConfigContext'
-import FadeIn from '../../components/FadeIn'
-import TiltHeading from '../../components/TiltHeading'
-import GoldSpan from '../../components/GoldSpan'
-import Lightbox from '../../components/Lightbox'
+import FadeIn from '../../../../components/FadeIn'
+import TiltHeading from '../../../../components/TiltHeading'
+import GoldSpan from '../../../../components/GoldSpan'
+import Lightbox from '../../../../components/Lightbox'
 
 function Gallery() {
   const configFromContext = useContext(ConfigContext)

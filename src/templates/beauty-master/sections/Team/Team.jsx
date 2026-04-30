@@ -3,9 +3,9 @@ import { Sparkles } from 'lucide-react'
 import { AnimatePresence } from 'framer-motion'
 import { defaultConfig } from '../../../../configs/_default.config'
 import { ConfigContext } from '../../../../contexts/ConfigContext'
-import FadeIn from '../../components/FadeIn'
-import TiltHeading from '../../components/TiltHeading'
-import GoldSpan from '../../components/GoldSpan'
+import FadeIn from '../../../../components/FadeIn'
+import TiltHeading from '../../../../components/TiltHeading'
+import GoldSpan from '../../../../components/GoldSpan'
 import MasterModal from '../../components/MasterModal'
 
 const { GOLD, TEXT, TEXT_SOFT, MUTED, CHOCOLATE, SURFACE, SURFACE_L } = defaultConfig.tokens

@@ -2,7 +2,7 @@ import { useState, useEffect, useCallback } from 'react'
 import Lenis from 'lenis'
 import { defaultConfig } from '../../configs/_default.config'
 import { ConfigContext } from '../../contexts/ConfigContext'
-import SectionBoundary from './components/SectionBoundary'
+import SectionBoundary from '../../components/SectionBoundary'
 import ChatWidget from './widgets/Kolya/ChatWidget'
 import Nav from './sections/Nav/Nav'
 import Hero from './sections/Hero/Hero'
@@ -19,7 +19,7 @@ import Reviews from './sections/Reviews/Reviews'
 import FAQ from './sections/FAQ/FAQ'
 import BookingContacts from './sections/BookingContacts/BookingContacts'
 import Footer from './sections/Footer/Footer'
-import StickyBar from '../../components/StickyBar'
+import StickyBar from './components/StickyBar'
 
 const DEFAULT_SECTIONS_ORDER = [
   'hero',

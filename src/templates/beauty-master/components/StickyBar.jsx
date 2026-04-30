@@ -1,7 +1,7 @@
 import { useContext } from 'react'
-import { defaultConfig } from '../configs/_default.config'
-import { ConfigContext } from '../contexts/ConfigContext'
-import { scrollToBooking } from '../utils/scrollToBooking'
+import { defaultConfig } from '../../../configs/_default.config'
+import { ConfigContext } from '../../../contexts/ConfigContext'
+import { scrollToBooking } from '../../../utils/scrollToBooking'
 
 export default function StickyBar({ enabled = false }) {
   if (!enabled) return null
