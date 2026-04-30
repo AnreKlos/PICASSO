@@ -1,0 +1,267 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Client Config Schema",
+  "description": "Schema for assembled.config.json - final client configuration for rendering",
+  "type": "object",
+  "required": ["meta", "contacts", "sections"],
+  "properties": {
+    "meta": {
+      "type": "object",
+      "description": "Client metadata",
+      "required": ["slug", "name", "brand"],
+      "properties": {
+        "slug": {
+          "type": "string",
+          "pattern": "^[a-z0-9-]+$",
+          "description": "URL-safe slug (lowercase, hyphens only)"
+        },
+        "name": {
+          "type": "string",
+          "description": "Business name"
+        },
+        "brand": {
+          "type": "object",
+          "required": ["name", "slug"],
+          "properties": {
+            "name": { "type": "string" },
+            "slug": { "type": "string" },
+            "shortName": { "type": "string" }
+          }
+        },
+        "fullName": { "type": "string" },
+        "tagline": { "type": "string" },
+        "city": { "type": "string" },
+        "cityPrepositional": { "type": "string" }
+      }
+    },
+    "contacts": {
+      "type": "object",
+      "description": "Contact information",
+      "required": ["phone", "phoneRaw", "address"],
+      "properties": {
+        "phone": { "type": "string" },
+        "phoneRaw": { "type": "string" },
+        "address": { "type": "string" },
+        "addressNote": { "type": "string" },
+        "hours": { "type": "string" },
+        "hoursNote": { "type": "string" },
+        "whatsapp": { "type": "string" },
+        "coordinates": {
+          "type": "object",
+          "properties": {
+            "lat": { "type": "number" },
+            "lng": { "type": "number" }
+          }
+        }
+      }
+    },
+    "social": {
+      "type": "array",
+      "description": "Social media links",
+      "items": {
+        "type": "object",
+        "required": ["href", "label", "short"],
+        "properties": {
+          "href": { "type": "string", "format": "uri" },
+          "label": { "type": "string" },
+          "short": { "type": "string" }
+        }
+      }
+    },
+    "sections": {
+      "type": "object",
+      "description": "Section configurations",
+      "properties": {
+        "hero": {
+          "type": "object",
+          "properties": {
+            "enabled": { "type": "boolean" },
+            "photo": { "type": "string" },
+            "titleLine1": { "type": "string" },
+            "cityLine": { "type": "string" },
+            "lead": { "type": "string" },
+            "ctaLabel": { "type": "string" }
+          }
+        },
+        "advantages": {
+          "type": "object",
+          "properties": {
+            "enabled": { "type": "boolean" }
+          }
+        },
+        "promotion": {
+          "type": "object",
+          "properties": {
+            "enabled": { "type": "boolean" },
+            "title": { "type": "string" },
+            "text": { "type": "string" }
+          }
+        },
+        "serviceCarousel": {
+          "type": "object",
+          "properties": {
+            "enabled": { "type": "boolean" },
+            "title": { "type": "string" },
+            "items": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "title": { "type": "string" },
+                  "short": { "type": "string" },
+                  "priceFrom": { "type": "string" },
+                  "description": { "type": "string" },
+                  "image": { "type": "string" }
+                }
+              }
+            }
+          }
+        },
+        "services": {
+          "type": "object",
+          "properties": {
+            "enabled": { "type": "boolean" },
+            "items": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "title": { "type": "string" },
+                  "short": { "type": "string" },
+                  "priceFrom": { "type": "string" },
+                  "image": { "type": "string" }
+                }
+              }
+            }
+          }
+        },
+        "gallery": {
+          "type": "object",
+          "properties": {
+            "enabled": { "type": "boolean" },
+            "title": { "type": "string" },
+            "subtitle": { "type": "string" },
+            "items": {
+              "type": "array",
+              "items": { "type": "string" }
+            }
+          }
+        },
+        "beforeAfter": {
+          "type": "object",
+          "properties": {
+            "enabled": { "type": "boolean" },
+            "items": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "before": { "type": "string" },
+                  "after": { "type": "string" },
+                  "label": { "type": "string" }
+                }
+              }
+            }
+          }
+        },
+        "team": {
+          "type": "object",
+          "properties": {
+            "enabled": { "type": "boolean" },
+            "items": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "name": { "type": "string" },
+                  "role": { "type": "string" },
+                  "exp": { "type": "string" },
+                  "specialty": { "type": "string" },
+                  "image": { "type": "string" },
+                  "details": {
+                    "type": "array",
+                    "items": { "type": "string" }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "reviews": {
+          "type": "object",
+          "properties": {
+            "enabled": { "type": "boolean" },
+            "items": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "author": { "type": "string" },
+                  "text": { "type": "string" },
+                  "rating": { "type": "number" }
+                }
+              }
+            }
+          }
+        },
+        "about": {
+          "type": "object",
+          "properties": {
+            "enabled": { "type": "boolean" },
+            "text": { "type": "string" },
+            "images": {
+              "type": "array",
+              "items": { "type": "string" }
+            }
+          }
+        },
+        "faq": {
+          "type": "object",
+          "properties": {
+            "enabled": { "type": "boolean" },
+            "items": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "question": { "type": "string" },
+                  "answer": { "type": "string" }
+                }
+              }
+            }
+          }
+        },
+        "bookingContacts": {
+          "type": "object",
+          "properties": {
+            "enabled": { "type": "boolean" }
+          }
+        }
+      }
+    },
+    "sectionsOrder": {
+      "type": "array",
+      "description": "Order of sections to render",
+      "items": {
+        "type": "string",
+        "enum": ["hero", "promotion", "advantages", "services", "serviceCarousel", "gallery", "beforeAfter", "team", "reels", "reviews", "about", "faq", "bookingContacts"]
+      }
+    },
+    "block_flags": {
+      "type": "object",
+      "description": "Per-section enabled/disabled flags",
+      "properties": {
+        "hero": { "type": "boolean" },
+        "about": { "type": "boolean" },
+        "services": { "type": "boolean" },
+        "team": { "type": "boolean" },
+        "gallery": { "type": "boolean" },
+        "beforeAfter": { "type": "boolean" },
+        "reviews": { "type": "boolean" },
+        "faq": { "type": "boolean" },
+        "promotions": { "type": "boolean" },
+        "contacts": { "type": "boolean" }
+      }
+    }
+  }
+}
