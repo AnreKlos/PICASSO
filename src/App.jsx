@@ -1,7 +1,7 @@
 import { Component, useEffect, useState } from 'react'
 import { Routes, Route, useParams } from 'react-router-dom'
 
-import BeautyTemplate from './BeautyTemplate.jsx'
+import BeautyTemplate from './templates/beauty-master/BeautyTemplate.jsx'
 import NotFound from './components/NotFound.jsx'
 import { defaultConfig } from './configs/_default.config.js'
 
