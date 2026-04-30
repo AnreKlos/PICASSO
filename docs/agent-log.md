@@ -216,3 +216,42 @@ This file documents all meaningful code changes made by AI agents working on the
   - Clicking inactive slides scrolls carousel
   - Clicking active slide opens lightbox
   - Clicking same active slide again closes lightbox
+
+---
+
+## 2026-04-30 — REFACTOR PHASE 1 — Legacy Removal
+
+**Git tag:** `v1-legacy-removed`
+**Commit:** `94e9244`
+**Branch:** `stable-working`
+
+**Task performed:**
+Deletion of legacy files and folders that were unused in the active code path. No moves, no code changes — pure deletion. Verified zero active imports for each target before deletion.
+
+**Deleted config files:**
+- `src/configs/kalinka.config.js`
+- `src/configs/kalinka-malinka-studiya-krasoty.config.js`
+- `src/configs/if-studiya.config.js`
+- `src/configs/picasso.config.js.bak`
+
+**Deleted JS files:**
+- `lib/templateResolver.js` (verified zero imports)
+
+**Deleted public folders:**
+- `public/images/` (entire folder with hair, hero, interior, services, team)
+- `public/kalinka/` (entire folder)
+- `public/kalinka-malinka-studiya-krasoty/` (entire folder)
+- `public/clients/kalinka/` (entire folder, `.gitkeep` preserved)
+
+**Build result:** SUCCESS — 1.13s, 2171 modules transformed.
+
+**Push:** stable-working pushed to origin (94e9244).
+
+**Notes:**
+- Codex attempted to perform Phase 3 actions (Move-Item on components) outside of the prompt scope. Windows blocked the moves due to path-with-spaces issues, so no damage was done. Active components in `src/components/` remain untouched.
+- Going forward: prompts must explicitly state "DO NOT MOVE OR RENAME ANY FILES" to prevent unauthorized scope expansion.
+
+**Risks / follow-ups:**
+- Phase 2: delete dead `src/templates/beauty-master/` duplicate structure (preserve `master.defaults.js` for Phase 5).
+- Phase 3: move active code into `src/templates/beauty-master/` (carefully, with import updates).
+- Build warning about INEFFECTIVE_DYNAMIC_IMPORT in `_default.config.js` — minor, address in Phase 6 (App.jsx cleanup).
