@@ -16,9 +16,10 @@ function Team() {
   const config = configFromContext || defaultConfig
   const team = Array.isArray(config?.team) ? config.team : []
   const realTeam = team.filter(item => item?.name)
-  
+  const brandName = config.meta?.brand?.text || config.meta?.brand?.shortName || config.meta?.brand?.name || 'наш салон'
+
   if (!realTeam.length) return null
-  
+
   const masters = [
     {
       name: 'Юлия Котомина', role: 'Мастер-универсал', exp: 'Опыт 15+ лет', specialty: 'Стрижки, окрашивания, свадебный стилист',
@@ -39,7 +40,7 @@ function Team() {
       image: '/images/team/viktoria_bobkova.webp',
       details: [
         '2017–2020 ГБПОУ Брянский Техникум Профессиональных технологий и Сферы услуг — парикмахер-модельер 4 разряда',
-        'С 2019 — работает в студии PICASSO',
+        `С 2019 — работает в студии ${brandName}`,
         '2018 — 1 место, 4-й открытый чемпионат Брянской области «Хрустальные ножницы» (Юниоры)',
         '2019 — 1 место, 5-й открытый чемпионат Брянской области «Хрустальные ножницы» (Юниоры)',
         '2020 — 2 место, 4-й открытый региональный чемпионат «Молодые профессионалы» WorldSkills Russia',
@@ -52,17 +53,17 @@ function Team() {
         'Подбор домашнего ухода, коррекция и окрашивание бровей',
       ],
     },
-    { name: 'Место в команде', role: 'Мы ищем мастеров', exp: 'PICASSO растёт', specialty: 'Присоединяйтесь к нашей команде', image: '/images/team/PICASSO_JOB.webp', details: [] },
+    { name: 'Место в команде', role: 'Мы ищем мастеров', exp: `${brandName} растёт`, specialty: 'Присоединяйтесь к нашей команде', image: '/images/team/team-photo.webp', details: [] },
   ]
 
   return (
     <section id="team-section" className="scroll-mt-20 py-28 sm:py-36" style={{ background: CHOCOLATE }}>
       <div className="mx-auto max-w-6xl px-5 sm:px-8">
         <FadeIn>
-          <p className="font-picasso-body text-[12px] uppercase tracking-[0.4em] mb-5 select-none text-center" style={{ color: GOLD }}>Команда</p>
+          <p className="font-wow-body text-[12px] uppercase tracking-[0.4em] mb-5 select-none text-center" style={{ color: GOLD }}>Команда</p>
         </FadeIn>
         <FadeIn delay={0.1}>
-          <TiltHeading className="font-picasso-display text-3xl sm:text-4xl lg:text-5xl font-medium text-center leading-[1.15]" style={{ color: TEXT }}>
+          <TiltHeading className="font-wow-display text-3xl sm:text-4xl lg:text-5xl font-medium text-center leading-[1.15]" style={{ color: TEXT }}>
             Наши <GoldSpan>мастера</GoldSpan>
           </TiltHeading>
         </FadeIn>
@@ -82,11 +83,11 @@ function Team() {
                   <div className="absolute inset-0 pointer-events-none transition-opacity duration-500 opacity-25 group-hover:opacity-5" style={{ background: 'rgba(14,12,11,0.35)' }} />
                   <div className="absolute inset-0" style={{ background: 'linear-gradient(to top, rgba(14,12,11,0.95) 0%, rgba(14,12,11,0.5) 35%, transparent 55%)' }} />
                   <div className="absolute bottom-0 left-0 right-0 p-5 sm:p-6 flex flex-col justify-end sm:min-h-[160px]">
-                    <p className="font-picasso-body text-[11px] uppercase tracking-[0.2em] mb-2" style={{ color: GOLD }}>{m.role}</p>
-                    <h3 className="font-picasso-display text-lg sm:text-xl font-medium" style={{ color: TEXT }}>{m.name}</h3>
+                    <p className="font-wow-body text-[11px] uppercase tracking-[0.2em] mb-2" style={{ color: GOLD }}>{m.role}</p>
+                    <h3 className="font-wow-display text-lg sm:text-xl font-medium" style={{ color: TEXT }}>{m.name}</h3>
                     <p className="mt-1 text-[12px] sm:text-[13px] font-light" style={{ color: TEXT_SOFT }}>{m.exp}</p>
                     <p className="mt-2 text-[12px] sm:text-[13px] font-light" style={{ color: MUTED }}>{m.specialty}</p>
-                    <span className="mt-3 inline-block font-picasso-body text-[11px] sm:text-[12px] uppercase tracking-[0.14em] cursor-pointer transition-opacity hover:opacity-70"
+                    <span className="mt-3 inline-block font-wow-body text-[11px] sm:text-[12px] uppercase tracking-[0.14em] cursor-pointer transition-opacity hover:opacity-70"
                       style={{ color: GOLD }}>{m.details.length > 0 ? 'Подробнее →' : '\u00A0'}</span>
                   </div>
                 </div>

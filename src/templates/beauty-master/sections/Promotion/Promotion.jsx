@@ -38,7 +38,7 @@ function Promotion() {
               <Sparkles size={18} style={{ color: GOLD }} strokeWidth={1.5} />
             </div>
 
-            <TiltHeading className="font-picasso-display text-3xl sm:text-4xl font-medium leading-[1.15]" style={{ color: TEXT }}>
+            <TiltHeading className="font-wow-display text-3xl sm:text-4xl font-medium leading-[1.15]" style={{ color: TEXT }}>
               {title}
             </TiltHeading>
 

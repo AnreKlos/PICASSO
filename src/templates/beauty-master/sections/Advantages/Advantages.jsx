@@ -1,5 +1,7 @@
 import { Shield, Clock, Coffee, Diamond } from 'lucide-react'
+import { useContext } from 'react'
 import { defaultConfig } from '../../../../configs/_default.config'
+import { ConfigContext } from '../../../../contexts/ConfigContext'
 import FadeIn from '../../../../components/FadeIn'
 import TiltHeading from '../../../../components/TiltHeading'
 import GoldSpan from '../../../../components/GoldSpan'
@@ -30,16 +32,20 @@ const items = [
 ]
 
 function Advantages() {
+  const configFromContext = useContext(ConfigContext)
+  const config = configFromContext || defaultConfig
+  const brandName = config.meta?.brand?.text || config.meta?.brand?.shortName || config.meta?.brand?.name || 'наш салон'
+
   return (
     <section id="advantages-section" className="scroll-mt-20 py-20 sm:py-24" style={{ background: BG }}>
       <div className="mx-auto max-w-6xl px-5 sm:px-8">
         <FadeIn>
-          <p className="font-picasso-body text-[12px] uppercase tracking-[0.4em] mb-5 select-none text-center" style={{ color: GOLD }}>Почему мы</p>
+          <p className="font-wow-body text-[12px] uppercase tracking-[0.4em] mb-5 select-none text-center" style={{ color: GOLD }}>Почему мы</p>
         </FadeIn>
 
         <FadeIn delay={0.1}>
-          <TiltHeading className="font-picasso-display text-3xl sm:text-4xl lg:text-5xl font-medium text-center leading-[1.15]" style={{ color: TEXT }}>
-            Что отличает <GoldSpan>PICASSO</GoldSpan>
+          <TiltHeading className="font-wow-display text-3xl sm:text-4xl lg:text-5xl font-medium text-center leading-[1.15]" style={{ color: TEXT }}>
+            Что отличает <GoldSpan>{brandName}</GoldSpan>
           </TiltHeading>
         </FadeIn>
 
@@ -77,7 +83,7 @@ function Advantages() {
                 </div>
 
                 <h3
-                  className="relative font-picasso-display text-[15px] sm:text-[17px] leading-snug text-center max-w-[14ch]"
+                  className="relative font-wow-display text-[15px] sm:text-[17px] leading-snug text-center max-w-[14ch]"
                   style={{ color: TEXT }}
                 >
                   {item.title}

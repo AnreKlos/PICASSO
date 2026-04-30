@@ -94,7 +94,7 @@ function BookingContacts() {
       <div className="mx-auto max-w-xl px-5 sm:px-8 text-center relative z-10">
         <FadeIn>
           <p
-            className="font-picasso-body text-[12px] uppercase tracking-[0.4em] mb-5 select-none"
+            className="font-wow-body text-[12px] uppercase tracking-[0.4em] mb-5 select-none"
             style={{ color: `${GOLD}88` }}
           >
             Запись
@@ -104,7 +104,7 @@ function BookingContacts() {
         <FadeIn delay={0.1}>
           <TiltHeading
             as="h2"
-            className="font-picasso-display text-3xl sm:text-4xl font-medium leading-tight"
+            className="font-wow-display text-3xl sm:text-4xl font-medium leading-tight"
             style={{ color: TEXT }}
           >
             Ваш следующий <GoldSpan>визит</GoldSpan>
@@ -162,7 +162,7 @@ function BookingContacts() {
                   placeholder="Ваше имя"
                   autoComplete="name"
                   required
-                  className="block px-5 py-4 text-base font-picasso-body transition-all placeholder:opacity-60"
+                  className="block px-5 py-4 text-base font-wow-body transition-all placeholder:opacity-60"
                   style={inputStyle}
                 />
 
@@ -174,7 +174,7 @@ function BookingContacts() {
                   autoComplete="tel"
                   inputMode="tel"
                   required
-                  className="block px-5 py-4 text-base font-picasso-body transition-all placeholder:opacity-60"
+                  className="block px-5 py-4 text-base font-wow-body transition-all placeholder:opacity-60"
                   style={inputStyle}
                 />
 
@@ -184,7 +184,7 @@ function BookingContacts() {
                   onChange={(e) => setService(e.target.value)}
                   placeholder="Желаемая услуга (необязательно)"
                   autoComplete="off"
-                  className="block px-5 py-4 text-base font-picasso-body transition-all placeholder:opacity-60"
+                  className="block px-5 py-4 text-base font-wow-body transition-all placeholder:opacity-60"
                   style={inputStyle}
                 />
 
@@ -197,7 +197,7 @@ function BookingContacts() {
                   whileTap={{
                     boxShadow: '0 2px 12px rgba(201,168,122,0.1)',
                   }}
-                  className="mt-3 w-full py-4 font-picasso-body text-[13px] font-medium uppercase tracking-[0.14em] transition-all duration-300 cursor-pointer"
+                  className="mt-3 w-full py-4 font-wow-body text-[13px] font-medium uppercase tracking-[0.14em] transition-all duration-300 cursor-pointer"
                   style={{
                     background: `linear-gradient(to bottom, ${GOLD_BRIGHT} 0%, ${GOLD} 40%, ${GOLD_DIM} 100%)`,
                     color: BG,
@@ -226,7 +226,7 @@ function BookingContacts() {
                 }}
               >
                 <p
-                  className="font-picasso-display text-2xl italic"
+                  className="font-wow-display text-2xl italic"
                   style={{ color: TEXT }}
                 >
                   Спасибо!
@@ -246,7 +246,7 @@ function BookingContacts() {
       <div className="mx-auto max-w-6xl px-5 sm:px-8 mt-24 sm:mt-32 relative z-10">
         <div id="contacts" className="scroll-mt-20">
           <FadeIn>
-            <TiltHeading as="h2" className="font-picasso-display text-2xl sm:text-3xl font-medium text-center leading-[1.15] mb-12" style={{ color: TEXT }}>
+            <TiltHeading as="h2" className="font-wow-display text-2xl sm:text-3xl font-medium text-center leading-[1.15] mb-12" style={{ color: TEXT }}>
               Контакты
             </TiltHeading>
           </FadeIn>
@@ -283,7 +283,7 @@ function BookingContacts() {
           {showMap && address && (
             <FadeIn delay={0.25}>
               <div className="mt-14 text-left">
-                <h3 className="font-picasso-display text-xl sm:text-2xl mb-5" style={{ color: TEXT }}>
+                <h3 className="font-wow-display text-xl sm:text-2xl mb-5" style={{ color: TEXT }}>
                   {mapTitle}
                 </h3>
                 <div

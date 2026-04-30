@@ -3,20 +3,20 @@
  * MVP skeleton: Nav, Hero, at least one service block, Gallery, Reviews, FAQ, BookingContacts, Footer, StickyBar
  */
 
+import { getSectionOrder } from './getSectionOrder'
+
 export function getAvailableSections(config) {
   const { sections = {}, block_flags = {} } = config
-  const sectionsOrder = config.sectionsOrder || [
-    'hero', 'promotion', 'advantages', 'services', 'gallery',
-    'beforeAfter', 'team', 'reels', 'reviews', 'about', 'faq', 'bookingContacts'
-  ]
-
-  const available = []
+  const sectionOrder = getSectionOrder(config)
 
   // Helper to check if section is enabled by block_flags
   const isBlockEnabled = (blockKey) => block_flags[blockKey] !== false
 
   // Helper to check section enabled property
   const isSectionEnabled = (sectionKey) => sections[sectionKey]?.enabled !== false
+
+  // Build metadata map for all sections
+  const sectionMetadata = {}
 
   // === Services (carousel or regular) ===
   const hasServiceCarousel = isSectionEnabled('serviceCarousel') &&
@@ -28,14 +28,14 @@ export function getAvailableSections(config) {
     sections.services.items.length >= 3
 
   if (hasServiceCarousel || hasServices) {
-    available.push({
+    sectionMetadata['services'] = {
       key: 'services',
-      label: 'Услуги',
-      anchorId: 'services-section',
+      label: 'Прайс',
+      anchorId: 'prices',
       enabled: true,
       inNav: true,
       hasData: true
-    })
+    }
   }
 
   // === Gallery (minimum 3 photos) ===
@@ -47,14 +47,14 @@ export function getAvailableSections(config) {
     galleryItems.length >= 3
 
   if (hasGallery) {
-    available.push({
+    sectionMetadata['gallery'] = {
       key: 'gallery',
       label: 'Работы',
       anchorId: 'gallery-section',
       enabled: true,
       inNav: true,
       hasData: true
-    })
+    }
   }
 
   // === Reviews (minimum 2 reviews) ===
@@ -66,14 +66,14 @@ export function getAvailableSections(config) {
     reviewsItems.length >= 2
 
   if (hasReviews) {
-    available.push({
+    sectionMetadata['reviews'] = {
       key: 'reviews',
       label: 'Отзывы',
       anchorId: 'reviews-section',
       enabled: true,
       inNav: true,
       hasData: true
-    })
+    }
   }
 
   // === FAQ (always available in MVP) ===
@@ -81,14 +81,14 @@ export function getAvailableSections(config) {
     isSectionEnabled('faq')
 
   if (hasFaq) {
-    available.push({
+    sectionMetadata['faq'] = {
       key: 'faq',
       label: 'FAQ',
       anchorId: 'faq-section',
       enabled: true,
       inNav: true,
       hasData: true
-    })
+    }
   }
 
   // === About (optional) ===
@@ -98,14 +98,14 @@ export function getAvailableSections(config) {
     aboutText && aboutText.trim().length >= 20
 
   if (hasAbout) {
-    available.push({
+    sectionMetadata['about'] = {
       key: 'about',
       label: 'О салоне',
       anchorId: 'about-section',
       enabled: true,
       inNav: true,
       hasData: true
-    })
+    }
   }
 
   // === Team (optional, minimum 1 master) ===
@@ -116,14 +116,14 @@ export function getAvailableSections(config) {
     realTeam.length >= 1
 
   if (hasTeam) {
-    available.push({
+    sectionMetadata['team'] = {
       key: 'team',
       label: 'Мастера',
       anchorId: 'team-section',
       enabled: true,
       inNav: true,
       hasData: true
-    })
+    }
   }
 
   // === BeforeAfter (optional) ===
@@ -135,14 +135,14 @@ export function getAvailableSections(config) {
     beforeAfterItems.length >= 1
 
   if (hasBeforeAfter) {
-    available.push({
+    sectionMetadata['beforeAfter'] = {
       key: 'beforeAfter',
       label: 'До/после',
       anchorId: 'beforeAfter-section',
       enabled: true,
       inNav: true,
       hasData: true
-    })
+    }
   }
 
   // === Reels (optional) ===
@@ -153,14 +153,14 @@ export function getAvailableSections(config) {
     reelsItems.length >= 1
 
   if (hasReels) {
-    available.push({
+    sectionMetadata['reels'] = {
       key: 'reels',
       label: 'Reels',
       anchorId: 'reels-section',
       enabled: true,
       inNav: false, // Usually not in nav
       hasData: true
-    })
+    }
   }
 
   // === Promotion (optional, not in nav) ===
@@ -171,48 +171,84 @@ export function getAvailableSections(config) {
     (promotionTitle || promotionText)
 
   if (hasPromotion) {
-    available.push({
+    sectionMetadata['promotion'] = {
       key: 'promotion',
       label: 'Акция',
       anchorId: 'promotion-section',
       enabled: true,
       inNav: false,
       hasData: true
-    })
+    }
   }
 
   // === Advantages (not in nav) ===
   const hasAdvantages = isSectionEnabled('advantages')
   if (hasAdvantages) {
-    available.push({
+    sectionMetadata['advantages'] = {
       key: 'advantages',
       label: 'Преимущества',
       anchorId: 'advantages-section',
       enabled: true,
       inNav: false,
       hasData: true
-    })
+    }
   }
 
   // === Hero (always, not in nav) ===
-  available.push({
+  sectionMetadata['hero'] = {
     key: 'hero',
     label: 'Hero',
     anchorId: 'hero-section',
     enabled: true,
     inNav: false,
     hasData: true
-  })
+  }
 
   // === BookingContacts (always) ===
-  available.push({
+  sectionMetadata['bookingContacts'] = {
     key: 'bookingContacts',
     label: 'Запись',
     anchorId: 'bookingContacts-section',
     enabled: true,
     inNav: false, // Has separate CTA button
     hasData: true
-  })
+  }
+
+  // === ServiceCarousel (alias for services nav, if exists) ===
+  if (hasServiceCarousel) {
+    sectionMetadata['serviceCarousel'] = {
+      key: 'serviceCarousel',
+      label: 'Услуги',
+      anchorId: 'service-carousel',
+      enabled: true,
+      inNav: true,
+      hasData: true
+    }
+  }
+
+  // Build final array following sectionOrder
+  const available = []
+  const seenKeys = new Set()
+
+  for (const sectionKey of sectionOrder) {
+    // Direct match
+    if (sectionMetadata[sectionKey] && !seenKeys.has(sectionKey)) {
+      available.push(sectionMetadata[sectionKey])
+      seenKeys.add(sectionKey)
+    }
+    // Handle serviceCarousel -> services alias for nav
+    if (sectionKey === 'serviceCarousel' && sectionMetadata['services'] && !seenKeys.has('services')) {
+      available.push(sectionMetadata['services'])
+      seenKeys.add('services')
+    }
+  }
+
+  // Add any remaining sections not in sectionOrder (append at end)
+  for (const [key, metadata] of Object.entries(sectionMetadata)) {
+    if (!seenKeys.has(key)) {
+      available.push(metadata)
+    }
+  }
 
   return available
 }

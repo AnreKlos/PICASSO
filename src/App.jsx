@@ -6,7 +6,7 @@ import NotFound from './components/NotFound.jsx'
 import { defaultConfig } from './configs/_default.config.js'
 import { getClientConfig } from './lib/clientConfigResolver.js'
 
-function SlugPicassoRoute() {
+function ClientSiteRoute() {
   const { slug } = useParams()
   const [state, setState] = useState({ loading: true, config: null })
 
@@ -44,7 +44,7 @@ export default function App() {
     <ErrorBoundary>
       <Routes>
         <Route path="/" element={<BeautyTemplate config={defaultConfig} />} />
-        <Route path="/:slug" element={<SlugPicassoRoute />} />
+        <Route path="/:slug" element={<ClientSiteRoute />} />
         <Route path="*" element={<NotFound />} />
       </Routes>
     </ErrorBoundary>

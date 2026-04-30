@@ -23,7 +23,7 @@ function Footer() {
         <div className="flex flex-col sm:flex-row items-center justify-between gap-5">
           <div className="flex items-center gap-4">
             <span
-              className="font-picasso-display text-lg"
+              className="font-wow-display text-lg"
               style={{ color: GOLD, textShadow: '0 0 20px rgba(201,168,122,0.1)' }}
             >
               {config.meta.name}
@@ -61,13 +61,13 @@ function Footer() {
           className="mt-6 pt-5 text-center flex flex-col sm:flex-row items-center justify-center gap-2 sm:gap-5"
           style={{ borderTop: `1px solid ${BORDER}` }}
         >
-          <p className="font-picasso-body text-[11px] tracking-[0.05em]" style={{ color: 'rgba(255,255,255,0.55)' }}>
+          <p className="font-wow-body text-[11px] tracking-[0.05em]" style={{ color: 'rgba(255,255,255,0.55)' }}>
             &copy; {config.copyrightYear} {config.meta.name}. Все права защищены.
           </p>
 
           <a
             href={`tel:${config.contacts.phoneRaw || (config.contacts.phone || '').replace(/\D/g, '')}`}
-            className="font-picasso-body text-[11px] tracking-[0.05em] transition-opacity hover:opacity-80"
+            className="font-wow-body text-[11px] tracking-[0.05em] transition-opacity hover:opacity-80"
             style={{ color: 'rgba(255,255,255,0.6)' }}
             aria-label={`Позвонить в салон ${config.meta.name}`}
           >
@@ -79,12 +79,12 @@ function Footer() {
           <div className="mt-3 flex flex-col items-center gap-1">
             <a
               href={config.legal?.policyUrl || '#'}
-              className="font-picasso-body text-[10px] tracking-[0.05em] transition-opacity hover:opacity-80"
+              className="font-wow-body text-[10px] tracking-[0.05em] transition-opacity hover:opacity-80"
               style={{ color: 'rgba(255,255,255,0.55)' }}
             >
               Политика конфиденциальности
             </a>
-            <p className="font-picasso-body text-[10px] tracking-[0.05em]" style={{ color: 'rgba(255,255,255,0.45)' }}>
+            <p className="font-wow-body text-[10px] tracking-[0.05em]" style={{ color: 'rgba(255,255,255,0.45)' }}>
               {config.legal?.placeholder}
             </p>
           </div>

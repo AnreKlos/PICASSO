@@ -31,8 +31,8 @@ function MasterModal({ master, onClose }) {
             <img src={master.image} alt={master.name} className="w-full max-w-[90vw] sm:max-w-full h-full aspect-[3/4] object-cover pointer-events-none" style={{ borderRadius: 12 }} />
           </div>
           <div className="flex-1 min-w-0">
-            <p className="font-picasso-body text-[11px] uppercase tracking-[0.2em] mb-2" style={{ color: GOLD }}>{master.role}</p>
-            <h3 className="font-picasso-display text-2xl sm:text-3xl font-medium mb-1" style={{ color: TEXT }}>{master.name}</h3>
+            <p className="font-wow-body text-[11px] uppercase tracking-[0.2em] mb-2" style={{ color: GOLD }}>{master.role}</p>
+            <h3 className="font-wow-display text-2xl sm:text-3xl font-medium mb-1" style={{ color: TEXT }}>{master.name}</h3>
             <p className="text-[14px] font-light mb-6" style={{ color: MUTED }}>{master.exp}</p>
             <div className="flex flex-col gap-y-2">
               {master.details.map((d, i) => (

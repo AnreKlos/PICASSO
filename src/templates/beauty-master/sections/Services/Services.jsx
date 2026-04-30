@@ -11,7 +11,7 @@ import DirectionCard from '../../components/DirectionCard'
 const DEFAULT_SERVICE_ITEMS = [
   {
     title: 'Hair — Парикмахерские услуги',
-    desc: 'Стрижки, окрашивание, кератин, укладки — главное направление PICASSO. Мастера-стилисты создают образ, который подчёркивает вашу индивидуальность.',
+    desc: 'Стрижки, окрашивание, кератин, укладки — главное направление салона. Мастера-стилисты создают образ, который подчёркивает вашу индивидуальность.',
     priceFrom: 'от 2 000 ₽',
     short: 'Стрижки, окрашивания, кератин, укладки',
     image: '/images/services/kabinet_parikmaherskaya.webp',
@@ -69,10 +69,10 @@ function Services() {
     <section id="services-section" className="scroll-mt-20 py-28 sm:py-36" style={{ background: BG }}>
       <div className="mx-auto max-w-6xl px-5 sm:px-8">
         <FadeIn>
-          <p className="font-picasso-body text-[12px] uppercase tracking-[0.4em] mb-5 select-none text-center" style={{ color: GOLD }}>Направления</p>
+          <p className="font-wow-body text-[12px] uppercase tracking-[0.4em] mb-5 select-none text-center" style={{ color: GOLD }}>Направления</p>
         </FadeIn>
         <FadeIn delay={0.1}>
-          <TiltHeading className="font-picasso-display text-3xl sm:text-4xl lg:text-5xl font-medium text-center leading-[1.15]" style={{ color: TEXT }}>
+          <TiltHeading className="font-wow-display text-3xl sm:text-4xl lg:text-5xl font-medium text-center leading-[1.15]" style={{ color: TEXT }}>
             Полный цикл <GoldSpan>красоты</GoldSpan>
           </TiltHeading>
         </FadeIn>
@@ -107,10 +107,10 @@ function Services() {
 
         <div id="prices" className="mt-20 max-w-2xl mx-auto scroll-mt-20">
           <FadeIn>
-            <p className="font-picasso-body text-[12px] uppercase tracking-[0.4em] mb-5 select-none text-center" style={{ color: GOLD }}>Прайс</p>
+            <p className="font-wow-body text-[12px] uppercase tracking-[0.4em] mb-5 select-none text-center" style={{ color: GOLD }}>Прайс</p>
           </FadeIn>
           <FadeIn delay={0.1}>
-            <TiltHeading className="font-picasso-display text-3xl sm:text-4xl lg:text-5xl font-medium text-center leading-[1.15]" style={{ color: TEXT }}>
+            <TiltHeading className="font-wow-display text-3xl sm:text-4xl lg:text-5xl font-medium text-center leading-[1.15]" style={{ color: TEXT }}>
               Цены по <GoldSpan>направлениям</GoldSpan>
             </TiltHeading>
           </FadeIn>

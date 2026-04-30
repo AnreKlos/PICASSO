@@ -16,7 +16,7 @@ function DirectionCard({ Icon, title, tagline, items, isOpen, onToggle, delay = 
             <Icon size={20} style={{ color: GOLD }} strokeWidth={1.5} />
           </div>
           <div className="flex-1 min-w-0">
-            <h3 className="font-picasso-display text-lg sm:text-xl font-medium" style={{ color: TEXT }}>{title}</h3>
+            <h3 className="font-wow-display text-lg sm:text-xl font-medium" style={{ color: TEXT }}>{title}</h3>
             <p className="mt-0.5 text-[13px] font-light truncate" style={{ color: MUTED }}>{tagline}</p>
           </div>
           <motion.span animate={{ rotate: isOpen ? 180 : 0 }} transition={{ duration: 0.3, ease: EASE }} className="shrink-0" style={{ color: MUTED }}>
@@ -30,9 +30,9 @@ function DirectionCard({ Icon, title, tagline, items, isOpen, onToggle, delay = 
                 <div style={{ borderTop: `1px solid ${BORDER}`, paddingTop: 20 }} className="flex flex-col gap-4">
                   {items.map((item) => (
                     <div key={item.name} className="flex items-baseline gap-3 flex-wrap">
-                      <span className="font-picasso-body text-[14px] sm:text-[15px] font-light" style={{ color: TEXT_SOFT }}>{item.name}</span>
+                      <span className="font-wow-body text-[14px] sm:text-[15px] font-light" style={{ color: TEXT_SOFT }}>{item.name}</span>
                       <span className="hidden sm:inline flex-1 border-b min-w-[30px] mb-1" style={{ borderColor: 'rgba(255,255,255,0.04)', borderStyle: 'dotted' }} />
-                      <span className="font-picasso-body text-[14px] sm:text-[15px] font-light shrink-0" style={{ color: GOLD }}>{item.price}</span>
+                      <span className="font-wow-body text-[14px] sm:text-[15px] font-light shrink-0" style={{ color: GOLD }}>{item.price}</span>
                     </div>
                   ))}
                 </div>

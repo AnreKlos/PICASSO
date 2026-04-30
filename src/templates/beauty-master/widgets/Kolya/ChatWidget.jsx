@@ -21,8 +21,8 @@ function ChatWidget() {
   const configFromContext = useContext(ConfigContext)
   const config = configFromContext || defaultConfig
   const { SURFACE, SURFACE_L, TEXT, MUTED, GOLD, GOLD_DIM, GOLD_BRIGHT, BG, BORDER, BORDER_H, EASE } = config.tokens
-  const brandName = config.meta?.brand?.name || config.meta?.name || 'PICASSO'
-  const clientSlug = config.meta?.brand?.slug || config.meta?.slug || 'picasso'
+  const brandName = config.meta?.brand?.name || config.meta?.name || 'Brand'
+  const clientSlug = config.meta?.brand?.slug || config.meta?.slug || 'default'
   const headerLabel = config.features?.chatWidget?.headerLabel || `${brandName} Concierge`
   const greetingTemplate = config.features?.chatWidget?.greeting || 'Здравствуйте! Я цифровой консьерж {{brandName}}. Чем могу помочь?'
   const greetingText = greetingTemplate.replace('{{brandName}}', brandName)
@@ -173,13 +173,13 @@ function ChatWidget() {
             >
               <div>
                 <p
-                  className="font-picasso-display text-sm font-semibold"
+                  className="font-wow-display text-sm font-semibold"
                   style={{ color: TEXT }}
                 >
                   {headerLabel}
                 </p>
                 <p
-                  className="text-[12px] font-picasso-body"
+                  className="text-[12px] font-wow-body"
                   style={{ color: MUTED }}
                 >
                   Онлайн 24/7
@@ -204,7 +204,7 @@ function ChatWidget() {
               {messages.map((m, i) => (
                 <div
                   key={i}
-                  className={`max-w-[85%] px-4 py-3 text-sm font-picasso-body leading-relaxed ${m.from === 'bot' ? 'self-start' : 'self-end'
+                  className={`max-w-[85%] px-4 py-3 text-sm font-wow-body leading-relaxed ${m.from === 'bot' ? 'self-start' : 'self-end'
                     }`}
                   style={{
                     background: m.from === 'bot' ? SURFACE_L : GOLD,
@@ -234,7 +234,7 @@ function ChatWidget() {
               ))}
               {loading && (
                 <div
-                  className="self-start max-w-[85%] px-4 py-3 text-sm font-picasso-body italic"
+                  className="self-start max-w-[85%] px-4 py-3 text-sm font-wow-body italic"
                   style={{ background: SURFACE_L, color: MUTED, borderRadius: 12 }}
                 >
                   Консьерж подбирает ответ...
@@ -252,7 +252,7 @@ function ChatWidget() {
                 onChange={(e) => setInput(e.target.value)}
                 onKeyDown={(e) => e.key === 'Enter' && handleSend()}
                 placeholder="Ваш вопрос..."
-                className="flex-1 bg-transparent text-sm font-picasso-body outline-none"
+                className="flex-1 bg-transparent text-sm font-wow-body outline-none"
                 style={{ color: TEXT }}
                 readOnly={loading}
               />
@@ -314,7 +314,7 @@ function ChatWidget() {
               setOpen(true)
               setShowTooltip(false)
             }}
-            className="absolute bottom-4 right-[68px] max-w-[calc(100vw-90px)] sm:max-w-none min-w-[220px] sm:min-w-[280px] px-5 py-3 font-picasso-body text-[14px] sm:text-[14px] cursor-pointer whitespace-normal leading-relaxed"
+            className="absolute bottom-4 right-[68px] max-w-[calc(100vw-90px)] sm:max-w-none min-w-[220px] sm:min-w-[280px] px-5 py-3 font-wow-body text-[14px] sm:text-[14px] cursor-pointer whitespace-normal leading-relaxed"
             style={{
               background: SURFACE,
               color: TEXT,

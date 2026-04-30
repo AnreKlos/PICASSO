@@ -26,10 +26,10 @@ function Reviews() {
     <section id="reviews-section" className="scroll-mt-20 py-28 sm:py-36" style={{ background: BG }}>
       <div className="mx-auto max-w-5xl px-5 sm:px-8">
         <FadeIn>
-          <p className="font-picasso-body text-[12px] uppercase tracking-[0.4em] mb-5 select-none text-center" style={{ color: GOLD }}>Отзывы</p>
+          <p className="font-wow-body text-[12px] uppercase tracking-[0.4em] mb-5 select-none text-center" style={{ color: GOLD }}>Отзывы</p>
         </FadeIn>
         <FadeIn delay={0.1}>
-          <TiltHeading className="font-picasso-display text-3xl sm:text-4xl lg:text-5xl font-medium text-center leading-[1.15]" style={{ color: TEXT }}>
+          <TiltHeading className="font-wow-display text-3xl sm:text-4xl lg:text-5xl font-medium text-center leading-[1.15]" style={{ color: TEXT }}>
             Нам <GoldSpan>доверяют</GoldSpan>
           </TiltHeading>
         </FadeIn>
@@ -43,7 +43,7 @@ function Reviews() {
                 </div>
                 <p className="text-[15px] font-light leading-relaxed flex-1" style={{ color: TEXT_SOFT }}>{r.text}</p>
                 <div className="mt-6">
-                  <p className="font-picasso-display text-sm font-medium" style={{ color: TEXT }}>{r.author}</p>
+                  <p className="font-wow-display text-sm font-medium" style={{ color: TEXT }}>{r.author}</p>
                 </div>
               </div>
             </FadeIn>

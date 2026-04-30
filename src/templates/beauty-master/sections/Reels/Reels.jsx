@@ -58,13 +58,13 @@ function Reels() {
     <section id="reels-section" className="scroll-mt-20 py-28 sm:py-36" style={{ background: BG }}>
       <div className="mx-auto max-w-6xl px-5 sm:px-8">
         <FadeIn>
-          <p className="font-picasso-body text-[12px] uppercase tracking-[0.4em] mb-5 select-none text-center" style={{ color: GOLD }}>
+          <p className="font-wow-body text-[12px] uppercase tracking-[0.4em] mb-5 select-none text-center" style={{ color: GOLD }}>
             Reels
           </p>
         </FadeIn>
 
         <FadeIn delay={0.1}>
-          <TiltHeading className="font-picasso-display text-3xl sm:text-4xl lg:text-5xl font-medium text-center leading-[1.15]" style={{ color: TEXT }}>
+          <TiltHeading className="font-wow-display text-3xl sm:text-4xl lg:text-5xl font-medium text-center leading-[1.15]" style={{ color: TEXT }}>
             {reelsTitle ? reelsTitle : <>Из жизни <GoldSpan>студии</GoldSpan></>}
           </TiltHeading>
         </FadeIn>

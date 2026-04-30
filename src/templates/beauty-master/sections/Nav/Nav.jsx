@@ -36,7 +36,7 @@ function Nav({ scrollTo, scrollToTop }) {
             ? 'text-sm sm:text-base lg:text-lg tracking-[0.04em]'
             : 'text-base sm:text-lg lg:text-xl'
           
-          const baseClasses = 'font-picasso-display font-semibold tracking-[0.06em] select-none cursor-pointer text-left leading-none shrink-0 whitespace-nowrap'
+          const baseClasses = 'font-wow-display font-semibold tracking-[0.06em] select-none cursor-pointer text-left leading-none shrink-0 whitespace-nowrap'
           
           return (
             <button
@@ -49,10 +49,10 @@ function Nav({ scrollTo, scrollToTop }) {
             </button>
           )
         })()}
-        <div className="hidden lg:flex items-center gap-5 font-picasso-body text-[12px] xl:text-[13px] font-medium uppercase tracking-[0.1em]" style={{ color: MUTED }}>
-          {navItems.map(item => <a key={item.key} href={`#${item.anchorId}`} onClick={(e) => { e.preventDefault(); scrollTo(`#${item.anchorId}`) }} className="hover:text-[var(--color-picasso-text)] transition-colors duration-200 whitespace-nowrap" style={{ color: MUTED }}>{item.label}</a>)}
+        <div className="hidden lg:flex items-center gap-5 font-wow-body text-[12px] xl:text-[13px] font-medium uppercase tracking-[0.1em]" style={{ color: MUTED }}>
+          {navItems.map(item => <a key={item.key} href={`#${item.anchorId}`} onClick={(e) => { e.preventDefault(); scrollTo(`#${item.anchorId}`) }} className="text-[var(--color-wow-text-muted)] hover:text-[var(--color-wow-text)] transition-colors duration-200 whitespace-nowrap">{item.label}</a>)}
           <MagneticButton href="#bookingContacts-section" onClick={(e) => { e.preventDefault(); scrollToBooking() }}
-            className="inline-flex items-center gap-2 px-5 py-2 transition-all duration-300 font-picasso-body text-[13px] font-medium uppercase tracking-[0.12em]"
+            className="inline-flex items-center gap-2 px-5 py-2 transition-all duration-300 font-wow-body text-[13px] font-medium uppercase tracking-[0.12em]"
             style={{ background: `linear-gradient(to bottom, ${GOLD_BRIGHT} 0%, ${GOLD} 50%, ${GOLD_DIM} 100%)`, color: BG, borderRadius: 9999, boxShadow: '0 2px 12px rgba(201,168,122,0.15), inset 0 1px 0 rgba(255,255,255,0.2), inset 0 -1px 0 rgba(0,0,0,0.12)' }}>
             Записаться
           </MagneticButton>
@@ -65,8 +65,8 @@ function Nav({ scrollTo, scrollToTop }) {
         {mobileOpen && (
           <motion.div initial={{ height: 0, opacity: 0 }} animate={{ height: 'auto', opacity: 1 }} exit={{ height: 0, opacity: 0 }} transition={{ duration: 0.3 }}
             className="lg:hidden overflow-hidden" style={{ background: 'rgba(14,12,11,0.97)', borderTop: `1px solid ${BORDER}` }}>
-            <div className="flex flex-col gap-4 px-6 py-6 font-picasso-body text-[14px] uppercase tracking-[0.1em]" style={{ color: MUTED }}>
-              {navItems.map(item => <a key={item.key} href={`#${item.anchorId}`} onClick={(e) => { e.preventDefault(); setMobileOpen(false); scrollTo(`#${item.anchorId}`) }} className="py-1" style={{ color: MUTED }}>{item.label}</a>)}
+            <div className="flex flex-col gap-4 px-6 py-6 font-wow-body text-[14px] uppercase tracking-[0.1em]" style={{ color: MUTED }}>
+              {navItems.map(item => <a key={item.key} href={`#${item.anchorId}`} onClick={(e) => { e.preventDefault(); setMobileOpen(false); scrollTo(`#${item.anchorId}`) }} className="py-1 text-[var(--color-wow-text-muted)] hover:text-[var(--color-wow-text)] transition-colors duration-200">{item.label}</a>)}
               <button
                 type="button"
                 onClick={() => {

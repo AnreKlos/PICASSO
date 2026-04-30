@@ -14,18 +14,19 @@ function Gallery() {
   const config = configFromContext || defaultConfig
   const { GOLD, TEXT, TEXT_SOFT, MUTED, BG, SURFACE, BORDER, BORDER_H } = config.tokens
   const sectionConfig = config.sections?.gallery || {}
+  const brandName = config.meta?.brand?.text || config.meta?.brand?.shortName || config.meta?.brand?.name || 'салона'
   const [lightbox, setLightbox] = useState(null)
   const [selectedIndex, setSelectedIndex] = useState(0)
   const [activeIndex, setActiveIndex] = useState(0)
   const lightboxIndexRef = useRef(0)
 
   const defaultWorks = [
-    { src: '/images/hair/hair_1.webp', alt: 'Окрашивание волос в салоне PICASSO' },
-    { src: '/images/hair/hair_2.webp', alt: 'Женская стрижка и укладка в салоне PICASSO' },
+    { src: '/images/hair/hair_1.webp', alt: `Окрашивание волос в ${brandName}` },
+    { src: '/images/hair/hair_2.webp', alt: `Женская стрижка и укладка в ${brandName}` },
     { src: '/images/hair/hair_3.webp', alt: 'Преображение волос после окрашивания' },
     { src: '/images/hair/hair_4.webp', alt: 'Сложное окрашивание волос' },
     { src: '/images/hair/hair_5.webp', alt: 'Укладка волос после салонного ухода' },
-    { src: '/images/hair/hair_6.webp', alt: 'Результат работы мастеров PICASSO' },
+    { src: '/images/hair/hair_6.webp', alt: `Результат работы мастеров ${brandName}` },
   ]
   const configuredItems = Array.isArray(sectionConfig.items) ? sectionConfig.items : []
   const works = configuredItems.length
@@ -112,10 +113,10 @@ function Gallery() {
         data-gallery-anchor
       >
         <FadeIn>
-          <p className="font-picasso-body text-[12px] uppercase tracking-[0.4em] mb-5 select-none text-center" style={{ color: GOLD }}>Портфолио</p>
+          <p className="font-wow-body text-[12px] uppercase tracking-[0.4em] mb-5 select-none text-center" style={{ color: GOLD }}>Портфолио</p>
         </FadeIn>
         <FadeIn delay={0.1}>
-          <TiltHeading className="font-picasso-display text-3xl sm:text-4xl lg:text-5xl font-medium text-center leading-[1.15]" style={{ color: TEXT }}>
+          <TiltHeading className="font-wow-display text-3xl sm:text-4xl lg:text-5xl font-medium text-center leading-[1.15]" style={{ color: TEXT }}>
             {sectionConfig.title || <>Наши <GoldSpan>работы</GoldSpan></>}
           </TiltHeading>
         </FadeIn>

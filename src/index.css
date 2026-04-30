@@ -1,18 +1,18 @@
 @import "tailwindcss";
 
 @theme {
-  --font-picasso-display: 'Playfair Display', Georgia, serif;
-  --font-picasso-body: 'Inter', system-ui, sans-serif;
-  --color-picasso-bg: #0E0C0B;
-  --color-picasso-surface: #1A1714;
-  --color-picasso-surface-light: #262220;
-  --color-picasso-border: rgba(255,255,255,0.06);
-  --color-picasso-border-hover: rgba(255,255,255,0.14);
-  --color-picasso-text: #F0EBE3;
-  --color-picasso-text-muted: #9A938B;
-  --color-picasso-gold: #C9A87A;
-  --color-picasso-gold-dim: #A68B5A;
-  --color-picasso-rose: #B8928A;
+  --font-wow-display: 'Playfair Display', Georgia, serif;
+  --font-wow-body: 'Inter', system-ui, sans-serif;
+  --color-wow-bg: #0E0C0B;
+  --color-wow-surface: #1A1714;
+  --color-wow-surface-light: #262220;
+  --color-wow-border: rgba(255,255,255,0.06);
+  --color-wow-border-hover: rgba(255,255,255,0.14);
+  --color-wow-text: #F0EBE3;
+  --color-wow-text-muted: #9A938B;
+  --color-wow-gold: #C9A87A;
+  --color-wow-gold-dim: #A68B5A;
+  --color-wow-rose: #B8928A;
 }
 
 @layer base {
@@ -26,9 +26,9 @@
   }
 
   body {
-    background-color: var(--color-picasso-bg);
-    color: var(--color-picasso-text);
-    font-family: var(--font-picasso-body);
+    background-color: var(--color-wow-bg);
+    color: var(--color-wow-text);
+    font-family: var(--font-wow-body);
     font-size: 17px;
     line-height: 1.7;
     overflow-x: hidden;

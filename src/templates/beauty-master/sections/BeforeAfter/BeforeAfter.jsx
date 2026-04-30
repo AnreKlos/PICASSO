@@ -18,12 +18,12 @@ function BeforeAfter() {
     <section id="beforeAfter-section" className="scroll-mt-20 py-28 sm:py-36" style={{ background: BG }}>
       <div className="mx-auto max-w-6xl px-5 sm:px-8">
         <FadeIn>
-          <p className="font-picasso-body text-[12px] uppercase tracking-[0.4em] mb-5 select-none text-center" style={{ color: GOLD }}>
+          <p className="font-wow-body text-[12px] uppercase tracking-[0.4em] mb-5 select-none text-center" style={{ color: GOLD }}>
             До/после
           </p>
         </FadeIn>
         <FadeIn delay={0.1}>
-          <TiltHeading className="font-picasso-display text-3xl sm:text-4xl lg:text-5xl font-medium text-center leading-[1.15]" style={{ color: TEXT }}>
+          <TiltHeading className="font-wow-display text-3xl sm:text-4xl lg:text-5xl font-medium text-center leading-[1.15]" style={{ color: TEXT }}>
             Реальные работы <GoldSpan>мастеров</GoldSpan>
           </TiltHeading>
         </FadeIn>
@@ -43,7 +43,7 @@ function BeforeAfter() {
                         decoding="async"
                       />
                     )}
-                    <div className="absolute top-2 left-2 px-3 py-1 text-[11px] font-picasso-body uppercase tracking-[0.1em] rounded-full" style={{ background: 'rgba(14,12,11,0.8)', color: TEXT }}>
+                    <div className="absolute top-2 left-2 px-3 py-1 text-[11px] font-wow-body uppercase tracking-[0.1em] rounded-full" style={{ background: 'rgba(14,12,11,0.8)', color: TEXT }}>
                       До
                     </div>
                   </div>
@@ -57,13 +57,13 @@ function BeforeAfter() {
                         decoding="async"
                       />
                     )}
-                    <div className="absolute top-2 left-2 px-3 py-1 text-[11px] font-picasso-body uppercase tracking-[0.1em] rounded-full" style={{ background: GOLD, color: BG }}>
+                    <div className="absolute top-2 left-2 px-3 py-1 text-[11px] font-wow-body uppercase tracking-[0.1em] rounded-full" style={{ background: GOLD, color: BG }}>
                       После
                     </div>
                   </div>
                 </div>
                 {item.title && (
-                  <p className="text-sm font-picasso-display font-medium" style={{ color: TEXT }}>
+                  <p className="text-sm font-wow-display font-medium" style={{ color: TEXT }}>
                     {item.title}
                   </p>
                 )}

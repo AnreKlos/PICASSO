@@ -8,7 +8,7 @@ function FAQItem({ q, a, isOpen, onToggle }) {
   return (
     <div style={{ borderBottom: `1px solid ${BORDER}` }}>
       <button onClick={onToggle} className="w-full flex items-center justify-between py-6 text-left group cursor-pointer">
-        <span className="font-picasso-display text-lg sm:text-xl font-medium pr-6" style={{ color: TEXT }}>{q}</span>
+        <span className="font-wow-display text-lg sm:text-xl font-medium pr-6" style={{ color: TEXT }}>{q}</span>
         <motion.span animate={{ rotate: isOpen ? 180 : 0 }} transition={{ duration: 0.3, ease: EASE }} className="shrink-0" style={{ color: MUTED }}>
           <ChevronDown size={22} />
         </motion.span>

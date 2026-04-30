@@ -20,25 +20,12 @@ import FAQ from './sections/FAQ/FAQ'
 import BookingContacts from './sections/BookingContacts/BookingContacts'
 import Footer from './sections/Footer/Footer'
 import StickyBar from './components/StickyBar'
-
-const DEFAULT_SECTIONS_ORDER = [
-  'hero',
-  'advantages',
-  'about',
-  'serviceCarousel',
-  'services',
-  'gallery',
-  'reviews',
-  'faq',
-  'bookingContacts',
-]
+import { getSectionOrder } from '../../utils/getSectionOrder'
 
 export default function BeautyTemplate({ config = defaultConfig }) {
   const [showWidget, setShowWidget] = useState(false)
   const { sections } = config
-  const sectionsOrder = Array.isArray(config.sectionsOrder) && config.sectionsOrder.length
-    ? config.sectionsOrder
-    : DEFAULT_SECTIONS_ORDER
+  const sectionsOrder = getSectionOrder(config)
 
   const blockFlags = {
     hero: true,
@@ -231,7 +218,7 @@ export default function BeautyTemplate({ config = defaultConfig }) {
   return (
     <ConfigContext.Provider value={config}>
       <div
-        className="relative w-full overflow-hidden flex flex-col min-h-screen font-picasso-body"
+        className="relative w-full overflow-hidden flex flex-col min-h-screen font-wow-body"
         style={{ background: BG, color: TEXT, lineHeight: 1.7 }}
       >
         {chatWidgetEnabled && showWidget && <ChatWidget />}

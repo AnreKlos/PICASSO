@@ -12,7 +12,8 @@ function About() {
   const config = configFromContext || defaultConfig
   const { GOLD, TEXT, TEXT_SOFT, CHOCOLATE } = config.tokens
   const aboutConfig = config.sections?.about || {}
-  const aboutText = aboutConfig.text || 'PICASSO — студия, куда приходят за понятным результатом. Мы честно обсуждаем пожелания, подбираем решения под качество волос и кожи, работаем только на проверенных составах и держим высокий стандарт чистоты. В одном визите можно обновить стрижку и цвет, привести в порядок ногти и брови и уйти с ощущением, что о вас действительно позаботились.'
+  const brandName = config.meta?.brand?.text || config.meta?.brand?.shortName || config.meta?.brand?.name || 'наш салон'
+  const aboutText = aboutConfig.text || `${brandName} — студия, куда приходят за понятным результатом. Мы честно обсуждаем пожелания, подбираем решения под качество волос и кожи, работаем только на проверенных составах и держим высокий стандарт чистоты. В одном визите можно обновить стрижку и цвет, привести в порядок ногти и брови и уйти с ощущением, что о вас действительно позаботились.`
   const showImages = aboutConfig.showImages !== false
 
   if (!aboutText || aboutText.trim().length < 20) return null
@@ -37,7 +38,7 @@ function About() {
           <div className="flex-1 min-w-0 flex flex-col justify-center">
             <FadeIn>
               <p
-                className="font-picasso-body text-[12px] uppercase tracking-[0.4em] mb-5 select-none"
+                className="font-wow-body text-[12px] uppercase tracking-[0.4em] mb-5 select-none"
                 style={{ color: GOLD }}
               >
                 О салоне
@@ -46,7 +47,7 @@ function About() {
 
             <FadeIn delay={0.1}>
               <TiltHeading
-                className="font-picasso-display text-3xl sm:text-4xl lg:text-5xl font-medium"
+                className="font-wow-display text-3xl sm:text-4xl lg:text-5xl font-medium"
                 style={{ color: TEXT }}
               >
                 Пространство,
@@ -80,13 +81,13 @@ function About() {
                 onClick={() =>
                   setLightbox({
                     src: '/images/interior/whod_s_ulitci.webp',
-                    alt: 'Вход в салон PICASSO',
+                    alt: `Вход в ${brandName}`,
                   })
                 }
               >
                 <img
                   src="/images/interior/whod_s_ulitci.webp"
-                  alt="Вход в салон PICASSO"
+                  alt={`Вход в ${brandName}`}
                   className="w-full max-w-full h-full object-cover transform-gpu scale-[1.01] group-hover:scale-[1.03] transition-transform duration-500 ease-out aspect-[4/3] pointer-events-none"
                   style={{ backfaceVisibility: 'hidden', willChange: 'transform' }}
                   width={750}

@@ -50,15 +50,10 @@ neuralsync/
 ├── src/
 │   ├── App.jsx                   # Корень приложения (тонкий)
 │   ├── main.jsx                  # Entry point
-│   ├── Picasso.jsx               # Layout: Lenis + scrollTo + рендер секций
-│   ├── BeautyTemplate.jsx        # Основной шаблон для beauty-лендингов
 │   ├── index.css                 # Глобальные стили
 │   │
 │   ├── configs/                  # Конфигурации клиентов
-│   │   ├── picasso.config.js     # Конфиг для PICASSO (пример)
-│   │   ├── kalinka.config.js
-│   │   ├── if-studiya.config.js
-│   │   └── kalinka-malinka-studiya-krasoty.config.js
+│   │   └── _default.config.js    # Дефолтная конфигурация
 │   │
 │   ├── components/               # Переиспользуемые UI-компоненты
 │   │   ├── SectionBoundary.jsx   # Error boundary для секций
@@ -321,10 +316,10 @@ export default sql
 
   // Мета-информация
   meta: {
-    name: 'PICASSO',
+    name: 'Brand',
     brand: {
-      name: 'PICASSO',
-      shortName: 'PICASSO',
+      name: 'Brand',
+      shortName: 'Brand',
     },
     tagline: 'Салон эстетики',
     favicon: '/favicon.ico',
@@ -560,8 +555,8 @@ export function getNavItems(config) {
 ### Логика
 ```javascript
 function getOrCreateSessionId() {
-  const key = 'picasso_session_id'
-  const startedKey = 'picasso_session_started'
+  const key = 'salon_session_id'
+  const startedKey = 'salon_session_started'
   const ttl = 30 * 24 * 60 * 60 * 1000 // 30 дней
 
   let sessionId = localStorage.getItem(key)

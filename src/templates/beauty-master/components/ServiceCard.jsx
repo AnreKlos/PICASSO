@@ -81,9 +81,9 @@ function ServiceCard({ Icon, title, desc, image, featured }) {
                 >
                   <Icon size={18} style={{ color: GOLD }} strokeWidth={1.5} />
                 </div>
-                <p className="font-picasso-body text-[11px] uppercase tracking-[0.2em]" style={{ color: GOLD }}>Главное направление</p>
+                <p className="font-wow-body text-[11px] uppercase tracking-[0.2em]" style={{ color: GOLD }}>Главное направление</p>
               </div>
-              <h3 className="font-picasso-display text-2xl sm:text-3xl font-medium" style={{ color: TEXT, textShadow: isMobile ? '0 2px 10px rgba(0,0,0,0.85), 0 1px 2px rgba(0,0,0,0.9)' : 'none' }}>{title}</h3>
+              <h3 className="font-wow-display text-2xl sm:text-3xl font-medium" style={{ color: TEXT, textShadow: isMobile ? '0 2px 10px rgba(0,0,0,0.85), 0 1px 2px rgba(0,0,0,0.9)' : 'none' }}>{title}</h3>
               <p className="mt-3 text-[15px] font-light leading-relaxed max-w-md line-clamp-3 sm:line-clamp-4" style={{ color: isMobile ? '#E8E0D6' : TEXT_SOFT, textShadow: isMobile ? '0 2px 8px rgba(0,0,0,0.9)' : 'none' }}>{desc}</p>
             </div>
           </div>
@@ -103,7 +103,7 @@ function ServiceCard({ Icon, title, desc, image, featured }) {
             <div className="w-10 h-10 flex items-center justify-center" style={{ border: `1px solid ${BORDER_H}`, borderRadius: 9999, background: 'rgba(201,168,122,0.06)' }}>
               <Icon size={18} style={{ color: GOLD }} strokeWidth={1.5} />
             </div>
-            <h3 className="font-picasso-display text-lg font-medium" style={{ color: TEXT }}>{title}</h3>
+            <h3 className="font-wow-display text-lg font-medium" style={{ color: TEXT }}>{title}</h3>
           </div>
           <p className="text-[14px] font-light leading-relaxed line-clamp-3 sm:line-clamp-4" style={{ color: TEXT_SOFT }}>{desc}</p>
         </div>

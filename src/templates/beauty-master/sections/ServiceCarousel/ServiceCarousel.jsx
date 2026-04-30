@@ -269,13 +269,13 @@ function ServiceCarousel() {
     <section ref={sectionRef} id="service-carousel" className="scroll-mt-20 py-24 sm:py-32" style={{ background: BG }}>
       <div className="mx-auto max-w-7xl px-5 sm:px-8">
         <FadeIn>
-          <p className="font-picasso-body text-[12px] uppercase tracking-[0.4em] mb-5 select-none text-center" style={{ color: GOLD }}>
+          <p className="font-wow-body text-[12px] uppercase tracking-[0.4em] mb-5 select-none text-center" style={{ color: GOLD }}>
             Услуги
           </p>
         </FadeIn>
 
         <FadeIn delay={0.1}>
-          <TiltHeading className="font-picasso-display text-3xl sm:text-4xl lg:text-5xl font-medium text-center leading-[1.12]" style={{ color: TEXT }}>
+          <TiltHeading className="font-wow-display text-3xl sm:text-4xl lg:text-5xl font-medium text-center leading-[1.12]" style={{ color: TEXT }}>
             {customTitle ? customTitle : <>Премиум <GoldSpan>галерея услуг</GoldSpan></>}
           </TiltHeading>
         </FadeIn>
@@ -364,11 +364,11 @@ function ServiceCarousel() {
                           border: '1px solid rgba(255,255,255,0.06)',
                         }}
                       >
-                        <p className="font-picasso-display leading-tight text-3xl sm:text-[34px]" style={{ color: TEXT }}>
+                        <p className="font-wow-display leading-tight text-3xl sm:text-[34px]" style={{ color: TEXT }}>
                           {itemTitle}
                         </p>
 
-                        <p className="mt-2 font-picasso-body text-[14px] tracking-[0.02em]" style={{ color: GOLD }}>
+                        <p className="mt-2 font-wow-body text-[14px] tracking-[0.02em]" style={{ color: GOLD }}>
                           {itemTitle} · {itemPrice}
                         </p>
 
@@ -508,16 +508,16 @@ function ServiceCarousel() {
 
                 <div className="p-6 sm:p-8 md:p-9 flex flex-col">
                   {activeItem.category && (
-                    <p className="font-picasso-body text-[11px] uppercase tracking-[0.18em] mb-3" style={{ color: GOLD }}>
+                    <p className="font-wow-body text-[11px] uppercase tracking-[0.18em] mb-3" style={{ color: GOLD }}>
                       {activeItem.category}
                     </p>
                   )}
 
-                  <h3 className="font-picasso-display text-3xl sm:text-4xl leading-tight" style={{ color: TEXT }}>
+                  <h3 className="font-wow-display text-3xl sm:text-4xl leading-tight" style={{ color: TEXT }}>
                     {getItemTitle(activeItem)}
                   </h3>
 
-                  <p className="mt-4 font-picasso-display text-2xl italic" style={{ color: GOLD }}>
+                  <p className="mt-4 font-wow-display text-2xl italic" style={{ color: GOLD }}>
                     {getItemPrice(activeItem)}
                   </p>
 
@@ -531,7 +531,7 @@ function ServiceCarousel() {
                         href={bookingUrl}
                         target="_blank"
                         rel="noreferrer"
-                        className="inline-flex items-center justify-center gap-2 px-6 py-3 text-[13px] font-picasso-body uppercase tracking-[0.14em]"
+                        className="inline-flex items-center justify-center gap-2 px-6 py-3 text-[13px] font-wow-body uppercase tracking-[0.14em]"
                         style={{
                           borderRadius: 9999,
                           color: BG,
@@ -546,7 +546,7 @@ function ServiceCarousel() {
                     {phoneRaw && (
                       <a
                         href={`tel:${phoneRaw}`}
-                        className="inline-flex items-center justify-center gap-2 px-6 py-3 text-[13px] font-picasso-body uppercase tracking-[0.14em]"
+                        className="inline-flex items-center justify-center gap-2 px-6 py-3 text-[13px] font-wow-body uppercase tracking-[0.14em]"
                         style={{
                           borderRadius: 9999,
                           color: TEXT,

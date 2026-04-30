@@ -14,7 +14,7 @@ function Hero({ scrollTo }) {
   const config = configFromContext || defaultConfig
   const { GOLD, GOLD_DIM, GOLD_BRIGHT, TEXT, TEXT_SOFT, BG, SURFACE, BORDER_H, EASE } = config.tokens
   const heroConfig = config.sections?.hero || {}
-  const brandShortName = config.meta?.brand?.shortName || config.meta?.brand?.name || config.meta?.name || 'PICASSO'
+  const brandShortName = config.meta?.brand?.shortName || config.meta?.brand?.name || config.meta?.name || 'Brand'
   const city = config.meta?.city || ''
   const cityPrepositional = config.meta?.cityPrepositional || ''
   
@@ -94,7 +94,7 @@ function Hero({ scrollTo }) {
             <motion.div style={{ y: heroY, opacity: heroOpacity, willChange: 'transform' }}>
               {heroTopLabel && (
                 <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.6, ease: EASE }}>
-                  <p className="font-picasso-body text-[9px] sm:text-[10px] md:text-[11px] font-light uppercase tracking-[0.2em] sm:tracking-[0.24em] whitespace-nowrap mb-5 select-none" style={{ color: 'rgba(240,235,227,0.4)', textShadow: '0 2px 20px rgba(0,0,0,0.8)' }}>{heroTopLabel}</p>
+                  <p className="font-wow-body text-[9px] sm:text-[10px] md:text-[11px] font-light uppercase tracking-[0.2em] sm:tracking-[0.24em] whitespace-nowrap mb-5 select-none" style={{ color: 'rgba(240,235,227,0.4)', textShadow: '0 2px 20px rgba(0,0,0,0.8)' }}>{heroTopLabel}</p>
                 </motion.div>
               )}
 
@@ -106,7 +106,7 @@ function Hero({ scrollTo }) {
                 >
                   <TiltHeading
   as="h1"
-  className="font-picasso-display font-medium tracking-[-0.01em] leading-[1.1] flex flex-col gap-2 sm:gap-3"
+  className="font-wow-display font-medium tracking-[-0.01em] leading-[1.1] flex flex-col gap-2 sm:gap-3"
   style={{ color: TEXT }}
 >
                     {/* Line 1: Main service - titleLine1 */}
@@ -188,7 +188,7 @@ function Hero({ scrollTo }) {
 
               {heroLead && (
                 <motion.p initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.9, ease: EASE, delay: 0.8 }}
-                  className="mt-7 font-picasso-body text-base sm:text-lg font-light leading-relaxed" style={{ color: TEXT_SOFT, textShadow: '0 2px 20px rgba(0,0,0,0.8)' }}>
+                  className="mt-7 font-wow-body text-base sm:text-lg font-light leading-relaxed" style={{ color: TEXT_SOFT, textShadow: '0 2px 20px rgba(0,0,0,0.8)' }}>
                   {heroLead}
                 </motion.p>
               )}
@@ -198,14 +198,14 @@ function Hero({ scrollTo }) {
                 <MagneticButton href="#bookingContacts-section" onClick={(e) => { e.preventDefault(); scrollToBooking() }}
                   whileHover={{ boxShadow: '0 6px 40px rgba(201,168,122,0.25), inset 0 1px 0 rgba(255,255,255,0.15)' }}
                   whileTap={{ boxShadow: '0 2px 12px rgba(201,168,122,0.15)' }}
-                  className="btn-shine group inline-flex items-center justify-center gap-2 px-9 py-4 font-picasso-body text-[13px] font-medium uppercase tracking-[0.14em] transition-all duration-300 cursor-pointer min-h-[44px]"
+                  className="btn-shine group inline-flex items-center justify-center gap-2 px-9 py-4 font-wow-body text-[13px] font-medium uppercase tracking-[0.14em] transition-all duration-300 cursor-pointer min-h-[44px]"
                   style={{ background: `linear-gradient(to bottom, ${GOLD_BRIGHT} 0%, ${GOLD} 40%, ${GOLD_DIM} 100%)`, color: BG, borderRadius: 9999, boxShadow: '0 1px 0 rgba(255,255,255,0.25) inset, 0 -2px 0 rgba(0,0,0,0.2) inset, 0 4px 8px rgba(0,0,0,0.3), 0 8px 30px rgba(201,168,122,0.18)', textShadow: '0 1px 2px rgba(0,0,0,0.25)' }}>
                   {heroCtaLabel} <ArrowRight size={15} className="transition-transform group-hover:translate-x-1" />
                 </MagneticButton>
                 <MagneticButton href="#gallery-section" onClick={(e) => { e.preventDefault(); scrollTo('gallery-section') }}
                   whileHover={{ boxShadow: '0 6px 30px rgba(0,0,0,0.4), inset 0 1px 0 rgba(255,255,255,0.06)' }}
                   whileTap={{ boxShadow: '0 2px 10px rgba(0,0,0,0.3)' }}
-                  className="inline-flex items-center justify-center font-picasso-body text-[13px] font-medium uppercase tracking-[0.14em] px-9 py-4 transition-all duration-300 cursor-pointer min-h-[44px]"
+                  className="inline-flex items-center justify-center font-wow-body text-[13px] font-medium uppercase tracking-[0.14em] px-9 py-4 transition-all duration-300 cursor-pointer min-h-[44px]"
                   style={{ border: `1px solid ${BORDER_H}`, color: TEXT_SOFT, borderRadius: 9999, boxShadow: '0 4px 20px rgba(0,0,0,0.25), inset 0 1px 0 rgba(255,255,255,0.04), inset 0 -1px 0 rgba(0,0,0,0.2)' }}>
                   Наши работы
                 </MagneticButton>
@@ -213,7 +213,7 @@ function Hero({ scrollTo }) {
 
               {hours && (
                 <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.6, ease: EASE, delay: 1.2 }}
-                  className="mt-5 font-picasso-body text-xs font-light tracking-[0.05em]" style={{ color: TEXT_SOFT, textShadow: '0 2px 20px rgba(0,0,0,0.8)' }}>
+                  className="mt-5 font-wow-body text-xs font-light tracking-[0.05em]" style={{ color: TEXT_SOFT, textShadow: '0 2px 20px rgba(0,0,0,0.8)' }}>
                   ⏱ {hours}
                 </motion.div>
               )}

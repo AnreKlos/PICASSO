@@ -17,12 +17,12 @@ export default function StickyBar({ enabled = false }) {
   return (
     <div className="sticky-bar-mobile">
       <div className="flex items-center justify-between px-4 py-3" style={{ background: 'rgba(0, 0, 0, 0.88)', color: '#F0EBE3', height: '56px' }}>
-        <span className="text-sm font-picasso-body" style={{ color: '#F0EBE3' }}>
+        <span className="text-sm font-wow-body" style={{ color: '#F0EBE3' }}>
           Записаться в студию
         </span>
         <button
           onClick={handleScrollToBooking}
-          className="px-5 py-2 rounded-full font-picasso-body text-[13px] font-medium uppercase tracking-[0.14em] transition-all duration-300 cursor-pointer"
+          className="px-5 py-2 rounded-full font-wow-body text-[13px] font-medium uppercase tracking-[0.14em] transition-all duration-300 cursor-pointer"
           style={{
             background: GOLD,
             color: BG,

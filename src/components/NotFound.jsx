@@ -13,7 +13,7 @@ function NotFound() {
         >
           Picasso Demo
         </p>
-        <h1 className="font-picasso-display text-3xl sm:text-4xl leading-tight">
+        <h1 className="font-wow-display text-3xl sm:text-4xl leading-tight">
           Демо не найдено
         </h1>
         <p className="mt-4 text-sm sm:text-base" style={{ color: '#9A938B' }}>
