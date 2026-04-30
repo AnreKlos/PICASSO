@@ -4,65 +4,19 @@ import { Routes, Route, useParams } from 'react-router-dom'
 import BeautyTemplate from './templates/beauty-master/BeautyTemplate.jsx'
 import NotFound from './components/NotFound.jsx'
 import { defaultConfig } from './configs/_default.config.js'
-
-const configModules = import.meta.glob('./configs/*.config.js')
-
-function resolveModuleConfig(moduleValue) {
-  if (!moduleValue || typeof moduleValue !== 'object') return null
-  if (moduleValue.default && typeof moduleValue.default === 'object') return moduleValue.default
-
-  for (const value of Object.values(moduleValue)) {
-    if (value && typeof value === 'object') {
-      return value
-    }
-  }
-
-  return null
-}
+import { getClientConfig } from './lib/clientConfigResolver.js'
 
 function SlugPicassoRoute() {
   const { slug } = useParams()
-  const [state, setState] = useState({ loading: true, config: null, found: false })
+  const [state, setState] = useState({ loading: true, config: null })
 
   useEffect(() => {
-    const key = `./configs/${String(slug || '').trim().toLowerCase()}.config.js`
-    const loader = configModules[key]
-
-    if (!loader) {
-      setState({ loading: false, config: null, found: false })
-      return
-    }
-
-    let cancelled = false
-    setState({ loading: true, config: null, found: true })
-
-    loader()
-      .then((moduleValue) => {
-        if (cancelled) return
-        const resolved = resolveModuleConfig(moduleValue)
-        if (!resolved) {
-          setState({ loading: false, config: null, found: false })
-          return
-        }
-        setState({ loading: false, config: resolved, found: true })
-      })
-      .catch(() => {
-        if (!cancelled) {
-          setState({ loading: false, config: null, found: false })
-        }
-      })
-
-    return () => {
-      cancelled = true
-    }
+    const config = getClientConfig(slug)
+    setState({ loading: false, config: config || defaultConfig })
   }, [slug])
 
   if (state.loading) {
     return null
-  }
-
-  if (!state.found || !state.config) {
-    return <NotFound />
   }
 
   return <BeautyTemplate config={state.config} />

@@ -1,76 +1,44 @@
 # Future Client Structure
 
-## Current State
+## Client Configs
 
-The project currently uses a single template-based architecture:
-- **Template**: `beauty-master` (located in `src/templates/beauty-master/`)
-- **Config**: `_default.config.js` imports from `master.defaults.js`
-- **Assets**: `public/templates/beauty-master/`
+`data/clients/<slug>.json` - client-specific configuration files
 
-## Future Multi-Client Architecture
+## Client Assets
 
-When the project scales to support multiple clients, the following structure will be used:
-
-### Client Assets
+`public/clients/<slug>/` - client-specific media folders
 
 ```
 public/clients/
-├── <client-slug-1>/
+├── picasso/
 │   ├── hero/
 │   │   └── hero.webp
 │   ├── gallery/
 │   │   ├── work-1.webp
-│   │   ├── work-2.webp
 │   │   └── ...
 │   ├── services/
-│   │   ├── service-1.webp
-│   │   └── ...
+│   │   └── service-1.webp
 │   ├── team/
-│   │   ├── master-1.webp
-│   │   └── ...
+│   │   └── master-1.webp
 │   └── about/
 │       └── interior.webp
-└── <client-slug-2>/
+└── kalinka-malinka/
     └── ...
 ```
 
-### Generated Client Configs
+## Config Loading
 
-```
-data/generated-configs/
-├── <client-slug-1>.json
-├── <client-slug-2>.json
-└── ...
-```
+URL slug → `getClientConfig(slug)` from `lib/clientResolver.js`:
+- Loads `data/clients/<slug>.json` via `import.meta.glob('../data/clients/*.json', { eager: true })`
+- Returns config if found, otherwise `null`
+- App.jsx falls back to `defaultConfig` from `src/configs/_default.config.js`
 
-Each generated config will contain:
-- `meta`: client-specific metadata (name, slug, city, etc.)
-- `contacts`: client contact information
-- `social`: client social media links
-- `sections`: section-specific content and asset paths
-- `content`: promotional text, etc.
+## Routing
 
-### Template Resolution
+- `/` → renders with `defaultConfig` (beauty-master demo)
+- `/:slug` → renders with client config if found, otherwise `defaultConfig`
 
-The `lib/templateResolver.js` will:
-1. Accept a client slug
-2. Load the client's generated config from `data/generated-configs/<slug>.json`
-3. Merge with the base template defaults from `src/templates/beauty-master/master.defaults.js`
-4. Apply global UI config from `src/configs/_default.config.js` (tokens, features, legal)
+## Asset Paths
 
-### URL Routing
-
-Future routing will support:
-- `/` → default demo (beauty-master)
-- `/:slug` → client-specific site (e.g., `/picasso`, `/kalinka`)
-
-### Asset Path Resolution
-
-Generated configs will use client-specific asset paths:
-- Template defaults: `/templates/beauty-master/...`
-- Client overrides: `/clients/<slug>/...`
-
-This allows clients to:
-1. Use template defaults for common assets
-2. Override specific assets with their own
-3. Add custom assets without touching the template
+- Template defaults: `/templates/beauty-master/<category>/...`
+- Client overrides: `/clients/<slug>/<category>/...`
