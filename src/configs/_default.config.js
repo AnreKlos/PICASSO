@@ -3,8 +3,7 @@ export const defaultConfig = {
     slug: 'beauty-master',
     name: 'Beauty Master',
     brand: {
-      name: 'Beauty Master',
-      slug: 'beauty-master',
+      text: 'Beauty Master',
     },
     fullName: 'Beauty Salon Demo',
     tagline: 'Premium Beauty Studio',

@@ -11,10 +11,7 @@ function Nav({ scrollTo, scrollToTop }) {
   const configFromContext = useContext(ConfigContext)
   const config = configFromContext || defaultConfig
   const { GOLD, GOLD_DIM, GOLD_BRIGHT, TEXT, MUTED, BG, BORDER, EASE } = config.tokens
-  const brandName = config.meta?.brand?.shortName
-    || config.meta?.brand?.name
-    || config.meta?.name
-    || 'PICASSO'
+  const brandText = config.meta?.brand?.text || config.meta?.brand?.shortName || config.meta?.brand?.name || config.meta?.name || 'Sample Brand'
 
   const [scrolled, setScrolled] = useState(false)
   const [mobileOpen, setMobileOpen] = useState(false)
@@ -31,14 +28,27 @@ function Nav({ scrollTo, scrollToTop }) {
       className={`fixed top-0 left-0 right-0 w-full z-40 transition-all duration-500 overflow-hidden ${scrolled ? 'backdrop-blur-lg' : ''}`}
       style={{ background: scrolled ? 'rgba(14,12,11,0.92)' : 'transparent', borderBottom: `1px solid ${scrolled ? BORDER : 'transparent'}` }}>
       <div className="mx-auto max-w-6xl px-5 sm:px-8 flex items-center justify-between h-16 gap-3">
-        <button
-          type="button"
-          onClick={scrollToTop}
-          className="font-picasso-display text-base sm:text-lg lg:text-xl font-semibold tracking-[0.06em] select-none cursor-pointer text-left leading-tight max-w-[140px] sm:max-w-[190px] lg:max-w-[220px]"
-          style={{ color: GOLD, textShadow: '0 0 20px rgba(201,168,122,0.15)' }}
-        >
-          {brandName}
-        </button>
+        {(() => {
+          const words = brandText.split(/\s+/).filter(Boolean)
+          const longestWord = Math.max(...words.map(w => w.length))
+          
+          const sizeClass = longestWord > 10
+            ? 'text-sm sm:text-base lg:text-lg tracking-[0.04em]'
+            : 'text-base sm:text-lg lg:text-xl'
+          
+          const baseClasses = 'font-picasso-display font-semibold tracking-[0.06em] select-none cursor-pointer text-left leading-none shrink-0 whitespace-nowrap'
+          
+          return (
+            <button
+              type="button"
+              onClick={scrollToTop}
+              className={`${baseClasses} ${sizeClass}`}
+              style={{ color: GOLD, textShadow: '0 0 20px rgba(201,168,122,0.15)' }}
+            >
+              {brandText}
+            </button>
+          )
+        })()}
         <div className="hidden lg:flex items-center gap-5 font-picasso-body text-[12px] xl:text-[13px] font-medium uppercase tracking-[0.1em]" style={{ color: MUTED }}>
           {navItems.map(item => <a key={item.key} href={`#${item.anchorId}`} onClick={(e) => { e.preventDefault(); scrollTo(`#${item.anchorId}`) }} className="hover:text-[var(--color-picasso-text)] transition-colors duration-200 whitespace-nowrap" style={{ color: MUTED }}>{item.label}</a>)}
           <MagneticButton href="#bookingContacts-section" onClick={(e) => { e.preventDefault(); scrollToBooking() }}

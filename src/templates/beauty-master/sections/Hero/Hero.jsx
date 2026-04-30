@@ -34,8 +34,22 @@ function Hero({ scrollTo }) {
   // Image alt: "[название салона] — [основная услуга] в [городе]"
   const heroImageAlt = cityPrepositional ? `${brandShortName} — ${heroTitleLine1} в ${cityPrepositional}` : `${brandShortName} — ${heroTitleLine1}`
 
-  // Split brand shortName by dash
-  const [brandPart1, brandPart2] = brandShortName.split('-')
+  // Use brand.text first (new generic config), fallback to shortName
+  const brandFullText = config.meta?.brand?.text || brandShortName
+  const brandWords = brandFullText.split(/[\s-]+/).filter(Boolean)
+  const brandPart1 = brandWords[0] || ''
+  const brandPart2 = brandWords.slice(1).join(' ')
+
+  // Auto font size for big brand H1 based on longest word
+  const brandLongestWord = Math.max(...brandWords.map(w => w.length), 0)
+  const brandSizeClass =
+    brandLongestWord > 12
+      ? 'text-3xl sm:text-4xl lg:text-5xl'
+      : brandLongestWord > 9
+      ? 'text-4xl sm:text-5xl lg:text-6xl'
+      : brandLongestWord > 7
+      ? 'text-5xl sm:text-6xl lg:text-7xl'
+      : 'text-6xl sm:text-7xl lg:text-8xl'
 
   const ref = useRef(null)
   const [isMobile, setIsMobile] = useState(false)
@@ -113,7 +127,7 @@ function Hero({ scrollTo }) {
                     {/* Brand lines - from shortName, split by dash */}
                     {brandPart1 && brandPart2 ? (
                       <>
-                        <span className="block italic text-6xl sm:text-7xl lg:text-8xl" style={{
+                        <span className={`block italic ${brandSizeClass}`} style={{
                           color: GOLD,
                           textShadow: `0 2px 20px rgba(0,0,0,0.8),
                         0 1px 0 #A68B5A,
@@ -128,10 +142,11 @@ function Hero({ scrollTo }) {
                         0 0 260px rgba(201,168,122,0.01)
                       `,
                         }}>
-                          {brandPart1}–
+                          {brandPart1}
                         </span>
-                        <span className="block italic text-6xl sm:text-7xl lg:text-8xl" style={{
+                        <span className={`block italic ${brandSizeClass}`} style={{
                           color: GOLD,
+                          paddingLeft: '1.2em',
                           textShadow: `0 2px 20px rgba(0,0,0,0.8),
                         0 1px 0 #A68B5A,
                         0 2px 0 #8A742B,
@@ -149,7 +164,7 @@ function Hero({ scrollTo }) {
                         </span>
                       </>
                     ) : brandPart1 && (
-                      <span className="block italic text-6xl sm:text-7xl lg:text-8xl" style={{
+                      <span className={`block italic ${brandSizeClass}`} style={{
                         color: GOLD,
                         textShadow: `0 2px 20px rgba(0,0,0,0.8),
                       0 1px 0 #A68B5A,

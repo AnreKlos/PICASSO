@@ -56,8 +56,8 @@ function Gallery() {
     if (!emblaApi) return
     const snap = emblaApi.selectedScrollSnap()
     setSelectedIndex(snap)
-    setActiveIndex(snap % defaultWorks.length)
-  }, [emblaApi, defaultWorks.length])
+    setActiveIndex(snap % works.length)
+  }, [emblaApi, works.length])
 
   useEffect(() => {
     if (!emblaApi) return
@@ -128,15 +128,14 @@ function Gallery() {
         <div className="mt-20 relative">
           <div className="overflow-hidden" ref={emblaRef}>
             <div className="flex items-center" style={{ gap: '1.5rem' }}>
-              {defaultWorks.map((w, i) => {
+              {works.map((w, i) => {
                 const isActive = i === activeIndex
                 return (
-                <div key={i} className="embla-slide shrink-0 flex items-center justify-center px-2"
+                <div key={i} className="embla-slide shrink-0 px-2"
                   style={{ flex: '0 0 auto', width: 'min(65vw, 380px)' }}>
                   <div
-                    className="w-full overflow-hidden cursor-pointer relative transition-[transform,opacity,filter] duration-500"
+                    className="w-full overflow-hidden cursor-pointer relative transition-[transform,opacity,filter] duration-500 aspect-[3/4]"
                     style={{
-                      aspectRatio: '3/4',
                       borderRadius: 16,
                       border: `1px solid ${BORDER}`,
                       transform: `scale(${isActive ? 0.95 : 0.88})`,
@@ -144,7 +143,7 @@ function Gallery() {
                       filter: isActive ? 'brightness(0.8)' : 'brightness(0.55)',
                     }}
                     onClick={() => openLightbox(i)}>
-                    <img src={w.src} alt={w.alt} className="w-full max-w-full h-full object-cover" width={420} height={560} loading="lazy" decoding="async" draggable={false} />
+                    <img src={w.src} alt={w.alt} className="w-full h-full object-cover" width={420} height={560} loading="lazy" decoding="async" draggable={false} />
                     <div className="absolute inset-0" style={{
                       background: isActive
                         ? 'linear-gradient(to top, rgba(14,12,11,0.4) 0%, transparent 35%)'
@@ -172,7 +171,7 @@ function Gallery() {
         </div>
 
         <div className="flex justify-center gap-2 mt-8">
-          {defaultWorks.map((_, i) => (
+          {works.map((_, i) => (
             <button key={i} onClick={() => emblaApi?.scrollTo(i)} aria-label={`Перейти к слайду ${i + 1}`}
               className="w-12 h-12 flex items-center justify-center cursor-pointer"
             >

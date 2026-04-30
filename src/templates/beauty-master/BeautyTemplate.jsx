@@ -23,15 +23,12 @@ import StickyBar from './components/StickyBar'
 
 const DEFAULT_SECTIONS_ORDER = [
   'hero',
-  'promotion',
   'advantages',
+  'about',
+  'serviceCarousel',
   'services',
   'gallery',
-  'beforeAfter',
-  'team',
-  'reels',
   'reviews',
-  'about',
   'faq',
   'bookingContacts',
 ]
