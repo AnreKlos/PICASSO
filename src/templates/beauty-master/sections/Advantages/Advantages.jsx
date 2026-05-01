@@ -1,10 +1,10 @@
 import { Shield, Clock, Coffee, Diamond } from 'lucide-react'
 import { useContext } from 'react'
 import { defaultConfig } from '../../../../configs/_default.config'
-import { ConfigContext } from '../../../../contexts/ConfigContext'
-import FadeIn from '../../../../components/FadeIn'
-import TiltHeading from '../../../../components/TiltHeading'
-import GoldSpan from '../../../../components/GoldSpan'
+import { ConfigContext } from '../../../../shared/contexts/ConfigContext'
+import FadeIn from '../../components/FadeIn'
+import TiltHeading from '../../components/TiltHeading'
+import GoldSpan from '../../components/GoldSpan'
 
 const { GOLD, TEXT, BG, BORDER_H } = defaultConfig.tokens
 

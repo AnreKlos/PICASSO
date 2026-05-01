@@ -3,8 +3,8 @@ import { motion, AnimatePresence } from 'framer-motion'
 import { X, Send, MessageCircle } from 'lucide-react'
 import { salesSalonPrompt } from '../../../../prompts/salesSalonPrompt'
 import { defaultConfig } from '../../../../configs/_default.config'
-import { getOrCreateSessionId } from '../../../../lib/session.js'
-import { ConfigContext } from '../../../../contexts/ConfigContext'
+import { getOrCreateSessionId } from '../../../../shared/lib/session.js'
+import { ConfigContext } from '../../../../shared/contexts/ConfigContext'
 
 function parseToolArguments(raw) {
   if (!raw) return {}

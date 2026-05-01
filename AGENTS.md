@@ -1,14 +1,20 @@
 # AGENTS.md — Инструкция для AI-агентов в проекте Picasso/Neuralsync
 
-> Этот файл читают все AI-агенты при старте работы в проекте: Claude (Code/Cursor/Windsurf), Codex, Kimi (через Devin), Gemini и другие. Не удалять. При изменении архитектуры — обновлять.
+> Этот файл читают все AI-агенты при старте работы в проекте: Claude (Code/Cursor/Windsurf/Desktop), Codex, Kimi (через Devin), Gemini и другие. Не удалять. При изменении архитектуры — обновлять.
+>
+> **Если в этом файле что-то противоречит конкретному промпту от Андрея — приоритет у промпта**, но об этом расхождении нужно сообщить ему в ответе.
 
 ---
 
 ## 1. ЧТО ЭТО ЗА ПРОЕКТ
 
-**Шаблон сайта для салонов красоты** с встроенным AI-консьержем по имени Коля. Конечная бизнес-модель — продавать готовые сайты салонам через автоматизированную воронку: радар парсит салоны с Google Maps → автогенератор создаёт конфиг под каждый салон → выкатывается персонализированная демо-витрина → владелец салона покупает за 70 000 ₽ или 13 000 ₽/мес подписки.
+**SaaS для автогенерации сайтов салонам красоты** с встроенным AI-консьержем по имени Коля. Бизнес-модель — продавать готовые сайты салонам через автоматизированную воронку: радар парсит салоны с Google Maps → автогенератор создаёт конфиг под каждый салон → выкатывается персонализированная демо-витрина → владелец салона покупает за 70 000 ₽ или 13 000 ₽/мес подписки.
 
-**Текущая стадия:** разработка первого шаблона на примере салона PICASSO (г. Брянск). Шаблон должен:
+Проект состоит из двух репозиториев:
+- **`neuralsync`** (этот репо, `D:\2 Clode Proj\1\neuralsync`) — фронтенд-шаблоны и серверные API. Это то, с чем работают агенты-кодеры.
+- **`PARSER`** (`D:\1 KURSOR_PROJ\11 PARSER`) — Python-бэкенд парсера/радара/ассемблера, отдельный репо. На него ссылаются папки-плейсхолдеры `radar/` и `assembler/`.
+
+**Текущая стадия:** разработка первого шаблона `beauty-master` на примере салона PICASSO (г. Брянск) и тестового демо «Калинка-Малинка». Шаблон должен:
 - Эмоционально продавать салон клиенткам этого салона
 - Демонстрировать владельцу, насколько круче может выглядеть его сайт
 - Записывать диалоги Коли с посетительницами в БД для последующей аналитики
@@ -21,14 +27,15 @@
 | Слой | Технология | Заметки |
 |------|-----------|---------|
 | Frontend | React 19 + Vite 8 | Чистый JS, без TypeScript |
-| Стили | Tailwind CSS 4 | Через @tailwindcss/vite |
+| Стили | Tailwind CSS 4 | Через `@tailwindcss/vite`, токены темы в `src/index.css` |
 | Анимации | Framer Motion | + Lenis (smooth scroll) |
-| Карусели | Embla Carousel | В Gallery |
+| Карусели | Embla Carousel | В Gallery, ServiceCarousel, Reels |
 | Иконки | lucide-react | |
+| Роутинг | react-router-dom v7 | `/` → демо, `/:slug` → клиент |
 | API/Serverless | Vercel Functions | `api/*.js` |
 | БД | Supabase Postgres 17 | Регион eu-west-1, transaction pooler |
-| ORM | postgres.js | **НЕ supabase-js!** см. правила ниже |
-| Email | nodemailer | (Используется ТОЛЬКО в legacy. К удалению.) |
+| ORM | postgres.js | **НЕ supabase-js!** см. правило 3.1 |
+| Email | nodemailer | (Только в legacy. К удалению.) |
 | LLM | OpenRouter, model gpt-4o-mini | Тестируем разные через playground |
 | Хостинг | Vercel | Деплой автоматический из git |
 
@@ -44,34 +51,46 @@
 ### 3.2. ПДн (имя, телефон) НЕ передаются в LLM
 Сейчас Коля общается через OpenRouter (зарубежный провайдер). Передавать туда телефоны/имена клиенток — нарушение 152-ФЗ. Поэтому:
 - Имя и телефон собираются через **отдельную форму** (BookingContacts), которая шлёт данные напрямую в `api/booking.js`, минуя любой контакт с OpenRouter
-- Коля не просит телефон в чате — он рендерит **inline-кнопку** "Оставить заявку"
+- Коля не просит телефон в чате — он рендерит **inline-кнопку** «Оставить заявку»
 - В диалогах в БД (`dialogues.messages_json`) ПДн в принципе не должно быть
 
 ### 3.3. localStorage для session_id, не cookies
-Идентификация анонимного посетителя — UUID, генерируется на клиенте через `crypto.randomUUID()`, хранится в localStorage с TTL 30 дней. Утилита `src/lib/session.js` — единый источник.
+Идентификация анонимного посетителя — UUID, генерируется на клиенте через `crypto.randomUUID()`, хранится в localStorage с TTL 30 дней. Утилита `src/shared/lib/session.js` — единый источник.
 
 Причины: cookies на Vercel требуют race-condition обработки, а localStorage даёт мгновенный ID без roundtrip к серверу.
 
-### 3.4. Один шаблон — много клиентов, через config
-`src/config/picasso.config.js` — единственное место, где живут данные конкретного салона: название, цвета, контакты, услуги, мастера, отзывы. Каждый новый клиент = новый файл `config/<slug>.config.js`. **Никакого хардкода данных в секциях.**
+### 3.4. Изолированные шаблоны, изолированные клиенты
+Архитектура мульти-шаблонная и мульти-клиентская. Два уровня изоляции:
 
-### 3.5. Каждая секция в своём файле и обёрнута в SectionBoundary
-В `src/sections/<Имя>/<Имя>.jsx`. ErrorBoundary ловит ошибки секции и показывает плейсхолдер вместо чёрного экрана.
+**Шаблоны** (`src/templates/<template-slug>/`) — каждый шаблон это самодостаточный визуальный язык со своими секциями, своими template-specific компонентами и анимациями, своим набором цветовых токенов и шрифтов. Шаблоны **не знают друг о друге**. Сейчас активный шаблон один — `beauty-master`. Будущий, например `modern-minimal`, — отдельная папка с нуля, без расшаривания секций.
 
-### 3.6. Secret_token для Telegram webhook
+**Клиенты** — данные конкретного салона лежат в `data/clients/<slug>.json` (формат описан в `assembler/schema.client.json`), ассеты — в `public/clients/<slug>/`. Никакого хардкода клиентских данных в шаблонах. Дефолт-демо — `src/configs/_default.config.js`.
+
+### 3.5. Что shared, что template-specific
+В `src/shared/` живёт **только то, что не привязано к визуальному языку конкретного шаблона**: ErrorBoundary, страница 404, ConfigContext, резолвер клиентских JSON, генерация session_id, утилиты порядка секций и скролла к якорю. Никаких компонентов с цветами, тенями, easing-кривыми и шрифтовыми токенами в shared нет — такие компоненты живут внутри шаблона, даже если визуально похожи между шаблонами.
+
+Антипаттерн: вынести FadeIn в shared «потому что анимация-то одинаковая». Кривая и длительность — часть визуального языка. У второго шаблона своя FadeIn под свой ритм.
+
+### 3.6. Каждая секция в своём файле и обёрнута в SectionBoundary
+В `src/templates/<template>/sections/<Имя>/<Имя>.jsx`. ErrorBoundary `SectionBoundary` (общий, лежит в `src/shared/components/`) ловит ошибки секции и показывает плейсхолдер вместо чёрного экрана.
+
+### 3.7. Secret_token для Telegram webhook
 `api/telegram-webhook.js` обязательно проверяет заголовок `X-Telegram-Bot-Api-Secret-Token` против `process.env.TELEGRAM_WEBHOOK_SECRET`. Без этого любой может вытянуть переписку.
 
-### 3.7. parse_mode: 'HTML' + escapeHtml
-В Telegram-сообщениях используем только HTML-режим. Markdown ломается на спецсимволах в именах. Утилита `escapeHtml` в `lib/notifyError.js`.
+### 3.8. parse_mode: 'HTML' + escapeHtml
+В Telegram-сообщениях используем только HTML-режим. Markdown ломается на спецсимволах в именах. Утилита `escapeHtml` в `lib/notifyError.js` (бэкенд `lib/`, не `src/`).
 
-### 3.8. Дедупликация Telegram updates
+### 3.9. Дедупликация Telegram updates
 `api/telegram-webhook.js` пишет каждый `update_id` в таблицу `telegram_updates` через `INSERT ... ON CONFLICT DO NOTHING`. Если ничего не вставилось — это дубль, тихо отвечаем 200 OK.
 
-### 3.9. Идемпотентность уведомлений о лидах
+### 3.10. Идемпотентность уведомлений о лидах
 Поле `leads.telegram_notified_at` — null до отправки, заполняется после. Защита от двойных уведомлений при ретраях.
 
-### 3.10. Tool-call show_lead_button — единственный путь к контактам
+### 3.11. Tool-call `show_lead_button` — единственный путь к контактам
 Коля никогда не просит телефон в чате. Когда чувствует готовность клиента — вызывает функцию `show_lead_button(service_name?)`. ChatWidget рендерит кнопку «Оставить заявку», по клику открывается форма BookingContacts с предзаполненной услугой через CustomEvent `open-booking-form`.
+
+### 3.12. Codex не двигает файлы за рамки явной инструкции
+Прошлый инцидент: Codex самовольно перенёс 8 компонентов между папками во время Фазы 1 рефакторинга. Windows заблокировал из-за пробелов в пути — пронесло. На будущее: в каждом промпте по перемещению файлов явно перечисляются пути, остальные не трогать. Для путей с пробелами (`D:\2 Clode Proj\1\neuralsync`) PowerShell `Move-Item` ломается — использовать `git mv` или Node-инструменты.
 
 ---
 
@@ -83,58 +102,104 @@ neuralsync/
 │   ├── chat.js                   # Прокси к OpenRouter + tools + запись диалогов в БД
 │   ├── booking.js                # Приём заявок + Telegram-уведомление с inline-кнопкой
 │   └── telegram-webhook.js       # Обработка callback_query (история диалогов)
-├── lib/                          # Бэкенд-утилиты
+├── lib/                          # Бэкенд-утилиты (НЕ путать с src/shared/lib/)
 │   ├── db.js                     # Подключение к Postgres через postgres.js
 │   ├── notifyError.js            # Отправка ошибок в Telegram + escapeHtml
-│   ├── clientResolver.js         # getClientBySlug с in-memory кешем
+│   ├── clientResolver.js         # getClientBySlug с in-memory кешем (бэк, по slug → запись из clients)
 │   └── dialogue.js               # getOrCreateDialogue, appendMessage
+├── radar/                        # Placeholder для парсера. Реальный парсер в D:\1 KURSOR_PROJ\11 PARSER
+│   └── README.md
+├── assembler/                    # Контракт между парсером и фронтом
+│   ├── schema.client.json        # JSON Schema клиентского конфига
+│   └── README.md
+├── data/
+│   └── clients/                  # Клиентские конфиги, формат по schema.client.json
+│       └── .gitkeep              # пустая, заполняется парсером (по одному <slug>.json на салон)
+├── docs/                         # Архив отчётов рефакторинга, audit, agent-log
+├── plans/
+├── public/
+│   ├── templates/
+│   │   └── beauty-master/        # Демо-ассеты шаблона (hero/, gallery/, services/, about/, team/)
+│   └── clients/
+│       └── .gitkeep              # Сюда парсер кладёт public/clients/<slug>/ с фотками
 ├── src/
-│   ├── App.jsx                   # Корень приложения (тонкий)
+│   ├── App.jsx                   # Корень: Routes / → BeautyTemplate, /:slug → ClientSiteRoute
 │   ├── main.jsx                  # Entry point
-│   ├── Picasso.jsx               # Layout: Lenis + scrollTo + рендер секций по конфигу
-│   ├── index.css                 # Глобальные стили
-│   ├── config/
-│   │   └── picasso.config.js     # ВСЕ данные клиента: название, цвета, контакты, контент
-│   ├── components/               # Переиспользуемые UI-компоненты
-│   │   ├── SectionBoundary.jsx
-│   │   ├── TiltHeading.jsx
-│   │   ├── GoldSpan.jsx
-│   │   ├── FadeIn.jsx
-│   │   ├── MagneticButton.jsx
-│   │   ├── DustParticles.jsx
-│   │   ├── FAQItem.jsx
-│   │   ├── TiltGlare.jsx
-│   │   ├── ServiceCard.jsx
-│   │   ├── DirectionCard.jsx
-│   │   ├── Lightbox.jsx
-│   │   └── MasterModal.jsx
-│   ├── sections/                 # Секции страницы (каждая в своей папке)
-│   │   ├── Nav/
-│   │   ├── Hero/
-│   │   ├── Advantages/           # Новая (вынесена из About)
-│   │   ├── Promotion/            # Новая (нейтральная акция)
-│   │   ├── Services/             # Объединённая Services + Prices
-│   │   ├── Gallery/
-│   │   ├── Team/
-│   │   ├── Reviews/
-│   │   ├── About/                # Перенесена ниже Reviews
-│   │   ├── FAQ/
-│   │   ├── BookingContacts/      # Объединённая Booking + Contacts, слушает open-booking-form
-│   │   └── Footer/
-│   ├── widgets/
-│   │   └── Kolya/
-│   │       └── ChatWidget.jsx    # Виджет AI-консьержа, рендерит lead-кнопку при tool-call
+│   ├── index.css                 # Глобальные стили + Tailwind тема (@theme)
+│   │
+│   ├── shared/                   # Переиспользуемое между шаблонами (см. правило 3.5)
+│   │   ├── components/
+│   │   │   ├── SectionBoundary.jsx   # ErrorBoundary для секций
+│   │   │   └── NotFound.jsx          # Страница 404 (нейтральная, без брендинга)
+│   │   ├── contexts/
+│   │   │   └── ConfigContext.js      # Контекст с конфигом текущего салона
+│   │   ├── lib/
+│   │   │   ├── clientConfigResolver.js  # getClientConfig(slug) — читает data/clients/*.json
+│   │   │   └── session.js               # getOrCreateSessionId — UUID, localStorage, TTL 30д
+│   │   └── utils/
+│   │       ├── getSectionOrder.js       # Источник правды для порядка секций (config.sectionsOrder)
+│   │       ├── getAvailableSections.js  # Метаданные секций для Nav (label, anchorId, inNav)
+│   │       └── scrollToBooking.js       # scroll → #bookingContacts-section
+│   │
+│   ├── configs/
+│   │   └── _default.config.js    # Дефолтный конфиг для главной/демо. ВСЕ данные демо-салона.
+│   │
 │   ├── prompts/
 │   │   └── salesSalonPrompt.js   # Системный промпт Коли v2 («устраиваюсь на работу»)
-│   └── lib/
-│       └── session.js            # getOrCreateSessionId (фронт, localStorage, TTL 30 дней)
+│   │
+│   └── templates/
+│       └── beauty-master/        # Активный шаблон — салон-премиум, тёмная палитра + золото
+│           ├── BeautyTemplate.jsx    # Layout: Lenis + scrollTo + рендер секций по конфигу
+│           ├── components/           # Template-specific компоненты (визуальный язык beauty-master)
+│           │   ├── DirectionCard.jsx
+│           │   ├── DustParticles.jsx
+│           │   ├── FadeIn.jsx        # анимация на токенах шаблона (EASE из конфига)
+│           │   ├── FAQItem.jsx
+│           │   ├── GoldSpan.jsx      # золотой акцент на токенах шаблона
+│           │   ├── Lightbox.jsx      # лайтбокс на токенах шаблона
+│           │   ├── MagneticButton.jsx
+│           │   ├── MasterModal.jsx
+│           │   ├── ServiceCard.jsx
+│           │   ├── StickyBar.jsx
+│           │   ├── TiltGlare.jsx
+│           │   └── TiltHeading.jsx   # 3D-tilt заголовок
+│           ├── sections/             # 16 секций beauty-master, каждая в своей папке
+│           │   ├── Nav/Nav.jsx
+│           │   ├── Hero/Hero.jsx
+│           │   ├── Advantages/Advantages.jsx
+│           │   ├── Promotion/Promotion.jsx
+│           │   ├── About/About.jsx
+│           │   ├── Services/Services.jsx
+│           │   ├── ServiceCarousel/ServiceCarousel.jsx  # карусель услуг (3D-эффект)
+│           │   ├── ServiceGrid/ServiceGrid.jsx          # альтернатива карусели — сетка 4×N
+│           │   ├── Gallery/Gallery.jsx
+│           │   ├── BeforeAfter/BeforeAfter.jsx
+│           │   ├── Team/Team.jsx
+│           │   ├── Reels/Reels.jsx
+│           │   ├── Reviews/Reviews.jsx
+│           │   ├── FAQ/FAQ.jsx
+│           │   ├── BookingContacts/BookingContacts.jsx  # форма + контакты + Yandex карта
+│           │   └── Footer/Footer.jsx
+│           └── widgets/
+│               └── Kolya/
+│                   └── ChatWidget.jsx  # Виджет AI-консьержа, рендерит lead-кнопку при tool-call
+│
 ├── public/                       # Статика, не трогать
 ├── .env                          # Локальные секреты (не в git)
 ├── .env.example                  # Образец списка переменных
 ├── package.json
-├── vite.config.js                # host: 127.0.0.1 — фикс для Windows IPv6 + proxy /api для vercel dev
+├── vite.config.js                # host: 127.0.0.1 — фикс Windows IPv6 + proxy /api для vercel dev
 └── vercel.json
 ```
+
+**Канонический порядок секций beauty-master** (зафиксирован в `_default.config.js → sectionsOrder`):
+```
+Hero → Promotion → Advantages → ServiceCarousel → Services →
+Gallery → BeforeAfter → Team → Reels → Reviews → About →
+FAQ → BookingContacts → Footer
+```
+
+`ServiceGrid` — альтернативная вёрстка для блока «услуги», взаимозаменяема с `ServiceCarousel`. Какую из двух подключать — решается на уровне sectionsOrder. По умолчанию активна `ServiceCarousel`.
 
 ---
 
@@ -158,11 +223,11 @@ neuralsync/
 ### `clients`
 `id`, `slug`, `name`, `telegram_chat_id`, `telegram_bot_token_env`, `notes`, `created_at`
 - Один клиент = один салон
-- Запись Пикассо: `slug='picasso'`, id=`2516ec94-b58c-4782-89af-853d440cdb26`, `telegram_chat_id='5068385066'`
+- Запись Пикассо: `slug='picasso'`, `id='2516ec94-b58c-4782-89af-853d440cdb26'`, `telegram_chat_id='5068385066'`
 
 ### `dialogues`
 `id`, `client_id` (FK→clients), `session_id` (UUID из localStorage), `messages_json` (JSONB массив `{role, content, model?, timestamp}`), `became_lead`, `started_at`, `last_at`
-- Уникальный constraint: (client_id, session_id)
+- Уникальный constraint: `(client_id, session_id)`
 - При каждом сообщении: `messages_json || новое + last_at = now()`
 - Tool-call сохраняется как content вида `[tool_call:show_lead_button] {"service_name":"..."}`
 
@@ -174,16 +239,21 @@ neuralsync/
 
 ---
 
-## 7. ЦВЕТОВАЯ ПАЛИТРА (PICASSO)
+## 7. ВИЗУАЛЬНЫЙ ЯЗЫК beauty-master
 
-В `src/config/picasso.config.js → tokens`:
+В `src/configs/_default.config.js → tokens`:
 - `GOLD: '#C9A87A'` — основной акцент
 - `BG: '#0E0C0B'` — фон страницы (почти чёрный с тёплым подтоном)
 - `CHOCOLATE: '#151210'` — фон секций для перебивки
 - `TEXT: '#F0EBE3'` — основной текст
 - `TEXT_SOFT: '#B5AFA7'` — приглушённый текст
+- `EASE` — кубическая кривая для анимаций (часть визуального языка, не общая утилита)
 
-Шрифты: `font-picasso-display` (для заголовков, italic), `font-picasso-body` (uppercase tracking для overlines, обычный для прозы).
+В `src/index.css → @theme` дублируются как CSS-переменные `--color-wow-*`, `--font-wow-display`, `--font-wow-body`. Шрифты: `font-wow-display` (Playfair Display, italic для GoldSpan, обычный для заголовков), `font-wow-body` (Inter, uppercase tracking для overlines).
+
+> Префиксы CSS-токенов исторически `--color-wow-*` — это сохраняется как есть, не переименовывать.
+
+Для **будущих** шаблонов токены будут жить в их собственных конфигах и иметь свои названия — между шаблонами токены не шарятся.
 
 ---
 
@@ -197,6 +267,7 @@ neuralsync/
 - **Кириллица должна остаться кириллицей.** Никаких "?" вместо "ё".
 - **Никаких README/CHANGELOG автоматически.** Я их не использую.
 - **Не выкладывать секреты (токены, пароли) в чат.** При запросах с командами, требующими секрет — оставлять плейсхолдеры типа `ТВОЙ_TOKEN`, ничего реального.
+- **Claude (Desktop/Code) НЕ пишет код напрямую** — только архитектура, аудит, промпты для Codex, оценка рисков. Код пишут Codex/Devin. Исключения — мелкие правки служебных файлов (AGENTS.md, заметки) по явному запросу Андрея.
 
 ---
 
@@ -205,31 +276,43 @@ neuralsync/
 **Phase 3 ЗАКРЫТА (25.04.2026).** MVP функционально готов:
 - Диалоги Коли пишутся в БД (Supabase, 30-дневная сессия через localStorage)
 - Лиды летят в Telegram владельца с inline-кнопкой «📄 Прочитать диалог»
-- Webhook зарегистрирован, кнопка отдаёт историю в человекочитаемом формате (👤 Гость / 🤖 Коля, время МСК, разделители пауз > 30 мин, маркер `👉 показал кнопку «Оставить заявку»` для tool-call)
-- Tool-call `show_lead_button` в OpenRouter работает — Коля сам предлагает кнопку, по клику открывается форма BookingContacts со скрытым предзаполнением `service`
-- Идемпотентность: `leads.telegram_notified_at`, `telegram_updates.update_id` через ON CONFLICT
-- Промпт Коли v2 с концепцией «устраиваюсь на работу», арсеналом инсайтов и лестницей Ханта
-- Текущая модель: `openai/gpt-4o-mini` (под вопросом — gpt-4o-mini залипает на длинном промпте, gpt-4.1-mini выглядит лучше по тестам, Gemini 3 Flash Preview — тоже хороший кандидат)
+- Webhook зарегистрирован, кнопка отдаёт историю в человекочитаемом формате
+- Tool-call `show_lead_button` в OpenRouter работает
+- Идемпотентность лидов и Telegram updates через ON CONFLICT
+- Промпт Коли v2 с концепцией «устраиваюсь на работу»
 
-**Открытые мелкие хвосты Phase 3 (не критично, можно полировать):**
-- Ужать промпт Коли — ~16 KB сейчас, можно до ~6 KB без потери смысла. Длинный промпт усугубляет залипания на дешёвых моделях.
-- Подобрать оптимальную модель — субъективное тестирование Gemini 3 Flash Preview vs gpt-4.1-mini vs Haiku
-- Заменить `@kolya_picasso_demo` плейсхолдер в промпте на реальный Telegram владельца перед первой продажей
+**Архитектурный рефакторинг (30.04–01.05.2026):**
+- Завершены Фазы 0–8 + Brand System: единый шаблон `beauty-master`, нейтральный `_default.config.js`, конфигурируемый бренд через `meta.brand.text`. Теги `v8-refactor-complete`, `v8.1-brand-system`.
+- Завершён shared-layer рефакторинг: создана папка `src/shared/`, FadeIn/GoldSpan/Lightbox/TiltHeading и ServiceGrid перенесены внутрь шаблона, NotFound зачищен от хардкода «Picasso Demo». Тег `v9-shared-layer` (ставится Андреем после проверки билда).
+
+**Параллельно:** бэкенд парсера (репо `PARSER`) переведён с локальной Gemma 4 на Google Gemini через Vertex AI (модель `gemini-2.5-flash-lite`, проект `leadparser-491719`, регион `us-central1`, авторизация через ADC). Тестовый прогон на lead_id=58 — все 6 контентных блоков сгенерированы без fallback. В `config_builder.py` добавлены хелперы `_hero_brand_name()`, `_hero_line1()`, `_hero_line1_small()` и `download_hero_photo()`.
+
+**Открытые мелкие хвосты Phase 3:**
+- Ужать промпт Коли (~16 KB → ~6 KB) — длинный промпт усугубляет залипания дешёвых моделей.
+- Подобрать оптимальную модель — Gemini 3 Flash Preview vs gpt-4.1-mini vs Haiku.
+- Заменить `@kolya_picasso_demo` плейсхолдер на реальный Telegram владельца перед первой продажей.
+
+**Top of mind (демо «Калинка-Малинка», `D:\2 Clode Proj\1\neuralsync`):**
+- Hero: восстановить `titleLine2Size: 'small'` (в конце последней сессии было ошибочно изменено на `'medium'`).
+- Интеллектуальная сортировка фото через Gemini Vision (вертикальная ориентация, наличие людей, отсутствие сторонних логотипов).
+- Очистка ServiceCarousel от мусора (телефоны, технические инструкции).
+- Заполнение пустых блоков страницы.
 
 **Дальше идут:**
-- **Phase 4 — полировка (визуальная)** — карта в BookingContacts (Яндекс iframe), фото в Advantages через Nano Banana / ComfyUI, sticky bottom-bar на мобильном (Записаться/Позвонить/WhatsApp), Schema.org JSON-LD, /privacy страница, cookie-consent
-- **Phase 5 — дашборд** — веб + Telegram Mini App с аналитикой диалогов (топ-вопросов, тепловая карта активности, воронка диалог→лид)
+- **Phase 4 — полировка (визуальная)** — карта в BookingContacts (Яндекс iframe), фото в Advantages через Nano Banana / ComfyUI, sticky bottom-bar на мобильном, Schema.org JSON-LD, /privacy страница, cookie-consent
+- **Phase 5 — дашборд** — веб + Telegram Mini App с аналитикой диалогов
 - **Phase 6 — переезд БД** — Yandex Managed Postgres перед первой продажей (152-ФЗ)
-- **Phase 7 — радар + автогенератор** — парсинг салонов с Google Maps, нейросетевой отбор лучших отзывов, автогенерация `<slug>.config.js` для каждого нового салона, выкатывание персонализированных демо-витрин под каждый таргет
+- **Phase 7 — радар + автогенератор** — парсинг с Google Maps, нейросетевой отбор отзывов, автогенерация `data/clients/<slug>.json`, выкатка демо-витрин под каждый таргет
 
 ---
 
 ## 10. ВНЕШНИЕ ИНСТРУМЕНТЫ И ПОДКЛЮЧЕНИЯ
 
 - **Supabase MCP** — подключён в Claude.ai, проект `picasso_bot_chat_dialogi`. Можно делать SQL-миграции, читать данные.
-- **Filesystem MCP** — Claude (Desktop) имеет доступ к папкам `D:\2 Clode Proj\1\neuralsync` и `F:\Holman_Obsidian\Holman`.
+- **Filesystem MCP** — Claude (Desktop) имеет доступ к папкам `D:\2 Clode Proj\1\neuralsync`, `F:\Holman_Obsidian\Holman` и `D:\1 KURSOR_PROJ\11 PARSER`.
 - **Devin/Windsurf** — основной кодинг-агент Андрея, через app.devin.ai. Модели: GPT-5.3 Codex Medium, Kimi K2.5.
 - **Cursor / Claude Code** — резервные среды на случай окончания триала Devin.
+- **Obsidian** (`F:\Holman_Obsidian\Holman`) — проектная база знаний. Заметки по сессиям и архитектуре в `01_Проекты/Пикассо-NeuralSync/`.
 
 ---
 
@@ -238,7 +321,9 @@ neuralsync/
 - Сайт (продакшн): https://picasso-alpha.vercel.app/
 - Supabase Dashboard: https://supabase.com/dashboard/project/qycbkiqrfcrapomvbhuw
 - Git: локальный репозиторий, push через GitHub Desktop вручную
-- Папка проекта: `D:\2 Clode Proj\1\neuralsync`
+- Папка проекта (фронт): `D:\2 Clode Proj\1\neuralsync`
+- Папка проекта (парсер): `D:\1 KURSOR_PROJ\11 PARSER`
+- Obsidian: `F:\Holman_Obsidian\Holman`
 
 ---
 
@@ -252,5 +337,7 @@ neuralsync/
 - Ты создал README/CHANGELOG/документацию по своей инициативе
 - Ты записал файл через PowerShell и в нём появился BOM
 - Ты выложил секреты или токены в логи/чат
+- Ты вынес template-specific код в `src/shared/` (см. правило 3.5)
+- Ты импортировал что-то из одного шаблона в другой (правило 3.4)
 
 Если делаешь что-то из этого списка — **остановись и спроси сначала**.

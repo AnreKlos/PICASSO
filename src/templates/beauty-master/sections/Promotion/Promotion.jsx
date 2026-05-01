@@ -1,9 +1,9 @@
 import { Sparkles } from 'lucide-react'
 import { useContext } from 'react'
 import { defaultConfig } from '../../../../configs/_default.config'
-import { ConfigContext } from '../../../../contexts/ConfigContext'
-import FadeIn from '../../../../components/FadeIn'
-import TiltHeading from '../../../../components/TiltHeading'
+import { ConfigContext } from '../../../../shared/contexts/ConfigContext'
+import FadeIn from '../../components/FadeIn'
+import TiltHeading from '../../components/TiltHeading'
 
 function Promotion() {
   const configFromContext = useContext(ConfigContext)

@@ -1,8 +1,8 @@
 import { useState, useEffect, useCallback } from 'react'
 import Lenis from 'lenis'
 import { defaultConfig } from '../../configs/_default.config'
-import { ConfigContext } from '../../contexts/ConfigContext'
-import SectionBoundary from '../../components/SectionBoundary'
+import { ConfigContext } from '../../shared/contexts/ConfigContext'
+import SectionBoundary from '../../shared/components/SectionBoundary'
 import ChatWidget from './widgets/Kolya/ChatWidget'
 import Nav from './sections/Nav/Nav'
 import Hero from './sections/Hero/Hero'
@@ -20,7 +20,7 @@ import FAQ from './sections/FAQ/FAQ'
 import BookingContacts from './sections/BookingContacts/BookingContacts'
 import Footer from './sections/Footer/Footer'
 import StickyBar from './components/StickyBar'
-import { getSectionOrder } from '../../utils/getSectionOrder'
+import { getSectionOrder } from '../../shared/utils/getSectionOrder'
 
 export default function BeautyTemplate({ config = defaultConfig }) {
   const [showWidget, setShowWidget] = useState(false)

@@ -2,9 +2,9 @@ import { Component, useEffect, useState } from 'react'
 import { Routes, Route, useParams } from 'react-router-dom'
 
 import BeautyTemplate from './templates/beauty-master/BeautyTemplate.jsx'
-import NotFound from './components/NotFound.jsx'
+import NotFound from './shared/components/NotFound.jsx'
 import { defaultConfig } from './configs/_default.config.js'
-import { getClientConfig } from './lib/clientConfigResolver.js'
+import { getClientConfig } from './shared/lib/clientConfigResolver.js'
 
 function ClientSiteRoute() {
   const { slug } = useParams()

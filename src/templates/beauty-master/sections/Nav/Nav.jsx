@@ -2,10 +2,10 @@ import { useState, useEffect, useContext } from 'react'
 import { X, Menu } from 'lucide-react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { defaultConfig } from '../../../../configs/_default.config'
-import { ConfigContext } from '../../../../contexts/ConfigContext'
+import { ConfigContext } from '../../../../shared/contexts/ConfigContext'
 import MagneticButton from '../../components/MagneticButton'
-import { scrollToBooking } from '../../../../utils/scrollToBooking'
-import { getNavItems } from '../../../../utils/getAvailableSections'
+import { scrollToBooking } from '../../../../shared/utils/scrollToBooking'
+import { getNavItems } from '../../../../shared/utils/getAvailableSections'
 
 function Nav({ scrollTo, scrollToTop }) {
   const configFromContext = useContext(ConfigContext)

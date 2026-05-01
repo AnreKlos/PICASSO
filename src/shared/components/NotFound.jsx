@@ -11,13 +11,13 @@ function NotFound() {
           className="text-[12px] uppercase tracking-[0.35em] mb-5"
           style={{ color: '#C9A87A' }}
         >
-          Picasso Demo
+          Demo
         </p>
         <h1 className="font-wow-display text-3xl sm:text-4xl leading-tight">
           Демо не найдено
         </h1>
         <p className="mt-4 text-sm sm:text-base" style={{ color: '#9A938B' }}>
-          Проверьте ссылку или откройте основное демо салона PICASSO.
+          Проверьте ссылку или вернитесь на главную.
         </p>
 
         <Link
@@ -31,7 +31,7 @@ function NotFound() {
               '0 4px 20px rgba(201,168,122,0.18), inset 0 1px 0 rgba(255,255,255,0.2), inset 0 -1px 0 rgba(0,0,0,0.15)',
           }}
         >
-          Открыть основное демо
+          На главную
         </Link>
       </div>
     </div>

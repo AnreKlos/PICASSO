@@ -2,12 +2,12 @@ import { useState, useRef, useEffect, useContext } from 'react'
 import { ArrowRight } from 'lucide-react'
 import { motion, useScroll, useTransform } from 'framer-motion'
 import { defaultConfig } from '../../../../configs/_default.config'
-import { ConfigContext } from '../../../../contexts/ConfigContext'
-import TiltHeading from '../../../../components/TiltHeading'
+import { ConfigContext } from '../../../../shared/contexts/ConfigContext'
+import TiltHeading from '../../components/TiltHeading'
 import MagneticButton from '../../components/MagneticButton'
 import DustParticles from '../../components/DustParticles'
 import TiltGlare from '../../components/TiltGlare'
-import { scrollToBooking } from '../../../../utils/scrollToBooking'
+import { scrollToBooking } from '../../../../shared/utils/scrollToBooking'
 
 function Hero({ scrollTo }) {
   const configFromContext = useContext(ConfigContext)

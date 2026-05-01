@@ -2,12 +2,12 @@ import { useState, useEffect, useRef, useContext } from 'react'
 import { MapPin, Phone, Clock3 } from 'lucide-react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { defaultConfig } from '../../../../configs/_default.config'
-import { ConfigContext } from '../../../../contexts/ConfigContext'
-import FadeIn from '../../../../components/FadeIn'
-import TiltHeading from '../../../../components/TiltHeading'
-import GoldSpan from '../../../../components/GoldSpan'
-import { getOrCreateSessionId } from '../../../../lib/session.js'
-import { scrollToBooking } from '../../../../utils/scrollToBooking.js'
+import { ConfigContext } from '../../../../shared/contexts/ConfigContext'
+import FadeIn from '../../components/FadeIn'
+import TiltHeading from '../../components/TiltHeading'
+import GoldSpan from '../../components/GoldSpan'
+import { getOrCreateSessionId } from '../../../../shared/lib/session.js'
+import { scrollToBooking } from '../../../../shared/utils/scrollToBooking.js'
 
 function BookingContacts() {
   const configFromContext = useContext(ConfigContext)

@@ -1,6 +1,6 @@
 import { useContext } from 'react'
 import { defaultConfig } from '../../../../configs/_default.config'
-import { ConfigContext } from '../../../../contexts/ConfigContext'
+import { ConfigContext } from '../../../../shared/contexts/ConfigContext'
 
 function Footer() {
   const configFromContext = useContext(ConfigContext)
