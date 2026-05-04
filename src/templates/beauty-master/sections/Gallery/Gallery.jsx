@@ -33,13 +33,15 @@ function Gallery() {
     ? configuredItems
       .map((item, index) => {
         if (typeof item === 'string') {
-          return { src: item, alt: `Работа ${index + 1}` }
+          // Извлекаем имя файла для alt вместо "Работа N"
+          const filename = item.split('/').pop().replace(/\.\w+$/, '')
+          return { src: item, alt: `Фото ${index + 1}` }
         }
 
         if (item && typeof item === 'object' && typeof item.src === 'string') {
           return {
             src: item.src,
-            alt: item.alt || `Работа ${index + 1}`,
+            alt: item.alt || `Фото ${index + 1}`,
           }
         }
 

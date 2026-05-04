@@ -11,6 +11,7 @@ import Promotion from './sections/Promotion/Promotion'
 import About from './sections/About/About'
 import Services from './sections/Services/Services'
 import ServiceCarousel from './sections/ServiceCarousel/ServiceCarousel'
+import PriceSection from './sections/Price/PriceSection'
 import Gallery from './sections/Gallery/Gallery'
 import BeforeAfter from './sections/BeforeAfter/BeforeAfter'
 import Team from './sections/Team/Team'
@@ -26,6 +27,18 @@ export default function BeautyTemplate({ config = defaultConfig }) {
   const [showWidget, setShowWidget] = useState(false)
   const { sections } = config
   const sectionsOrder = getSectionOrder(config)
+
+  useEffect(() => {
+    const brand = config.meta?.brand?.name || config.meta?.name || 'Beauty Salon'
+    const tagline = config.meta?.brand?.tagline || config.meta?.tagline || ''
+    const city = config.meta?.city || ''
+
+    let title = brand
+    if (tagline) title += ` — ${tagline}`
+    if (city) title += ` в ${city}`
+
+    document.title = title
+  }, [config])
 
   const blockFlags = {
     hero: true,
@@ -47,6 +60,7 @@ export default function BeautyTemplate({ config = defaultConfig }) {
     advantages: () => <Advantages />,
     serviceCarousel: () => <ServiceCarousel />,
     services: () => <Services />,
+    price: () => <PriceSection />,
     gallery: () => <Gallery />,
     beforeAfter: () => <BeforeAfter />,
     team: () => <Team />,
@@ -235,6 +249,7 @@ export default function BeautyTemplate({ config = defaultConfig }) {
               advantages: null,
               serviceCarousel: 'services',
               services: 'services',
+              price: 'price',
               gallery: 'gallery',
               beforeAfter: 'beforeAfter',
               team: 'team',
