@@ -1,9 +1,9 @@
 export const defaultConfig = {
   meta: {
     slug: 'beauty-master',
-    name: 'Beauty Master',
+    name: 'Beauty Ma',
     brand: {
-      text: 'Beauty Master',
+      text: 'Beauty Ma',
     },
     fullName: 'Beauty Salon Demo',
     tagline: 'Premium Beauty Studio',

@@ -37,8 +37,6 @@ function Hero({ scrollTo }) {
   // Use brand.text first (new generic config), fallback to shortName
   const brandFullText = config.meta?.brand?.text || brandShortName
   const brandWords = brandFullText.split(/[\s-]+/).filter(Boolean)
-  const brandPart1 = brandWords[0] || ''
-  const brandPart2 = brandWords.slice(1).join(' ')
 
   // Auto font size for big brand H1 based on longest word
   const brandLongestWord = Math.max(...brandWords.map(w => w.length), 0)
@@ -90,7 +88,7 @@ function Hero({ scrollTo }) {
 
       <div className="relative z-[5] w-full pointer-events-auto">
         <div className="mx-auto max-w-6xl px-5 sm:px-8 flex flex-col lg:flex-row items-center gap-12 lg:gap-16 pt-28 pb-16">
-          <div className="flex-1 text-center lg:text-left">
+          <div className="flex-1 min-w-0 text-center lg:text-left">
             <motion.div style={{ y: heroY, opacity: heroOpacity, willChange: 'transform' }}>
               {heroTopLabel && (
                 <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.6, ease: EASE }}>
@@ -103,6 +101,7 @@ function Hero({ scrollTo }) {
                   initial={{ opacity: 0, filter: 'blur(20px) brightness(2.5)' }}
                   animate={{ opacity: 1, filter: 'blur(0px) brightness(1)' }}
                   transition={{ duration: 2, ease: EASE, delay: 0.2 }}
+                  className="relative z-20"
                 >
                   <TiltHeading
   as="h1"
@@ -112,7 +111,7 @@ function Hero({ scrollTo }) {
                     {/* Line 1: Main service - titleLine1 */}
                     {heroTitleLine1 && (
                       <span
-                        className="block whitespace-nowrap text-4xl sm:text-5xl lg:text-6xl"
+                        className="block text-4xl sm:text-5xl lg:text-6xl"
                         style={{ color: TEXT, textShadow: '0 2px 20px rgba(0,0,0,0.8)' }}
                       >
                         {heroTitleLine1}
@@ -124,47 +123,9 @@ function Hero({ scrollTo }) {
                         {heroCityLine}
                       </span>
                     )}
-                    {/* Brand lines - from shortName, split by dash */}
-                    {brandPart1 && brandPart2 ? (
-                      <>
-                        <span className={`block italic ${brandSizeClass}`} style={{
-                          color: GOLD,
-                          textShadow: `0 2px 20px rgba(0,0,0,0.8),
-                        0 1px 0 #A68B5A,
-                        0 2px 0 #8A742B,
-                        0 3px 0 #6E5D22,
-                        0 4px 0 #53491A,
-                        0 5px 0 #3D3614,
-                        0 6px 14px rgba(0,0,0,0.35),
-                        0 12px 40px rgba(201,168,122,0.18),
-                        0 0 80px rgba(201,168,122,0.08),
-                        0 0 160px rgba(201,168,122,0.03),
-                        0 0 260px rgba(201,168,122,0.01)
-                      `,
-                        }}>
-                          {brandPart1}
-                        </span>
-                        <span className={`block italic ${brandSizeClass}`} style={{
-                          color: GOLD,
-                          paddingLeft: '1.2em',
-                          textShadow: `0 2px 20px rgba(0,0,0,0.8),
-                        0 1px 0 #A68B5A,
-                        0 2px 0 #8A742B,
-                        0 3px 0 #6E5D22,
-                        0 4px 0 #53491A,
-                        0 5px 0 #3D3614,
-                        0 6px 14px rgba(0,0,0,0.35),
-                        0 12px 40px rgba(201,168,122,0.18),
-                        0 0 80px rgba(201,168,122,0.08),
-                        0 0 160px rgba(201,168,122,0.03),
-                        0 0 260px rgba(201,168,122,0.01)
-                      `,
-                        }}>
-                          {brandPart2}
-                        </span>
-                      </>
-                    ) : brandPart1 && (
-                      <span className={`block italic ${brandSizeClass}`} style={{
+                    {/* Brand line */}
+                    {brandFullText && (
+                      <span className={`block italic whitespace-nowrap ${brandSizeClass}`} style={{
                         color: GOLD,
                         textShadow: `0 2px 20px rgba(0,0,0,0.8),
                       0 1px 0 #A68B5A,
@@ -179,7 +140,7 @@ function Hero({ scrollTo }) {
                       0 0 260px rgba(201,168,122,0.01)
                       `,
                       }}>
-                        {brandPart1}
+                        {brandFullText}
                       </span>
                     )}
                   </TiltHeading>

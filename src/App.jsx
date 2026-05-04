@@ -12,11 +12,21 @@ function ClientSiteRoute() {
 
   useEffect(() => {
     const config = getClientConfig(slug)
-    setState({ loading: false, config: config || defaultConfig })
+    setState({ loading: false, config })
   }, [slug])
 
   if (state.loading) {
     return null
+  }
+
+  if (!state.config) {
+    return (
+      <div style={{ padding: 40, background: '#0E0C0B', color: '#F0EBE3', fontFamily: 'monospace', minHeight: '100vh' }}>
+        <h2>Config not found</h2>
+        <p>Config not found for slug: <strong>{slug}</strong></p>
+        <p style={{ color: '#9A938B', fontSize: 12 }}>Available configs in src/configs/*.config.js</p>
+      </div>
+    )
   }
 
   return <BeautyTemplate config={state.config} />
