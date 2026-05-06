@@ -1,0 +1,81 @@
+{
+  "rejected": false,
+  "reject_reason": null,
+  "category": "interior",
+  "quality": {
+    "score": 7,
+    "sharpness": 7,
+    "lighting": 6,
+    "composition": 7
+  },
+  "marketing_grade": {
+    "score": 7,
+    "tier": "casual_acceptable",
+    "reasons": [
+      "clean_lighting",
+      "neutral_background"
+    ]
+  },
+  "content": {
+    "description": "Уютные кресла с велюровой обивкой и стразами в салоне красоты.",
+    "alt_text": "Кресла в салоне красоты",
+    "objects": [
+      "velvet_armchair",
+      "tufted_upholstery",
+      "rhinestones",
+      "side_table",
+      "cosmetic_device"
+    ],
+    "dominant_colors": [
+      "beige",
+      "brown",
+      "black"
+    ],
+    "mood": "cozy"
+  },
+  "people": {
+    "present": false,
+    "count": 0,
+    "faces_visible": false,
+    "primary_subject": null,
+    "back_or_side_only": false,
+    "covered_face": false
+  },
+  "text_in_image": {
+    "present": false,
+    "looks_like_caption_for_person": false,
+    "extracted_text": null
+  },
+  "service_ref": null,
+  "fit_scores": {
+    "hero": {
+      "score": 4,
+      "reason": "Shows the salon's atmosphere but lacks a strong hook or clear service indication."
+    },
+    "about": {
+      "score": 10,
+      "reason": "This is an excellent shot of the salon's interior, showcasing its ambiance and decor."
+    },
+    "gallery": {
+      "score": 0,
+      "reason": "The photo does not showcase any specific work results or services."
+    },
+    "team": {
+      "score": 0,
+      "reason": "No people are present in the image, making it unsuitable for a team section."
+    },
+    "services": {
+      "score": 2,
+      "reason": "While it shows salon furniture, it doesn't directly represent any specific service."
+    }
+  },
+  "flags": {
+    "has_logo": false,
+    "has_text_overlay": false,
+    "has_watermark": false,
+    "is_screenshot": false,
+    "face_covered": false,
+    "low_resolution": false,
+    "stock_photo_signals": false
+  }
+}

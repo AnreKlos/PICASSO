@@ -1,0 +1,80 @@
+{
+  "rejected": false,
+  "reject_reason": null,
+  "category": "work_result",
+  "quality": {
+    "score": 8,
+    "sharpness": 9,
+    "lighting": 8,
+    "composition": 8
+  },
+  "marketing_grade": {
+    "score": 8,
+    "tier": "pro_salon",
+    "reasons": [
+      "clean_lighting",
+      "professional_hair_result",
+      "minimal_background"
+    ]
+  },
+  "content": {
+    "description": "Женская стрижка и окрашивание блонд с плавным переходом от темных корней к светлым кончикам. Волосы уложены и выглядят ухоженными.",
+    "alt_text": "Стрижка и окрашивание блонд",
+    "objects": [
+      "woman_hair",
+      "hairdresser_hand",
+      "nail_polish"
+    ],
+    "dominant_colors": [
+      "blonde",
+      "grey",
+      "beige"
+    ],
+    "mood": "luxurious"
+  },
+  "people": {
+    "present": true,
+    "count": 1,
+    "faces_visible": false,
+    "primary_subject": "client",
+    "back_or_side_only": true,
+    "covered_face": false
+  },
+  "text_in_image": {
+    "present": false,
+    "looks_like_caption_for_person": false,
+    "extracted_text": null
+  },
+  "service_ref": "haircut",
+  "fit_scores": {
+    "hero": {
+      "score": 8,
+      "reason": "Striking hair result with a hand demonstrating the quality, making it visually appealing for a hero image."
+    },
+    "about": {
+      "score": 2,
+      "reason": "This image focuses on the hair result, not the salon interior or atmosphere."
+    },
+    "gallery": {
+      "score": 10,
+      "reason": "Excellent showcase of a finished hair service, highlighting the color and cut with good detail."
+    },
+    "team": {
+      "score": 0,
+      "reason": "No clear view of a master's face or context to identify them as staff."
+    },
+    "services": {
+      "score": 8,
+      "reason": "Clearly depicts the result of a hair coloring and cutting service, suitable for a service card."
+    }
+  },
+  "flags": {
+    "has_logo": false,
+    "has_text_overlay": false,
+    "has_watermark": false,
+    "is_screenshot": false,
+    "face_covered": false,
+    "low_resolution": false,
+    "stock_photo_signals": false
+  }
+}

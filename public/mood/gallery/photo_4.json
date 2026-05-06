@@ -1,0 +1,80 @@
+{
+  "rejected": false,
+  "reject_reason": null,
+  "category": "work_result",
+  "quality": {
+    "score": 8,
+    "sharpness": 8,
+    "lighting": 8,
+    "composition": 8
+  },
+  "marketing_grade": {
+    "score": 8,
+    "tier": "pro_salon",
+    "reasons": [
+      "good_lighting",
+      "professional_setting_implied",
+      "clean_background"
+    ]
+  },
+  "content": {
+    "description": "Молодая женщина с красивыми светлыми волосами, демонстрирующая результат окрашивания или укладки.",
+    "alt_text": "Женщина со светлыми волосами после процедуры в салоне",
+    "objects": [
+      "woman",
+      "hair",
+      "black_turtleneck"
+    ],
+    "dominant_colors": [
+      "blonde",
+      "black",
+      "beige"
+    ],
+    "mood": "neutral"
+  },
+  "people": {
+    "present": true,
+    "count": 1,
+    "faces_visible": true,
+    "primary_subject": "model",
+    "back_or_side_only": false,
+    "covered_face": false
+  },
+  "text_in_image": {
+    "present": false,
+    "looks_like_caption_for_person": false,
+    "extracted_text": null
+  },
+  "service_ref": "hair_treatment",
+  "fit_scores": {
+    "hero": {
+      "score": 8,
+      "reason": "The image showcases a beautiful hair result, which can be visually appealing for a hero section, but lacks a clear action or master involvement."
+    },
+    "about": {
+      "score": 4,
+      "reason": "While it shows a person, it doesn't provide a clear view of the salon's interior or atmosphere."
+    },
+    "gallery": {
+      "score": 10,
+      "reason": "This photo is an excellent example of a work result, showcasing the quality of hair services offered by the salon."
+    },
+    "team": {
+      "score": 0,
+      "reason": "This is not a portrait of a team member, and there is no accompanying caption information."
+    },
+    "services": {
+      "score": 8,
+      "reason": "The photo clearly displays the result of a hair service, making it suitable for a service card, though it doesn't show the service in action."
+    }
+  },
+  "flags": {
+    "has_logo": false,
+    "has_text_overlay": false,
+    "has_watermark": false,
+    "is_screenshot": false,
+    "face_covered": false,
+    "low_resolution": false,
+    "stock_photo_signals": false
+  }
+}
